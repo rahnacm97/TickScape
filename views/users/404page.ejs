@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fcfbfb;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            max-height: 1000px;
+        }
+
+        .content-wrapper {
+            background: linear-gradient(to bottom, #1e3d4a, #2c5a6b);
+            padding: 2rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-section {
+            background-color: #380352;
+            padding: 2rem;
+            border-radius: 4px;
+            text-align: center;
+            margin-right: 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: black;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 4rem;
+            color: #ff0000;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: #ff0000;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .error-text {
+            color: #333;
+            margin: 1rem 0;
+        }
+
+        .back-link {
+            color: blue;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content-wrapper">
+            <div class="logo-section">
+                <img src="assets\img\logo\tslogo2.png" alt="image">
+            </div>
+            <div class="error-section">
+                <div class="error-code">404</div>
+                <div class="error-message">Page Not Found...!</div>
+                <div class="error-text">
+                    Check the address or <a href="/" class="back-link">go back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

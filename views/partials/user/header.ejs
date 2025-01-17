@@ -1,0 +1,161 @@
+<!Doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>TickScape || The Watch Shop</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+
+.header-right ul {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Adjust gap for spacing */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+        .dropdown {
+        position:relative;
+        display:inline-block;
+        }
+        .dropdown a {
+    color: #10880c;  
+    padding: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+}
+    .dropdown-content {
+   display: none;
+   position:absolute;
+   background-color: white;
+   min-width: 160px;
+   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+   z-index:1000;
+   right:0;
+    }
+
+
+    .dropdown-content a {
+   color: black;
+   padding: 12px 16px;
+   text-decoration: none;
+   display: block;
+   width: 100%;
+    }
+    .dropdown-content a:hover{
+   background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content{
+   display: block;
+}
+
+    </style>
+</head>
+
+<body>
+    <!--? Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="assets/img/logo/tslogo.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Preloader Start -->
+    <header>
+        <!-- Header Start -->
+        <div class="header-area">
+            <div class="main-header header-sticky">
+                <div class="container-fluid">
+                    <div class="menu-wrapper">
+                        <!-- Logo -->
+                        <div class="logo">
+                            <a href="index.html"><img src="assets/img/logo/ts.png" alt=""></a>
+                        </div>
+                        <!-- Main-menu -->
+                        <div class="main-menu d-none d-lg-block">
+                            <nav>                                                
+                                <ul id="navigation">  
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="shop.html">shop</a></li>
+                                    <li><a href="about.html">about</a></li>
+                                    <li class="hot"><a href="#">Latest</a>
+                                        <ul class="submenu">
+                                            <li><a href="shop.html"> Product list</a></li>
+                                            <li><a href="product_details.html"> Product Details</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="blog.html">Blog</a>
+                                        <ul class="submenu">
+                                            <li><a href="blog.html">Men's</a></li>
+                                            <li><a href="blog-details.html">Women's</a></li>
+                                            <li><a href="blog-details.html">Smart Watches</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Pages</a>
+                                        <ul class="submenu">
+                                            <li><a href="/login">Login</a></li>
+                                            <li><a href="cart.html">Cart</a></li>
+                                            <li><a href="elements.html">Element</a></li>
+                                            <li><a href="confirmation.html">Confirmation</a></li>
+                                            <li><a href="checkout.html">Product Checkout</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="contact.html">Contact</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <!-- Header Right -->
+                        <div class="header-right">
+                            <ul>
+                                <li>
+                                    <div class="nav-search search-switch">
+                                        <span class="flaticon-search"></span>
+                                    </div>
+                                </li>
+                                <li><a href="cart.html"><span class="flaticon-shopping-cart"></span></a></li>
+                                <%if(locals.user){%>
+                                    <li class="dropdown">
+                                        <a href="#" class="sign-in-link"><%= locals.user.fname%></a>
+                                        <div class="dropdown-content">
+                                            <a href="/userProfile">Profile</a>
+                                            <a href="/logout">Logout</a>
+                                        </div>
+                                    </li>
+                                <%}else {%>
+                                <li> <a href="/login"><span class="flaticon-user"></span></a></li>
+                                <%}%>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Mobile Menu -->
+                    <div class="col-12">
+                        <div class="mobile_menu d-block d-lg-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+    </header>

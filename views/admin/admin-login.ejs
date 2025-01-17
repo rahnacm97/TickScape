@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <style>
+    body,
+    html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      font-family: 'Nunito Sans', sans-serif;
+      color: white;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 1000px; /* Larger container width */
+      padding: 40px;
+      background-color: #1a1a1a;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .text-center {
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: white;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #007bff;
+      background: #333;
+    }
+
+    .btn-primary {
+      display: block;
+      margin: 20px auto 0;
+      background-color: #007bff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      font-size: 0.875rem;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2 class="text-center">Admin Login</h2>
+    <% if (message) { %>
+    <div class="alert alert-danger text-center"><%= message %></div>
+    <% } %>
+    <form id="adminLoginForm" method="post" action="/admin/login">
+      <div class="form-group">
+        <label for="adminEmail">Email Address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="adminEmail"
+          name="email"
+          placeholder="Enter your email"
+        />
+        <div id="emailError" class="error-message"></div>
+      </div>
+      <div class="form-group">
+        <label for="adminPassword">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="adminPassword"
+          name="password"
+          placeholder="Enter your password"
+        />
+        <div id="passwordError" class="error-message"></div>
+      </div>
+      <button type="submit" class="btn-primary">Log In</button>
+    </form>
+  </div>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const adminLoginForm = document.getElementById("adminLoginForm");
+      const emailField = document.getElementById("adminEmail");
+      const passwordField = document.getElementById("adminPassword");
+      const emailError = document.getElementById("emailError");
+      const passwordError = document.getElementById("passwordError");
+
+      adminLoginForm.addEventListener("submit", function (event) {
+        let isValid = true;
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!emailPattern.test(emailField.value)) {
+          emailError.textContent = "Invalid email format";
+          isValid = false;
+        } else {
+          emailError.textContent = "";
+        }
+        if (passwordField.value.length < 8) {
+          passwordError.textContent =
+            "Password should contain at least 8 characters";
+          isValid = false;
+        } else {
+          passwordError.textContent = "";
+        }
+
+        if (!isValid) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

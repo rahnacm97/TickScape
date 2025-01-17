@@ -1,0 +1,260 @@
+<%- include("../../views/partials/user/header") %>
+
+<main>
+	<style>
+		.error-message{
+			color:red;
+			font-size: 0.75rem;
+			display: none;
+		}
+		.btn-outline-google {
+    border-color: #4285F4;
+    color: #fafbfc;
+    font-size: 14px;
+    padding: 10px 20px;
+    text-align: center;
+    width: 100%;
+}
+		/* .social-btns {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .social-btns button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      } */
+
+	</style>
+	<!-- Hero Area Start-->
+	<div class="slider-area ">
+		<div class="single-slider slider-height2 d-flex align-items-center">
+			<div class="container">
+				<div class="row">
+					<div class="col-xl-12">
+						<div class="hero-cap text-center">
+							<h2>Sign Up</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Hero Area End-->
+	<!--================login_part Area =================-->
+	<section class="login_part section_padding ">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-lg-6 col-md-6">
+					<div class="login_part_text text-center">
+						<div class="login_part_text_iner">
+							<img src="/assets/img/logo/tslogo2.png" alt="">
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6 col-md-6">
+					<div class="login_part_form">
+						<div class="login_part_form_iner">
+							<h3>Register now</h3>
+							<form id="signform" class="row contact_form" action="/signup" method="post" novalidate="novalidate">
+								<div class="col-md-12 form-group p_star">
+									<input type="text" class="form-control" id="fname" name="fname" value=""
+										placeholder="First Name">
+									<div id="err1" class="error-message"></div>
+								</div>
+								
+                                <div class="col-md-12 form-group p_star">
+									<input type="text" class="form-control" id="lname" name="lname" value=""
+										placeholder="Last Name">
+									<div id="err2" class="error-message"></div>
+								</div>
+								
+								<div class="col-md-12 form-group p_star">
+									<input type="text" class="form-control" id="phone" name="phone" value=""
+										placeholder="Phone Number">
+									<div id="err3" class="error-message"></div>
+								</div>
+								
+								<div class="col-md-12 form-group p_star">
+									<input type="text" class="form-control" id="email" name="email" value=""
+										placeholder="Email">
+										<div id="err4" class="error-message"></div>
+								</div>
+								
+								<div class="col-md-12 form-group p_star">
+									<input type="password" class="form-control" id="password" name="password" value=""
+										placeholder="Password">
+									<div id="err5" class="error-message"></div>
+								</div>
+								
+                                <div class="col-md-12 form-group p_star">
+									<input type="password" class="form-control" id="cpassword" name="cpassword" value=""
+										placeholder="Confirm Password">
+									<div id="err6" class="error-message"></div>
+								</div>
+
+								<%if(locals.message && message.length>0){%>
+									<div class="alert alert-danger text-center">
+									  <%=message%>
+									</div>
+								<%}%>
+								
+								<div class="col-md-12 form-group">
+									<button type="submit" value="submit" class="btn_3">
+										SIGN UP
+									</button>
+									<div class="mt-2px text-center">
+                                        <p>Or</p>
+                                    </div>
+                                    <div class="social-btns">
+                                        <a href="/auth/google" class="btn btn-outline-google btn-block">
+                                            <img src="/assets/img/logo/googlesignup.png" alt="Google Logo" style="width: 24px; height: 24px; margin-right: 10px;" />
+                                        	Sign Up Using Google
+                                        </a>
+                                    </div>	
+									<a class="lost_pass" href="forgetpassword">forget password?</a>
+								</div>			  
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================login_part end =================-->
+</main>
+
+	<%- include("../../views/partials/user/footer") %>
+
+	<script>
+
+		const fnameid = document.getElementById('fname');
+		const lnameid = document.getElementById('lname');
+		const phoneid = document.getElementById('phone');
+		const emailid = document.getElementById('email');
+		const passwordid = document.getElementById('password');
+		const cpasswordid = document.getElementById('cpassword');
+		const err1id = document.getElementById('err1');
+		const err2id = document.getElementById('err2');
+		const err3id = document.getElementById('err3');
+		const err4id = document.getElementById('err4');
+		const err5id = document.getElementById('err5');
+		const err6id = document.getElementById('err6'); 
+		const signformid = document.getElementById('signform');
+
+		function fnameValidate(e){
+			const fnameval = fnameid.value;
+			const fnamepattern = /^[A-Za-z\s]+$/;
+
+			if(fnameval.trim() === ""){
+				err1id.style.display = "block";
+				err1id.innerHTML = "Please Enter a valid Name";
+			}else if(!fnamepattern.test(fnameval)){
+				err1id.style.display = "block";
+				err1id.innerHTML = "Name can only contain Alphabets and Spaces";
+			}else{
+				err1id.style.display = "none";
+				err1id.innerHTML = "";
+			}
+		}
+
+		function lnameValidate(e){
+			const lnameval = lnameid.value;
+			const lnamepattern = /^[A-Za-z\s]+$/;
+
+			if(lnameval.trim() === ""){
+				err2id.style.display = "block";
+				err2id.innerHTML = "Please Enter a valid last name";
+			}else if(!lnamepattern.test(lnameval)){
+				err2id.style.display = "block";
+				err2id.innerHTML = "Name can only contain Alphabets and Spaces";
+			}else{
+				err2id.style.display = "none";
+				err2id.innerHTML = "";
+			}
+		}
+
+		function phoneValidate(e){
+			const phoneval = phoneid.value;
+			const phonepattern = /^[A-Za-z\s]+$/;
+
+			if(phoneval.trim() === ""){
+				err3id.style.display = "block";
+				err3id.innerHTML = "Enter Valid Phone Number";
+			}else if(phoneval.length<10 || phoneval.length>10){
+				err3id.style.display = "block";
+				err3id.innerHTML = "Enter 10 digit Number";
+			}else{
+				err3id.style.display = "none";
+				err3id.innerHTML = "";
+			}
+
+		}
+
+		function emailValidate(e){
+			const emailval = emailid.value;
+			const emailpattern = /^([a-zA-Z0-9._-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
+
+			if(!emailpattern.test(emailval)){
+				err4id.style.display = "block";
+				err4id.innerHTML = "Invalid Format";
+			}else{
+				err4id.style.display = "none";
+				err4id.innerHTML = "";
+			}
+		}
+
+		function passwordValidate(e){
+			const passval = passwordid.value;
+			const cpassval  = cpasswordid.value;
+			const alpha = /[a-zA-Z]/;
+			const digit = /\d/;
+
+			if(passval.length < 8 ){
+				err5id.style.display = "block";
+				err5id.innerHTML = "Should contain atleast 8 characters";
+			}else if(!alpha.test(passval) || !digit.test(passval)){
+				err5id.style.display = "block";
+				err5id.innerHTML = "Should contain Digits and Alphabets";
+			}else{
+				err5id.style.display = "none";
+				err5id.innerHTML = "";
+			}
+
+			if(passval !== cpassval){
+				err6id.style.display = "block";
+				err6id.innerHTML = "Password do not Match";
+			}else{
+				err6id.style.display = "none";
+				err6id.innerHTML = "";
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded",() => {
+			signformid.addEventListener("submit",function(e){
+				fnameValidate();
+				lnameValidate();
+				phoneValidate();
+				emailValidate();
+				passwordValidate();
+
+				if(!fnameid || !lnameid || !phoneid || !emailid || !passwordid || !cpasswordid 
+					|| !err1id || !err2id || !err3id || !err4id || !err5id || !err6id || !signformid)
+			
+					{
+						console.error("One or more fields are empty");
+					}
+				if(err1.innerHTML || err2.innerHTML || err3.innerHTML || err4.innerHTML ||
+				err5.innerHTML || err6.innerHTML){
+					e.preventDefault();
+				}
+		    })
+		})
+
+	</script>
