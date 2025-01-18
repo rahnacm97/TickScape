@@ -7,18 +7,21 @@ const categoryInfo = async (req,res) => {
         const limit = 3;
         const skip = (page-1)*limit;
 
-        const categoryData = await Category.find({})
+        const searchQuery = req.query.search || '';
+        const searchFilter = searchQuery ? { name: { $regex: searchQuery, $options: 'i' } } : {};
+        const categoryData = await Category.find(searchFilter)
         .sort({createdAt:-1})
         .skip(skip)
         .limit(limit);
 
-        const totalCategories = await Category.countDocuments();
+        const totalCategories = await Category.countDocuments(searchFilter);
         const totalPages = Math.ceil(totalCategories / limit);
         res.render("category",{
             cat:categoryData,
             currentPage:page,
             totalPages:totalPages,
-            totalCategories:totalCategories
+            totalCategories:totalCategories,
+            searchQuery: searchQuery
         }); 
     }catch(error){
         console.error(error);
@@ -26,10 +29,20 @@ const categoryInfo = async (req,res) => {
     }
 }
 
+const getAddCategory = async (req,res) => {
+    try {
+        //const { name, description } = req.body;
+        //const existingCategory = await Category.findOne({name:name});
+        res.render('add-category');
+    } catch (error) {
+        res.redirect('/pageerror');
+    }
+}
+
 const addCategory = async (req,res) => {
     try {
         const { name, description } = req.body;
-        const existingCategory = await Category.findOne({description});
+        const existingCategory = await Category.findOne({name:name});
         if(existingCategory){
             return res.status(400).json({error:"Category already exists"});
         }
@@ -132,7 +145,7 @@ const editCategory = async(req,res) => {
     try {
         const id = req.params.id;
         const {categoryName,description} = req.body;
-        const existingCategory = await Category.findOne({description:description});
+        const existingCategory = await Category.findOne({name:categoryName});
         
         if(existingCategory){
             return res.status(400).json({error:"Category exists, Choose another name"});
@@ -153,14 +166,56 @@ const editCategory = async(req,res) => {
     }
 }
 
+const searchCategory = async (req, res) => {
+    try {
+      const searchQuery = req.query.search || ''; // Get the search query
+      const currentPage = parseInt(req.query.page) || 1; // Current page number
+      const itemsPerPage = 10; // Items per page
+      const skip = (currentPage - 1) * itemsPerPage; // Skip for pagination
+  
+      // Search categories by name or description
+      const categories = await Category.find({
+        $or: [
+          { name: { $regex: searchQuery, $options: 'i' } },
+          { description: { $regex: searchQuery, $options: 'i' } }
+        ]
+      })
+      .skip(skip)
+      .limit(itemsPerPage);
+  
+      // Get total categories count for pagination
+      const totalCategories = await Category.countDocuments({
+        $or: [
+          { name: { $regex: searchQuery, $options: 'i' } },
+          { description: { $regex: searchQuery, $options: 'i' } }
+        ]
+      });
+  
+      const totalPages = Math.ceil(totalCategories / itemsPerPage); // Total pages for pagination
+  
+      res.render('admin/category', {
+        cat: categories,
+        searchQuery,
+        currentPage,
+        totalPages
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error fetching categories');
+    }
+  };
+  
+
 
 module.exports = {
     categoryInfo,
+    getAddCategory,
     addCategory,
     addCategoryOffer,
     removeCategoryOffer,
     getListCategory,
     getUnlistCategory,
     getEditCategory,
-    editCategory
+    editCategory,
+    searchCategory
 }
