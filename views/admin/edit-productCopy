@@ -1,0 +1,431 @@
+<%- include("../../views/partials/admin/header") %>
+
+<style>
+   
+    /* body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-main {
+        margin: 20px;
+        padding: 20px;
+        background-color: #fcfbfb;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-header h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1c1b1b;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+    }
+
+    .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .mb-4 {
+        margin-bottom: 20px;
+    }
+
+    .thumbnails-container {
+        display: flex;
+        overflow-x: auto;
+        margin-bottom: 20px;
+    }
+
+    .thumbnail img {
+        height: 100px;
+        width: auto;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
+
+   
+    @media (max-width: 768px) {
+        .col-lg-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .col-lg-4 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        button {
+            width: 100%;
+        }
+    } */
+</style>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header">
+                <h2 class="content-title">Edit Product</h2>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="myform">
+                        <!-- Product Name -->
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Product Name</label>
+                            <input type="text" name="productName" value="<%=product.productName%>" class="form-control"
+                                id="product_name">
+                            <div id="productName-error" class="error-message"></div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label">Full Description</label>
+                            <textarea name="descriptionData" id="descriptionid" class="form-control" rows="4"><%=product.description%></textarea>
+                            <div id="description-error" class="error-message"></div>
+                        </div>
+
+                        <!-- Price and Quantity -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Regular Price</label>
+                                    <input placeholder="$" name="regularPrice" type="text" value="<%=product.regularPrice%>"
+                                        class="form-control">
+                                    <div id="regularPrice-error" class="error-message"></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Sale Price</label>
+                                    <input id="salePrice" name="salePrice" type="text" value="<%=product.salePrice%>"
+                                        class="form-control">
+                                    <div id="salePrice-error" class="error-message"></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Quantity</label>
+                                    <input name="quantity" type="text" value="<%=product.quantity%>" class="form-control">
+                                    <div id="quantity-error" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Color -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Color</label>
+                                    <input name="color" type="text" value="<%=product.color%>" class="form-control">
+                                    <div id="color-error" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" name="category">
+                                        <%for(let i =0;i<cat.length;i++){%>
+                                            <option value="<%=cat[i]._id%>"><%=cat[i].name%></option>
+                                        <%}%>
+                                    </select>
+                                    <div id="category-error" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Images -->
+                        <div class="mb-4">
+                            <label class="form-label">Product Images</label>
+                            <div class="thumbnails-container">
+                                <% for(let i =0;i<product.productImage.length;i++){ %>
+                                    <div class="thumbnail">
+                                        <img src="http://localhost:3000/<%= product.productImage[i] %>" alt="">
+                                    </div>
+                                <% } %>
+                            </div>
+                            <input name="images" type="file" id="upload" multiple onchange="handleImage(event)" />
+                            <div id="cropperContainers"></div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div>
+                            <button type="submit">Update Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+   <script>
+
+      let croppers = {};  // Object to store the cropper instances
+      let croppedImages = [];  // Array to store the cropped image blobs
+
+      const handleImage = (e) => {
+      const files = e.target.files;  // Get the selected files
+      console.log("Selected Files: ", files);
+
+      // Clear any existing cropper containers
+      const cropperContainers = document.getElementById("cropperContainers");
+      cropperContainers.innerHTML = "";
+
+      // Iterate through the selected files
+      for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const reader = new FileReader();
+
+
+          // Create a new cropper container dynamically
+          const cropperContainer = document.createElement('div');
+          cropperContainer.id = `cropperContainer${i}`;
+          cropperContainer.style.marginBottom = "20px";  // Styling for separation
+          cropperContainers.appendChild(cropperContainer);
+
+          // Create an image element for previewing the selected image
+          const img = document.createElement('img');
+          img.id = `cropImage${i}`;
+          img.style.width = '300px';
+          img.style.height = '200px';
+          cropperContainer.appendChild(img);
+
+          const saveButton = document.createElement('button');
+          saveButton.textContent = 'Save Cropped Image';
+          saveButton.id = `saveButton${i}`;
+          saveButton.setAttribute("type", "button");
+          cropperContainer.appendChild(saveButton);
+
+          // Read the file as data URL
+          reader.onload = function () {
+              img.src = reader.result;
+
+            //   console.log(croppers[i]); // Check if the cropper instance is created
+            //    if (!croppers[i]) {
+            //       console.error("Cropper failed to initialize.");
+            //    }
+
+              // Initialize the cropper for this image
+              if (croppers[i]) {
+                  croppers[i].destroy();  // Destroy any existing cropper before initializing a new one
+              }
+
+              //const img = document.querySelector('#productImage');
+              croppers[i] = new Cropper(img, {
+                  aspectRatio: 1,  // Maintain a square aspect ratio
+                  viewMode: 1,
+                  autoCropArea: 1,
+              });
+
+              // Handle the "Save Cropped Image" button click event
+              saveButton.onclick = function () {
+                  const croppedCanvas = croppers[i].getCroppedCanvas({
+                      width: 600,  // Resize to 600x600
+                      height: 600
+                  });
+
+                  // Get the file extension from the uploaded image
+                  const fileExtension = file.name.split('.').pop();  // Extract file extension (e.g., jpg, png, etc.)
+
+                  // Compress and convert the cropped image to a Blob
+                  croppedCanvas.toBlob(function (blob) {
+                      const url = URL.createObjectURL(blob);
+
+                      // If the image is already cropped, replace the preview with the new cropped image
+                      img.src = url;  // Replace the preview with the new cropped image
+
+                      img.dataset.blob = blob;  // Store the Blob for future submission (e.g., sending to the backend)
+
+                      // Push the cropped image Blob to the array
+                      croppedImages.push(blob);
+                      console.log("Cropped Images Array: ", croppedImages);
+
+                      // Display the cropped image
+                      const croppedImagePreview = document.createElement('img');
+                      croppedImagePreview.src = url;
+                      croppedImagePreview.style.width = '200px';
+                      croppedImagePreview.style.height = '200px';
+                      cropperContainer.appendChild(croppedImagePreview);
+
+                      // Hide the cropper container (or remove it)
+                      cropperContainer.innerHTML = '';  // Clear the cropper UI
+                      cropperContainer.appendChild(croppedImagePreview);  // Only show the cropped image
+
+                      // Add a button to allow re-cropping the cropped image
+                      const reCropButton = document.createElement('button');
+                      reCropButton.textContent = 'Re-Crop This Image';
+                      reCropButton.setAttribute("type", "button");
+                      cropperContainer.appendChild(reCropButton);
+
+                      // Handle re-cropping the cropped image
+                      reCropButton.onclick = function () {
+                          // Replace the cropped image with the cropper again
+                          img.src = url;  // Use the cropped image as the source for re-cropping
+
+                          // Destroy the previous cropper instance
+                          croppers[i].destroy();
+
+                          // Re-initialize the cropper with the cropped image
+                          croppers[i] = new Cropper(img, {
+                              aspectRatio: 1,  // Maintain a square aspect ratio
+                              viewMode: 1,
+                              autoCropArea: 1,
+                          });
+
+                          // Clear the cropped image preview and display the cropper again
+                          cropperContainer.innerHTML = '';  // Clear the cropped image preview
+                          cropperContainer.appendChild(img);  // Add the image back for cropping
+                          cropperContainer.appendChild(saveButton);  // Add the save button
+                      };
+                  }, image/`${fileExtension}`, 0.7);  // Use the dynamic file extension for the cropped image
+              };
+          };
+
+          reader.readAsDataURL(file);
+      }
+  };
+
+
+       
+   </script>
+
+
+
+<script>
+  $(document).ready(function () {
+ 
+    $.validator.addMethod("greaterThan", function (value, element, param) {
+        return this.optional(element) || parseFloat(value) > parseFloat($(param).val());
+    }, "Regular price must be greater than sale price.");
+
+    // Apply validation rules
+    $("#myform").validate({
+        rules: {
+            productName: {
+                required: true,
+                minlength: 3
+            },
+            descriptionData: {
+                required: true,
+                minlength: 6
+            },
+            regularPrice: {
+                required: true,
+                number: true,
+                greaterThan: "#salePrice" // Ensure regularPrice > salePrice
+            },
+            salePrice: {
+                required: true,
+                number: true
+            },
+            color: {
+                required: true
+            }
+        },
+        messages: {
+            productName: {
+                required: "Please enter product name.",
+                minlength: "Product name must consist of at least 3 characters."
+            },
+            descriptionData: {
+                required: "Please provide product description.",
+                minlength: "Description must consist of at least 6 characters."
+            },
+            regularPrice: {
+                required: "Please enter regular price.",
+                number: "Please enter a valid number.",
+                greaterThan: "Regular price must be greater than sale price."
+            },
+            salePrice: {
+                required: "Please enter sale price.",
+                number: "Please enter a valid number."
+            },
+            color: {
+                required: "Enter a color value."
+            }
+        },
+        submitHandler: function (form) {
+            // Create a FormData object
+            const formData = new FormData(form);
+
+            // Append cropped images
+            
+
+            console.log(croppedImages, 'croppedImages'); // Debugging log
+
+            // AJAX call
+            $.ajax({
+                url: "/admin/editProduct/<%=product._id%>", // Replace with your API endpoint
+                type: "POST",
+                data: formData,
+                processData: false, // Prevent jQuery from processing the FormData
+                contentType: false, // Prevent jQuery from setting the content type
+                success: function (response) {
+                    // alert("Form submitted successfully! Response: " + );/
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert("An error occurred: " + error);
+                }
+            });
+
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js" integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  

@@ -1,0 +1,503 @@
+<%- include("../../views/partials/admin/header") %>
+<head>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+</head>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f4f4;
+        margin: 0;
+        padding: 0;
+        font-size: 12px;
+    }
+    .error-message {
+           color: red;
+           font-size: 0.875rem;
+           margin-top: 0.25rem;
+       }
+
+       .content-main {
+           background-color: #f9f9f9;
+           padding: 2rem;
+       }
+
+       .content-header h2 {
+           font-size: 1.75rem;
+           color: #333;
+       }
+
+       .card {
+           background-color: white;
+           border: 1px solid #ddd;
+           border-radius: 8px;
+           margin-bottom: 1.5rem;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+       }
+
+       .card-body {
+           padding: 1.5rem;
+       }
+
+       .form-label {
+           font-size: 1rem;
+           color: #333;
+           margin-bottom: 0.5rem;
+       }
+
+       .form-control {
+           font-size: 1rem;
+           padding: 0.75rem;
+           border: 1px solid #ddd;
+           border-radius: 8px;
+           width: 100%;
+           margin-bottom: 1rem;
+           transition: all 0.3s ease;
+       }
+
+       .form-control:focus {
+           border-color: #1f4dba;
+           outline: none;
+           box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+       }
+
+       .btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        border: none;             
+       }
+
+       .btn:hover {
+           background-color: #0056b3;
+       }
+
+       .btn-md {
+           font-size: 1.125rem;
+           padding: 0.75rem 1.25rem;
+       }
+
+       .thumbnails-container {
+           display: flex;
+           overflow-x: auto;
+           margin-top: 1rem;
+           gap: 1rem;
+       }
+
+       .thumbnail {
+           position: relative;
+           width: 120px;
+           height: 120px;
+           border-radius: 8px;
+           overflow: hidden;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+       }
+
+       .thumbnail img {
+           width: 100%;
+           height: 100%;
+           object-fit: cover;
+           border-radius: 8px;
+       }
+
+       .remove-icon {
+           position: absolute;
+           top: 5px;
+           right: 5px;
+           background: rgba(0, 0, 0, 0.5);
+           color: white;
+           border-radius: 50%;
+           padding: 5px;
+           cursor: pointer;
+       }
+
+       .remove-icon:hover {
+           background: red;
+       }
+
+       .image-cropper {
+           display: none;
+           width: 300px;
+           height: 200px;
+           margin-bottom: 1rem;
+       }
+
+       .image-cropper img {
+           width: 100%;
+           height: 100%;
+           object-fit: cover;
+           border-radius: 8px;
+       }
+
+       .image-cropper button {
+           background-color:  #007bff;
+           color: white;
+           border: none;
+           width: 200px;
+           border-radius: 25px;
+           padding: 0.5rem 1rem;
+           margin-top: 1rem;
+           margin-left: 10px;
+           cursor: pointer;
+       }
+
+       .image-cropper button:hover {
+           background-color: #0056b3;
+       }
+
+       .card-header h4 {
+           font-size: 1.25rem;
+           color: #333;
+       }
+
+       .card-header {
+           background-color: #f2f2f2;
+           padding: 1rem;
+           border-radius: 8px;
+           margin-bottom: 1rem;
+       }
+
+       .form-select {
+           padding: 0.75rem;
+           border-radius: 8px;
+           border: 1px solid #ddd;
+           width: 100%;
+       }
+
+       .form-select:focus {
+           border-color: #191e58;
+           box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+       }
+
+       .row {
+           margin-bottom: 1rem;
+       }
+
+       .col-lg-4 {
+           margin-bottom: 1.5rem;
+       }
+
+       .publishbutton{
+            width: 25%;
+            font-size: 1.25rem;
+            display: block;
+            margin: 0 auto;
+        }
+ </style>
+ 
+   <section class="content-main">
+       <div class="row">
+           <div class="col-9">
+               <div class="content-header">
+                   <h2 class="content-title">Add New Product</h2>
+               </div>
+           </div>
+           <div class="col-lg-12">
+               <div class="card mb-4">
+                   <div class="card-body">
+                       <!-- <form method="POST" action="/admin/addProducts" enctype="multipart/form-data"
+                           onsubmit="return validateForm()"> -->
+                        <form id="myform">
+                           <div class="mb-4">
+                               <label for="product_name" class="form-label">Product Name</label>
+                               <input value="sfdff" type="text" placeholder="Type here" name="productName"
+                                   class="form-control border" id="product_name">
+                               <div id="productName-error" class="error-message"></div>
+                           </div>
+                           
+                           <div class="mb-4">
+                               <label class="form-label">Full description</label>
+                               <textarea placeholder="Type here" id="descriptionid" name="description" class="form-control border"
+                                   rows="4">dfddfdff Lorem ipsum dolor sit amet consectetur adipisicing elit Dolores dolore blanditiis quasi deserunt odio sunt sapiente libero incidunt illo aliquid animi repellendus iure Architecto libero fuga quis aperiam esse impedit</textarea>
+                               <div id="description-error" class="error-message"></div>
+                           </div>
+                           <div class="row">
+                               <div class="col-lg-4">
+                                   <div class="mb-4">
+                                       <label class="form-label">Regular price</label>
+                                       <input value="45" placeholder="$" name="regularPrice" type="text"
+                                           class="form-control border">
+                                           <div id="regularPrice-error" class="error-message"></div>
+                                   </div>
+                               </div>
+                               <div class="col-lg-4">
+                                   <div class="mb-4">
+                                       <label class="form-label">Sale price</label>
+                                       <input placeholder="$" value="50" name="salePrice" type="text" class="form-control border">
+                                      
+                                   </div>
+                                   <div id="salePrice-error" class="error-message"></div>
+                               </div>
+                               <div class="col-lg-4">
+                                   <div class="mb-4">
+                                       <label class="form-label">Quantity</label>
+                                       <input placeholder="" name="quantity" value="56" type="text" class="form-control border">
+                                       <div id="quantity-error" class="error-message"></div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="row">
+                              
+                               <div class="col-lg-4">
+                                   <div class="mb-4">
+                                       <label class="form-label">Color</label>
+                                       <input value="Red"  name="color" type="text" class="form-control border">
+                                   </div>
+                                   <div id="color-error" class="error-message"></div>
+                               </div>
+                            
+                           </div>
+                           <div class="card mb-4">
+                               <div class="card-body">
+                                   <div class="row gx-2">
+                                       <div class="col-sm-6 mb-3">
+                                           <label class="form-label">Category</label>
+                                           <select class="form-select border" style="width: 150px;" name="category">
+                                                <%for(let i=0;i<cat.length;i++){%>  
+                                              
+                                                   <option value="<%=cat[i].name%>">
+                                                    <%=cat[i].name%>
+                                                   </option>
+                                                  
+                                                <%}%>
+                                                   
+                                           </select>
+                                           <div id="category-error" class="error-message"></div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                            <!-- Images -->
+                        <div class="mb-4">
+                            <label class="form-label">Product Images</label>
+                            <div class="thumbnails-container">
+                                
+                            <input name="images" type="file" id="upload" multiple onchange="handleImage(event)" />
+                            <div id="cropperContainers"></div>
+                        </div>
+
+                           <div>
+                               <button class="btn btn-md rounded font-sm hover-up publishbutton"  type="button" onclick="validateAndSubmit()
+                               ">Publish</button>
+                           </div>
+                       </form>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </section>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+<script>
+
+    let croppers = {};  // Object to store the cropper instances
+    let croppedImages = [];  // Array to store the cropped image blobs
+
+    const handleImage = (e) => {
+    const files = e.target.files;  // Get the selected files
+    console.log("Selected Files: ", files);
+
+    // Clear any existing cropper containers
+    const cropperContainers = document.getElementById("cropperContainers");
+    cropperContainers.innerHTML = "";
+
+    // Iterate through the selected files
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        // Create a new cropper container dynamically
+        const cropperContainer = document.createElement('div');
+        cropperContainer.id = `cropperContainer${i}`;
+        cropperContainer.style.marginBottom = "20px";  // Styling for separation
+        cropperContainers.appendChild(cropperContainer);
+
+        // Create an image element for previewing the selected image
+        const img = document.createElement('img');
+        img.id = `cropImage${i}`;
+        img.style.width = '300px';
+        img.style.height = '200px';
+        cropperContainer.appendChild(img);
+
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save Cropped Image';
+        saveButton.id = `saveButton${i}`;
+        saveButton.setAttribute("type", "button");
+        cropperContainer.appendChild(saveButton);
+
+        // Read the file as data URL
+        reader.onload = function () {
+            img.src = reader.result;
+
+            // Initialize the cropper for this image
+            if (croppers[i]) {
+                croppers[i].destroy();  // Destroy any existing cropper before initializing a new one
+            }
+
+            croppers[i] = new Cropper(img, {
+                aspectRatio: 1,  // Maintain a square aspect ratio
+                viewMode: 1,
+                autoCropArea: 1,
+            });
+
+            // Handle the "Save Cropped Image" button click event
+            saveButton.onclick = function () {
+                const croppedCanvas = croppers[i].getCroppedCanvas({
+                    width: 600,  // Resize to 600x600
+                    height: 600
+                });
+
+                // Get the file extension from the uploaded image
+                const fileExtension = file.name.split('.').pop();  // Extract file extension (e.g., jpg, png, etc.)
+
+                // Compress and convert the cropped image to a Blob
+                croppedCanvas.toBlob(function (blob) {
+                    const url = URL.createObjectURL(blob);
+
+                    // If the image is already cropped, replace the preview with the new cropped image
+                    img.src = url;  // Replace the preview with the new cropped image
+
+                    img.dataset.blob = blob;  // Store the Blob for future submission (e.g., sending to the backend)
+
+                    // Push the cropped image Blob to the array
+                    croppedImages.push(blob);
+                    console.log("Cropped Images Array: ", croppedImages);
+
+                    // Display the cropped image
+                    const croppedImagePreview = document.createElement('img');
+                    croppedImagePreview.src = url;
+                    croppedImagePreview.style.width = '400px';
+                    croppedImagePreview.style.height = '400px';
+                    cropperContainer.appendChild(croppedImagePreview);
+
+                    // Hide the cropper container (or remove it)
+                    cropperContainer.innerHTML = '';  // Clear the cropper UI
+                    cropperContainer.appendChild(croppedImagePreview);  // Only show the cropped image
+
+                    // Add a button to allow re-cropping the cropped image
+                    const reCropButton = document.createElement('button');
+                    reCropButton.textContent = 'Re-Crop This Image';
+                    reCropButton.setAttribute("type", "button");
+                    cropperContainer.appendChild(reCropButton);
+
+                    // Handle re-cropping the cropped image
+                    reCropButton.onclick = function () {
+                        // Replace the cropped image with the cropper again
+                        img.src = url;  // Use the cropped image as the source for re-cropping
+
+                        // Destroy the previous cropper instance
+                        croppers[i].destroy();
+
+                        // Re-initialize the cropper with the cropped image
+                        croppers[i] = new Cropper(img, {
+                            aspectRatio: 1,  // Maintain a square aspect ratio
+                            viewMode: 1,
+                            autoCropArea: 1,
+                        });
+
+                        // Clear the cropped image preview and display the cropper again
+                        cropperContainer.innerHTML = '';  // Clear the cropped image preview
+                        cropperContainer.appendChild(img);  // Add the image back for cropping
+                        cropperContainer.appendChild(saveButton);  // Add the save button
+                    };
+                }, image/`${fileExtension}`, 0.7);  // Use the dynamic file extension for the cropped image
+            };
+        };
+
+        reader.readAsDataURL(file);
+    }
+};
+
+
+     
+ </script>
+
+
+
+<script>
+$(document).ready(function () {
+
+  $.validator.addMethod("greaterThan", function (value, element, param) {
+      return this.optional(element) || parseFloat(value) > parseFloat($(param).val());
+  }, "Regular price must be greater than sale price.");
+
+  // Apply validation rules
+  $("#myform").validate({
+      rules: {
+          productName: {
+              required: true,
+              minlength: 3
+          },
+          descriptionData: {
+              required: true,
+              minlength: 6
+          },
+          regularPrice: {
+              required: true,
+              number: true,
+              greaterThan: "#salePrice" // Ensure regularPrice > salePrice
+          },
+          salePrice: {
+              required: true,
+              number: true
+          },
+          color: {
+              required: true
+          }
+      },
+      messages: {
+          productName: {
+              required: "Please enter product name.",
+              minlength: "Product name must consist of at least 3 characters."
+          },
+          descriptionData: {
+              required: "Please provide product description.",
+              minlength: "Description must consist of at least 6 characters."
+          },
+          regularPrice: {
+              required: "Please enter regular price.",
+              number: "Please enter a valid number.",
+              greaterThan: "Regular price must be greater than sale price."
+          },
+          salePrice: {
+              required: "Please enter sale price.",
+              number: "Please enter a valid number."
+          },
+          color: {
+              required: "Enter a color value."
+          }
+      },
+      submitHandler: function (form) {
+          // Create a FormData object
+          const formData = new FormData(form);
+
+          // Append cropped images
+          
+
+          console.log(croppedImages, 'croppedImages'); // Debugging log
+
+          // AJAX call
+          $.ajax({
+              url: "/admin/addProducts", // Replace with your API endpoint
+              type: "POST",
+              data: formData,
+              processData: false, // Prevent jQuery from processing the FormData
+              contentType: false, // Prevent jQuery from setting the content type
+              success: function (response) {
+                  // alert("Form submitted successfully! Response: " + );/
+                  window.location.reload();
+              },
+              error: function (xhr, status, error) {
+                  alert("An error occurred: " + error);
+              }
+          });
+
+      }
+  });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js" integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  

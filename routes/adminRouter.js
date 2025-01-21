@@ -12,8 +12,10 @@ const {userAuth,adminAuth} = require('../middlewares/auth');
 const storage = multer.diskStorage({ 
     destination: function (req, file, cb) { 
         cb(null, 'public/uploads/product-images/'); 
+        //cb(null, 'public/uploads/re-image/');
     }, 
     filename: function (req, file, cb) { 
+        console.log(file,'000000');
         cb(null, Date.now() + path.extname(file.originalname)); 
     } 
 }); 
@@ -42,7 +44,14 @@ router.get('/admin/searchCategory',adminAuth,categoryController.searchCategory);
 //Product management
 router.get('/products',adminAuth,productController.getAllProducts);
 router.get('/addProducts',adminAuth,productController.getProductAddPage);
-router.post('/addProducts',adminAuth,uploads.array("images",4),productController.addProducts);
+router.post('/addProducts',adminAuth,uploads.array("images"),productController.addProducts);
+router.post('/addProductOffer',adminAuth,productController.addProductOffer);
+router.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
+router.get('/blockProduct',adminAuth,productController.blockProduct);
+router.get('/unblockProduct',adminAuth,productController.unblockProduct);
+router.get('/editProduct/:id',adminAuth,productController.getEditProduct);
+router.post('/editProduct/:id',adminAuth,uploads.array("images"),productController.editProduct);
+router.post('/deleteImage',adminAuth,productController.deleteSingleImage);
 
 router.get('/logout',adminController.logout);
 

@@ -19,6 +19,7 @@ const categoryInfo = async (req,res) => {
         res.render("category",{
             cat:categoryData,
             currentPage:page,
+            limit:limit,
             totalPages:totalPages,
             totalCategories:totalCategories,
             searchQuery: searchQuery

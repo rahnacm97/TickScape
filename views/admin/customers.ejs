@@ -204,7 +204,7 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th class="text-center">#</th>
+            <th class="text-center">Sl. No</th>
             <th>Name</th>
             <th>Email</th>
             <th>Phone No</th>
@@ -219,7 +219,7 @@
           <% } else { %>
           <% userData.forEach((user, index) => { %>
           <tr>
-            <td class="text-center"><%= index + 1 %></td>
+            <td class="text-center"><%= (currentPage - 1) * limit + index + 1 %></td>
             <td><%= user.fname %></td>
             <td><%= user.email %></td>
             <td><%= user.phone %></td>
