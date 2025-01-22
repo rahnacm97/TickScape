@@ -61,7 +61,7 @@
      <h3 class="mb-30 text-center">Email Verification</h3>
    </div>
    <div class="otp-container">
-     <form method="post" action="/verify-passForgot-otp" onsubmit="return validateOtpForm()">
+     <form  onsubmit="return validateOtpForm()">
        <div class="form-group">
          <label for="otp">Enter OTP:</label>
          <input type="text" id="otp" name="otp" class="form-control" required>
@@ -111,7 +111,7 @@
             const seconds = timer % 60;
             timerElement.textContent = `${seconds}`;
             updateTimerColor((timer/60)*100);
-            if(--timer , 0){
+            if(--timer < 0){
                 clearInterval(otpTimerInterval);
                 timerElement.textContent = 'Expired';
                 timerElement.style.backgroundColor = 'red';
@@ -127,12 +127,12 @@
         startOtpTimer();
     }
 
-    function validateOTPForm(){
+    function validateOtpForm(){
         const otpInput = document.getElementById('otp').value;
 
         $.ajax({
             type:"POST",
-            url:"verify-passForgot-otp",
+            url:"/verify-passForgot-otp",
             data:{otp:otpInput},
             success: function(response){
                 if(response.success){

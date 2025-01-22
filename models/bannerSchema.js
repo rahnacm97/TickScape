@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
-const couponSchema = new Schema({
+const bannerSchema = new Schema({
     image: {
         type: String,
         required:true
@@ -27,5 +27,5 @@ const couponSchema = new Schema({
     }
 })
 
-const Banner = mongoose.model("Banner",bannerSchema);
+const Banner = mongoose.model('Banner',bannerSchema);
 module.exports = Banner;

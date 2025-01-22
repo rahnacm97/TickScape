@@ -1,0 +1,96 @@
+<%- include("../../views/partials/admin/header") %>
+
+<style>
+    .table th, .table td {
+  vertical-align: middle;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.75em;
+}
+
+.img-fluid {
+  border: 1px solid #ddd;
+  padding: 2px;
+  background-color: #f8f9fa;
+}
+
+.table-responsive {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.content-title {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.btn-success {
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+}
+
+</style>
+
+<div class="content-header row">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="content-title card-title">Banners</h2>
+    </div>
+</div>
+
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <a href="/admin/addBanner">
+                <button class="btn btn-primary mt-3" type="submit">Add Banner</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="right mt-5">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Sl. No</th>
+                <th scope="col">Image</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Active</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (data && data.length > 0) { %>
+                <% data.forEach(function(banner) { %>
+                    <tr>
+                        <td><%= banner.title %></td>
+                        <td>
+                            <img src="http://localhost:3000/<%= banner.image %>" style="height: 2rem; width: 3rem;" class="img-xs" alt="Banner">
+                        </td>
+                        <td><%= banner.title %></td>
+                        <td><%= banner.description %></td>
+                        <td>
+                            <% if (banner.startDate < Date.now() && banner.endDate > Date.now()) { %>
+                                <p class="badge rounded-pill alert-success">Active</p>
+                            <% } else { %>
+                                <p class="badge rounded-pill alert-danger">Not Active</p>
+                            <% } %>
+                        </td>
+                        <td class="action" data-title="Remove">
+                            <a href="/admin/deleteBanner?id=<%= banner._id %>"><i class="icon material-icons md-delete"></i></a>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No banners available.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+  <%- include("../../views/partials/admin/footer") %>

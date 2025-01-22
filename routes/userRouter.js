@@ -4,6 +4,8 @@ const passport = require('passport');
 const userController = require('../controllers/user/userController');
 const profileController = require('../controllers/user/profileController');
 
+const {userAuth,adminAuth} = require('../middlewares/auth');
+
 router.get('/pageNotFound',userController.pageNotFound);
 
 //SignUp Management
@@ -25,17 +27,16 @@ router.post('/login',userController.login);
 router.get('/logout',userController.logout);
 
 //Profile Management
-
 router.get('/forgot-password',profileController.getForgotPassword);
 router.post('/forgot-email-valid',profileController.forgotEmailValid);
 router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp);
 router.get('/reset-password',profileController.getResetPassword);
 router.post('/resend-forgot-otp',profileController.resendForgotOtp);
-
 router.post('/reset-password',profileController.postNewPassword);
-
-
-
+router.get('/userProfile',userAuth,profileController.userProfile);
+router.get('/change-email',userAuth,profileController.changeEmail);
+router.post('/change-email',userAuth,profileController.changeEmailValid);
+router.post('/verify-email-otp',userAuth,profileController.verifyEmailOtp);
 
 
 module.exports = router;

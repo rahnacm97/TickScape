@@ -6,6 +6,7 @@ const adminController = require('../controllers/admin/adminController');
 const customerController = require('../controllers/admin/customerController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
+const bannerController = require('../controllers/admin/bannerController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
@@ -52,6 +53,12 @@ router.get('/unblockProduct',adminAuth,productController.unblockProduct);
 router.get('/editProduct/:id',adminAuth,productController.getEditProduct);
 router.post('/editProduct/:id',adminAuth,uploads.array("images"),productController.editProduct);
 router.post('/deleteImage',adminAuth,productController.deleteSingleImage);
+
+//Banner Management
+router.get('/banner',adminAuth,bannerController.getBanner);
+router.get('/addBanner',adminAuth,bannerController.getAddBanner);
+router.post('/addBanner',adminAuth,uploads.single("images"),bannerController.addBanner);
+router.get('/deleteBanner',adminAuth,bannerController.deleteBanner);
 
 router.get('/logout',adminController.logout);
 

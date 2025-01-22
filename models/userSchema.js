@@ -71,6 +71,9 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     }],
+    otp:{
+        type: String,
+    },
     searchHistory: [{
         category: {
             type: Schema.Types.ObjectId,
