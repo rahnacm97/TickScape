@@ -1,39 +1,135 @@
 <%- include("../../views/partials/user/header") %>
 
-<main>
 	<style>
-		.error-message{
-			color:red;
-			font-size: 0.75rem;
-			display: none;
-		}
-		.btn-outline-google {
+	.container {
+    padding-top: 50px;
+    }
+
+/* Login Section Styling */
+.login_part {
+    margin-top: -90px;
+}
+
+/* Logo Styling */
+.login_part_text img {
+    width: 500px;
+    margin-bottom: 20px;
+}
+
+/* Form Input Styling */
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 12px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+/* Focused Input Styling */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Error Message Styling */
+.error-message {
+    color: red;
+    font-size: 0.75rem;
+    display: none;
+    margin-top: 5px;
+}
+
+/* Button Styling */
+.btn_3 {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 16px;
+    padding: 12px 20px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn_3:hover {
+    background-color: #0056b3;
+}
+
+/* Google Sign-Up Button Styling */
+.btn-outline-google {
     border-color: #4285F4;
     color: #fafbfc;
     font-size: 14px;
     padding: 10px 20px;
     text-align: center;
     width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
-		/* .social-btns {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 10px;
-      }
-      .social-btns button {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-      } */
 
+.btn-outline-google:hover {
+    background-color: #4285F4;
+}
+
+/* Social Button Icon Styling */
+.social-btns img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+/* Center the 'Or' Text */
+.mt-2px {
+    margin-top: 10px;
+}
+
+.text-center p {
+    font-size: 16px;
+    color: #777;
+}
+
+/* Register Link Styling */
+.lost_pass {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.lost_pass:hover {
+    color: #0056b3;
+}
+
+/* Input Container Spacing */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Title Styling */
+h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+/* Section Background Color */
+.login_part {
+    background-color: #f9f9f9;
+    padding: 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 	</style>
+
+  <main>
 	<!-- Hero Area Start-->
-	<div class="slider-area ">
+	<!-- <div class="slider-area ">
 		<div class="single-slider slider-height2 d-flex align-items-center">
 			<div class="container">
 				<div class="row">
@@ -45,7 +141,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 	<!-- Hero Area End-->
 	<!--================login_part Area =================-->
 	<section class="login_part section_padding ">

@@ -7,6 +7,8 @@ const customerController = require('../controllers/admin/customerController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
 const bannerController = require('../controllers/admin/bannerController');
+const brandController = require('../controllers/admin/brandController');
+const couponController = require('../controllers/admin/couponController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
@@ -23,14 +25,17 @@ const storage = multer.diskStorage({
     const uploads = multer({ storage: storage });
 
 router.get('/pageerror',adminController.pageerror);
+
 //admin 
 router.get('/login',adminController.adminLoadLogin);
 router.post('/login',adminController.adminLogin);
 router.get('/dashboard', adminAuth,adminController.loadDashboard);
+
 //Customer Management
 router.get('/users',adminAuth,customerController.customerInfo);
 router.get('/blockCustomer',adminAuth,customerController.customerBlocked);
 router.get('/unblockCustomer',adminAuth,customerController.customerunBlocked);
+
 //category Management
 router.get('/category',adminAuth,categoryController.categoryInfo);
 router.get('/addCategory',adminAuth,categoryController.getAddCategory);
@@ -42,6 +47,15 @@ router.get('/unlistCategory',adminAuth,categoryController.getUnlistCategory);
 router.get('/editCategory',adminAuth,categoryController.getEditCategory);
 router.post('/editCategory/:id',adminAuth,categoryController.editCategory);
 router.get('/admin/searchCategory',adminAuth,categoryController.searchCategory);
+
+// Brand Management
+router.get('/brands',adminAuth,brandController.getBrandsPage);
+router.get('/addBrand',adminAuth,brandController.getAddBrand);
+router.post('/addBrand',adminAuth,uploads.single("image"),brandController.addBrand);
+router.get('/blockBrand',adminAuth,brandController.blockBrand);
+router.get('/unBlockBrand',adminAuth,brandController.unBlockBrand);
+router.get('/deleteBrand',adminAuth,brandController.deleteBrand);
+
 //Product management
 router.get('/products',adminAuth,productController.getAllProducts);
 router.get('/addProducts',adminAuth,productController.getProductAddPage);
@@ -52,7 +66,8 @@ router.get('/blockProduct',adminAuth,productController.blockProduct);
 router.get('/unblockProduct',adminAuth,productController.unblockProduct);
 router.get('/editProduct/:id',adminAuth,productController.getEditProduct);
 router.post('/editProduct/:id',adminAuth,uploads.array("images"),productController.editProduct);
-router.post('/deleteImage',adminAuth,productController.deleteSingleImage);
+router.delete('/deleteImage',adminAuth,productController.deleteSingleImage);
+router.get('/deleteProduct',adminAuth,productController.deleteProduct);
 
 //Banner Management
 router.get('/banner',adminAuth,bannerController.getBanner);
@@ -60,6 +75,14 @@ router.get('/addBanner',adminAuth,bannerController.getAddBanner);
 router.post('/addBanner',adminAuth,uploads.single("images"),bannerController.addBanner);
 router.get('/deleteBanner',adminAuth,bannerController.deleteBanner);
 
-router.get('/logout',adminController.logout);
+//Coupon Management
+router.get('/coupon',adminAuth,couponController.loadCoupon);
+router.get('/createCoupon',adminAuth,couponController.loadCreateCoupon);
+router.post('/createCoupon',adminAuth,couponController.createCoupon);
+router.get('/editCoupon',adminAuth,couponController.editCoupon);
+router.post('/updateCoupon',adminAuth,couponController.updateCoupon);
+router.get('/deleteCoupon',adminAuth,couponController.deleteCoupon);
+
+router.get('/logout',adminAuth,adminController.logout);
 
 module.exports = router;

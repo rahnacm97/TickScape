@@ -1,130 +1,247 @@
 <%- include("../../views/partials/user/header") %>
 <style>
- .card-green {
-   background-color: #ADD8E6;
- }
- .main {
-   padding: 30px 0;
- }
 
+  /* General Styles */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+  }
 
- .dashboard-menu {
-   background-color: #cce3e6;
-   border-radius: 10px;
-   padding: 15px;
-   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
- }
+  .main {
+    padding: 20px 0;
+  }
 
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    background-color: #ffffff;
+  }
 
- .dashboard-menu .nav-link {
- font-weight: bold;
- color: #30683c;
- box-shadow: 0 4px 10px rgba(123, 131, 112, 0.3), 0 4px 20px rgba(0, 191, 255, 0.2);
- transition: box-shadow 0.3s ease;
+  .card-header {
+    background-color: #37438b;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .card-body {
+  padding: 20px;
+  line-height: 2;
 }
 
+  .btn {
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+  }
 
-.dashboard-menu .nav-link:hover {
- color: #00bfff;
- box-shadow: 0 4px 15px rgba(173, 255, 47, 0.5), 0 6px 25px rgba(0, 191, 255, 0.4);
-}
+  .btn-success {
+    background-color: #2657a0;
+    color: #fff;
+    border: none;
+    margin-left: 20px;
+  }
 
+  .btn-success:hover {
+    background-color: #19377e;
+    transform: scale(1.05);
+  }
 
- .card {
-   border-radius: 10px;
-   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-   margin-bottom: 20px;
- }
+  .btn-small {
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #5c6bc0;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
 
+  .btn-small:hover {
+    background-color: #3f51b5;
+  }
 
- .card-header {
-   background-color: #487379;
-   color: white;
-   border-radius: 10px 10px 0 0;
- }
+  .dashboard-menu {
+    background-color: #e3f2fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
+  .dashboard-menu .nav-link {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5c6bc0;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
- .btn-success {
-   background-color: #577194;
-   border-color: #6bb87d;
- }
+  .dashboard-menu .nav-link.active {
+    background-color: #5c6bc0;
+    color: #fff;
+  }
 
+  .dashboard-menu .nav-link:hover {
+    background-color: #3f51b5;
+    color: #fff;
+  }
 
- .btn-success:hover {
-   background-color: #506955;
- }
+  .breadcrumb-wrap {
+    background-color: #e3f2fd;
+    padding: 15px 0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
 
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+  }
 
- .form-group {
-   margin-bottom: 15px;
- }
+  .breadcrumb a {
+    color: #5c6bc0;
+    text-decoration: none;
+    margin-right: 5px;
+    transition: color 0.3s;
+  }
 
+  .breadcrumb a:hover {
+    color: #3f51b5;
+  }
 
- .required {
-   color: red;
- }
+  .breadcrumb span {
+    margin: 0 5px;
+    color: #999;
+  }
 
-
+  /* Responsive Styles */
   @media (max-width: 768px) {
-   .dashboard-menu {
-     padding: 10px;
-   }
+    .dashboard-menu {
+      padding: 10px;
+    }
 
+    .dashboard-menu .nav-link {
+      font-size: 14px;
+    }
 
-   .card {
-     margin-bottom: 15px;
-   }
- }
- .page-header.breadcrumb-wrap {
- background-color: #eee2e9;
- padding: 15px 0;
-}
+    .card-header {
+      font-size: 16px;
+    }
 
+    .btn-small {
+      font-size: 12px;
+    }
+  }
 
-.breadcrumb {
- display: flex;
- align-items: center;
- font-family: 'Arial', sans-serif;
- font-size: 16px;
- color: #121311;
-}
+  .tab-pane{
+    padding: 20px;
+    
+  }
 
+  .card{
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease-in-out;
+  }
 
-.breadcrumb a {
- color: #007bff;
- text-decoration: none;
- position: relative;
- margin: 0 5px;
-}
+  .card:hover {
+    transform: scale(1.02);
+  }
 
+  .card-header {
+    background-color: #007bff;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+  }
 
-.breadcrumb a:hover {
- color: #0056b3;
-}
+  .card-body {
+    padding: 20px;
+    line-height: 1.6; /* Adds line spacing for better readability */
+  }
 
+  address {
+    font-style: normal;
+    margin-bottom: 15px;
+    color: #120d0d;
+  }
 
-.breadcrumb span {
- margin: 0 5px;
- color: #999;
-}
+  .card-body p {
+    margin: 5px 0;
+  }
 
+  .btn-small {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    display: inline-block;
+  }
 
-.breadcrumb a::after {
- content: '';
- position: absolute;
- width: 100%;
- height: 2px;
- background: #6e6e3a;
- left: 0;
- bottom: -2px;
- transform: scaleX(0);
- transition: transform 0.3s ease;
-}
+  .btn-small:hover {
+    transform: scale(1.05);
+  }
 
+  .btn-small:first-child {
+    background-color: #007bff;
+  }
 
-.breadcrumb a:hover::after {
- transform: scaleX(1);
-}
+  .btn-small:first-child:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-small:last-child {
+    background-color: #dc3545;
+  }
+
+  .btn-small:last-child:hover {
+    background-color: #c82333;
+  }
+
+  .btn-primary {
+    background-color: #136d28;
+    border: none;
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 20px;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .btn-primary:hover {
+    background-color: #0a4817;
+  }
+
+  .d-flex {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+
 </style>
 
 
@@ -132,8 +249,8 @@
  <div class="page-header breadcrumb-wrap mb-3">
    <div class="container">
      <div class="breadcrumb">
-       <a href="#" rel="nofollow">Home</a>
-       <span></span> Profile <span></span> Account
+       <a href="/" rel="nofollow">Home</a>
+       <span></span> Profile 
      </div>
    </div>
  </div>
@@ -193,12 +310,12 @@
                      <h5 class="mb-0 text-center">User Profile</h5>
                    </div>
                    <div class="card-body text-center">
-                     <h5 class="card-title"><%=user.name%></h5>
+                     <h5 class="card-title"><%=user.fname%> <%=user.lname%></h5>
                      <p class="card-text">
-                       <strong>Phone:</strong><%=user.phone%>
+                       <strong>Phone: </strong><%=user.phone%>
                      </p>
                      <p class="card-text">
-                       <strong>Email:</strong><%=user.email%>
+                       <strong>Email: </strong><%=user.email%>
                      </p>
                      <a href="/change-email" class="btn btn-sm btn-success ml-2">Change Email</a>
                      <a href="/change-password" class="btn btn-sm btn-success">Change Password</a>
@@ -214,30 +331,33 @@
                  aria-labelledby="address-tab"
                >
                  <div class="row">
-                
+                  <%if(userAddress){%>
+                    <%userAddress.address.forEach((address) => {%>
                    <div class="col-lg-6">
-                     <div class="card mb-3 mb-lg-0">
+                     <div class="card address mb-3 mb-lg-6">
                        <div class="card-header">
-                         <h5 class="mb-0"></h5>
+                         <h5 class="mb-0"><%= address.addressType %></h5>
                        </div>
-
-
                        <div class="card-body">
                          <address>
-                        
-                        
-                         </address>
-                         <p></p>
+                          Name: <%= address.name %> <br/>
+                          City: <%= address.city %> <br>
+                          Landmark: <%= address.landMark %> <br>
+                          State: <%= address.state %> <br>
+                        </address>
+                         Pincode: <p><%= address.pincode %></p>
+                         Phone No: <p><%= address.phone %></p>
+                         Alternate Phone No: <p><%= address.altPhone %></p>
                       
                          <div class="d-flex justify-content-between">
-                           <a href="#" class="btn-small">Edit</a>
-                           <a href="#" class="btn-small" onclick="">Delete</a>
+                           <a href="/editAddress?id=<%= address._id%>" class="btn-small">Edit</a>
+                           <a href="/deleteAddress?id=<%= address._id%>" class="btn-small" onclick="return confirm('Do you want to delete this address?')">Delete</a>
                          </div>
                         
                        </div>
                      </div>
                    </div>
-                
+                   <%})%><%} else {%>
                    <div class="col-lg-6">
                      <div class="card mb-3 mb-lg-0">
                        <div class="card-header">
@@ -248,9 +368,9 @@
                        </div>
                      </div>
                    </div>
-              
+                   <%}%>
                    <div>
-                     <a href="#">
+                     <a href="/addAddress">
                        <button class="btn btn-primary w-70">
                          Add address
                        </button>

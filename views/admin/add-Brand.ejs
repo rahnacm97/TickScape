@@ -1,0 +1,87 @@
+<%- include("../../views/partials/admin/header") %>
+<style>
+  .error-message {
+    color: red;
+    font-size: 14px;
+  }
+  .btn-primary {
+   background-color: #007bff;
+   color: #fff;
+   border: 1px solid #007bff;
+   border-radius: 5px;
+   padding: 10px 20px;
+   cursor: pointer;
+   width: 25%;
+   font-size: 1.25rem;
+   display: block;
+   margin: 0 auto;
+ }
+
+
+ .btn-primary:hover {
+   background-color: #0056b3;
+   border-color: #0056b3;
+ }
+</style>
+<section class="content-main">
+  <div class="content-header">
+    <h2 class="content-title">Add New Brand</h2>
+    <!-- <a href="/admin/addBrand" class="btn btn-secondary">Back to Brands</a> -->
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <form method="post" action="/admin/addBrand" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <div class="mb-4">
+          <label for="brand_name" class="form-label">Brand Name</label>
+          <input
+            type="text"
+            id="brand_name"
+            name="name"
+            placeholder="Enter Brand Name"
+            class="form-control"
+          />
+          <span id="nameError" class="error-message"></span>
+        </div>
+        <div class="mb-4">
+          <label for="brand_image" class="form-label">Brand Image</label>
+          <input
+            type="file"
+            id="brand_image"
+            name="image"
+            class="form-control"
+          />
+          <span id="imageError" class="error-message"></span>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Add Brand</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+  function validateForm() {
+    const name = document.getElementById('brand_name').value.trim();
+    const image = document.getElementById('brand_image').value.trim();
+    let isValid = true;
+
+    // Clear previous error messages
+    document.getElementById('nameError').textContent = '';
+    document.getElementById('imageError').textContent = '';
+
+    // Validate Brand Name
+    if (!name) {
+      document.getElementById('nameError').textContent = 'Brand Name is required.';
+      isValid = false;
+    }
+
+    // Validate Brand Image
+    if (!image) {
+      document.getElementById('imageError').textContent = 'Brand Image is required.';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+</script>
+<%- include("../../views/partials/admin/footer") %>

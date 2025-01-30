@@ -204,6 +204,21 @@
                             <input id="productName" value="sfdff" type="text" placeholder="Type here" name="productName" class="form-control border" >
                             <div id="productName-error" class="error-message"></div>
                         </div>
+
+                        <div class="col-lg-4 mb-4">
+                            <label class="form-label">Brand</label>
+                            <select class="form-select border" name="brand">
+                                <%for(let i=0;i<brand.length;i++){%>  
+                                           
+                                    <option value="<%= brand[i].brandName%>">
+                                     <%= brand[i].brandName%>
+                                    </option>
+                                   
+                                 <%}%>      
+                            </select>
+                            <div id="brand-error" class="error-message"></div>
+                        </div>
+
  
                         <div class="mb-4">
                             <label class="form-label">Full description</label>
@@ -433,7 +448,6 @@
     }
     }
  
-
      // Validate the form
     function validateForm() {
     console.log("valid");
@@ -441,6 +455,8 @@
     console.log('error message clearde')
     const name = document.getElementById('productName').value;
     console.log(1);
+    const brand = document.getElementsByName('brand')[0].value;
+    console.log("brand");
     const description = document.getElementById('descriptionid').value;
     console.log(2);
     const price = document.getElementsByName('regularPrice')[0].value;
@@ -460,7 +476,7 @@
     if (name.trim() === "") {
         displayErrorMessage('productName-error', 'Please enter a product name.');
         isValid = false;
-    } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
         displayErrorMessage('productName-error', 'Product name should contain only alphabetic characters.');
         isValid = false;
     }

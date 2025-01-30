@@ -4,7 +4,7 @@ const Product = require('../../models/productSchema');
 const categoryInfo = async (req,res) => {
     try{
         const page = parseInt(req.query.page) || 1;
-        const limit = 3;
+        const limit = 4;
         const skip = (page-1)*limit;
 
         const searchQuery = req.query.search || '';
@@ -171,7 +171,7 @@ const searchCategory = async (req, res) => {
     try {
       const searchQuery = req.query.search || ''; // Get the search query
       const currentPage = parseInt(req.query.page) || 1; // Current page number
-      const itemsPerPage = 10; // Items per page
+      const itemsPerPage = 4; // Items per page
       const skip = (currentPage - 1) * itemsPerPage; // Skip for pagination
   
       // Search categories by name or description

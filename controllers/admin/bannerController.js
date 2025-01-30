@@ -3,14 +3,30 @@ const path = require('path');
 const fs = require('fs');
 
 
-const getBanner = async(req,res) => {
+const getBanner = async (req, res) => {
     try {
-        const findBanner = await Banner.find({});
-        res.render('banner',{data:findBanner});
+        
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4; 
+        const skip = (page - 1) * limit;
+      
+        const findBanner = await Banner.find({}).skip(skip).limit(limit);
+
+        const totalBanners = await Banner.countDocuments({});
+
+        const totalPages = Math.ceil(totalBanners / limit);
+
+        res.render('banner', {
+            data: findBanner,
+            currentPage: page,
+            totalPages: totalPages,
+            limit: limit
+        });
     } catch (error) {
         res.redirect('/pageerror');
     }
 }
+
 
 const getAddBanner = async(req,res) => {
     try {

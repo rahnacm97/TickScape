@@ -58,5 +58,4 @@ module.exports = {
     customerInfo,
     customerBlocked,
     customerunBlocked,
-
 };

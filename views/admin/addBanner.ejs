@@ -1,11 +1,7 @@
 <%- include("../../views/partials/admin/header") %>
 <head>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-
-
 </head>
-
-
    <style>
        .error-message {
            color: red;
@@ -51,10 +47,6 @@ body {
    box-sizing: border-box;
    font-family: 'Poppins', sans-serif;
 }
-
-
-
-
 
 
 .img-area h3 {
@@ -117,6 +109,33 @@ body {
        .thumbnail {
            margin-right: 10px;
        }
+
+    .center-container {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    margin-left: 175px;
+     }
+       
+    .btn {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #01420d;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: block;
+    margin: 20px auto; 
+    width: 25%; 
+    text-align: center;
+}
+
+
+ .btn:hover {
+   background-color: #04421c;
+   border-color: #04421c;
+ }
    </style>
    <section class="content-main">
        <div class="row">
@@ -194,7 +213,7 @@ body {
                            </div>
 
 
-                           <div>
+                           <div class="center-container">
                                <button class="btn btn-md rounded font-sm hover-up ml-200" type="button"
                                    onclick="validateAndSubmit()">Publish</button>
                            </div>

@@ -1,40 +1,81 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-	.error-message{
-			color:red;
-			font-size: 0.75rem;
-			display: none;
-		}
+	.container {
+    	padding-top: 0; 
+	}
+
+	.login_part {
+    	margin-top: -70px; 
+	}
+
+	body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+    }
+	.error-message {
+        color: red;
+        font-size: 0.75rem;
+        display: none;
+    }
 	.btn-outline-google {
-    border-color: #4285F4;
-    color: #fafbfc;
-    font-size: 14px;
-    padding: 10px 20px;
-    text-align: center;
-    width: 100%;
-}
+        border-color: #4285F4;
+        color: #fafbfc;
+        font-size: 14px;
+        padding: 10px 20px;
+        text-align: center;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 5px;
+    }
 
-.btn-outline-google:hover {
-    background-color: #4285F4;
-    color: white;
-    border-color: #4285F4;
-}
+    .btn-outline-google:hover {
+        background-color: #4285F4;
+        color: white;
+        border-color: #4285F4;
+    }
 
-.text-center {
-    text-align: center;
-}
+	.text-center {
+    	text-align: center;
+	}
 
-.lost-pass{
-	color: blue;
-}
-.lost-pass:hover{
-	color: rgb(7, 7, 105);
-}
+	.lost-pass{
+		color: blue;
+	}
+	.lost-pass:hover {
+        color: rgb(7, 7, 105);
+    }
+	
+	.btn_3 {
+        background-color: #4285F4;
+        color: white;
+        padding: 15px 0;
+        width: 100%;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+    .btn_3:hover {
+        background-color: #357AE8;
+    }
+
+    .social-btns a {
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
 </style>
 
 <main>
 	<!-- Hero Area Start-->
-	<div class="slider-area ">
+	<!-- <div class="slider-area ">
 		<div class="single-slider slider-height2 d-flex align-items-center">
 			<div class="container">
 				<div class="row">
@@ -46,18 +87,18 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 	<!-- Hero Area End-->
 	<!--================login_part Area =================-->
 	<section class="login_part section_padding ">
 		<div class="container">
 			<div class="row align-items-center">
 				<div class="col-lg-6 col-md-6">
-					<div class="login_part_text text-center">
+					<div class="login_part_text text-center" style="background-color: bisque;">
 						<div class="login_part_text_iner">
 							<h2>New to our Shop?</h2>
-							<p>There are advances being made in science and technology
-								everyday, and a good example of this is the</p>
+							<p>We offer a wide range of Watches that cater to all your needs. Join us and experience 
+								a seamless shopping journey with exclusive deals and a user-friendly interface.</p>
 							<a href="signup" class="btn_3">Create an Account</a>
 						</div>
 					</div>
@@ -66,7 +107,7 @@
 					<div class="login_part_form">
 						<div class="login_part_form_iner">
 							<h3>Welcome Back ! <br>
-								Please Sign in now</h3>
+								Please Sign In</h3>
 							<form id="login-form" class="row contact_form" action="#" method="post" novalidate="novalidate">
 								<div class="col-md-12 form-group p_star">
 									<input type="text" class="form-control" id="name" name="email" value=""
@@ -92,7 +133,6 @@
 									<button type="submit" value="submit" class="btn_3">
 										log in
 									</button>
-									
 									<div class="mt-2px text-center">
                                         <p>Or</p>
                                     </div>
@@ -103,7 +143,7 @@
                                         </a>
                                     </div>
 									<br>	
-									<a class="lost_pass" href="/forgot-password">forgot password?</a>				  
+									<a class="lost_pass" href="/forgot-password">Forgot password?</a>				  
 								</div>
 							</form>
 						</div>
@@ -115,4 +155,4 @@
 	<!--================login_part end =================-->
 </main>
 
-	<%- include("../../views/partials/user/footer") %>
+<%- include("../../views/partials/user/footer") %>
