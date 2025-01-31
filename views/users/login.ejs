@@ -1,4 +1,5 @@
 <%- include("../../views/partials/user/header") %>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <style>
 	.container {
     	padding-top: 0; 
@@ -71,6 +72,16 @@
         align-items: center;
         gap: 10px;
     }
+	
+        .password-container .toggle-password {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
 </style>
 
 <main>
@@ -108,15 +119,16 @@
 						<div class="login_part_form_iner">
 							<h3>Welcome Back ! <br>
 								Please Sign In</h3>
-							<form id="login-form" class="row contact_form" action="#" method="post" novalidate="novalidate">
+							<form id="login-form" class="row contact_form" action="#" method="post" novalidate="novalidate" autocomplete="off">
 								<div class="col-md-12 form-group p_star">
 									<input type="text" class="form-control" id="name" name="email" value=""
 										placeholder="Email">
 									<div id="error1" class="error-message"></div>
 								</div>
-								<div class="col-md-12 form-group p_star">
-									<input type="password" class="form-control" id="password" name="password" value=""
-										placeholder="Password">
+								<div class="password-container col-md-12 form-group p_star">
+									<input type="password" id="password" class="form-control" id="password" name="password" value="" placeholder="Password" autocomplete="off">
+        							<i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
+									
 										<div id="error2" class="error-message"></div>
 								</div>
 								<%if(locals.message && message.length>0){%>
@@ -154,5 +166,32 @@
 	</section>
 	<!--================login_part end =================-->
 </main>
+
+<script>
+	    window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function() {
+            window.history.go(1);  // Prevent going back
+        };
+
+        // Optional: Disabling the forward arrow by preventing navigation on this page
+        window.onbeforeunload = function() {
+            window.history.pushState(null, null, window.location.href);  // Push to prevent forward navigation
+        };
+	function togglePassword() {
+            var passwordField = document.getElementById("password");
+            var icon = document.querySelector(".toggle-password");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text"; 
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye"); 
+              } else {
+                passwordField.type = "password"; 
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash"); 
+              }
+        }
+		document.getElementById("login-form").autocomplete = "off";
+</script>
 
 <%- include("../../views/partials/user/footer") %>

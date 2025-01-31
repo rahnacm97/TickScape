@@ -1,5 +1,5 @@
 <%- include("../../views/partials/user/header") %>
-
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 	<style>
 	.container {
     padding-top: 50px;
@@ -125,6 +125,15 @@ h3 {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+.password-container .toggle-password {
+            position: absolute;
+            right: 30px;
+            top: 40%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
 	</style>
 
   <main>
@@ -183,13 +192,14 @@ h3 {
 										<div id="err4" class="error-message"></div>
 								</div>
 								
-								<div class="col-md-12 form-group p_star">
+								<div class="password-container col-md-12 form-group p_star">
 									<input type="password" class="form-control" id="password" name="password" value=""
 										placeholder="Password">
+									<i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
 									<div id="err5" class="error-message"></div>
 								</div>
 								
-                                <div class="col-md-12 form-group p_star">
+                                <div class="password-container col-md-12 form-group p_star">
 									<input type="password" class="form-control" id="cpassword" name="cpassword" value=""
 										placeholder="Confirm Password">
 									<div id="err6" class="error-message"></div>
@@ -353,5 +363,20 @@ h3 {
 				}
 		    })
 		})
+
+		function togglePassword() {
+            var passwordField = document.getElementById("password");
+            var icon = document.querySelector(".toggle-password");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text"; 
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye"); 
+              } else {
+                passwordField.type = "password"; 
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash"); 
+              }
+        }
 
 	</script>

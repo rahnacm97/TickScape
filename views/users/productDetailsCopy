@@ -1,0 +1,330 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+  }
+
+  .page-header.breadcrumb-wrap {
+    margin-top: 20px;
+    background-color: #eee2e9;
+    padding: 10px 0;
+  }
+
+  .breadcrumb-wrap {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 0;
+  }
+
+  .breadcrumb a {
+    color: rgb(15, 12, 12);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .detail-gallery {
+    position: relative;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .slider-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .slider-image {
+    width: 100%;
+    border-radius: 30px;
+    display: none;
+  }
+
+  .slider-image.active {
+    display: block;
+  }
+
+  button {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    background-color: rgba(161, 161, 161, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  button.prev {
+    left: 10px;
+  }
+
+  button.next {
+    right: 10px;
+  }
+
+  button:hover {
+    background-color: rgba(97, 95, 95, 0.8);
+  }
+
+  .product-image-slider figure {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .slider-nav-thumbnails img {
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border 0.3s;
+  }
+
+  .slider-nav-thumbnails .slick-current img {
+    border-color: #007bff;
+  }
+
+  .product-image-slider .zoom-icon {
+    display: block;
+  }
+
+  .product-image-slider img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .short-desc,
+  .product-price-cover {
+    margin-bottom: 20px;
+  }
+
+  .product-price ins {
+    font-size: 24px;
+    color: #007bff;
+  }
+
+  .old-price {
+    text-decoration: line-through;
+    color: #888;
+  }
+
+  .save-price {
+    color: green;
+  }
+
+  .detail-info ul {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .detail-info ul li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .detail-extralink .button {
+    background-color: #166d29;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .detail-extralink .button:hover {
+    background-color: #0056b3;
+  }
+
+  .action-btn {
+    margin-top: 190px;
+    font-size: 18px;
+    color: #077625;
+    text-decoration: none;
+    margin-left: 50px;
+  }
+
+  .action-btn:hover {
+    color: #0056b3;
+  }
+
+  
+</style>
+
+<main class="main">
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span><a href="/shop" rel="nofollow">Shop</a>
+        <span></span>Product
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
+
+  <section class="mt-50 mb-50">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="product-detail accordion-detail">
+            <div class="row mb-50">
+              <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="detail-gallery">
+                  <!-- Main Image Slider -->
+                  <div class="slider-wrapper">
+                    <% product.productImage.forEach((image, index) => { %>
+                    <figure class="border-radius-10 magnify image-class slider-image <%= index === 0 ? 'active' : '' %>">
+                      <img id="image-container" src="http://localhost:3000/<%= image %>" alt="Product Image" style="
+                        max-width: 400px;  
+                        max-height: 400px;  
+                        object-fit: cover;  
+                      ">
+                    </figure>
+                    <% }); %>
+                  </div>
+                  <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+                  <button class="next" onclick="moveSlide(1)">&#10095;</button>
+
+                  <script>
+                    const images = document.querySelectorAll('.slider-image');
+                    const totalImages = images.length;
+                    let currentIndex = 0;
+
+                    function moveSlide(direction) {
+                      // Remove 'active' class from current image
+                      images[currentIndex].classList.remove('active');
+                      currentIndex = (currentIndex + direction + totalImages) % totalImages;
+
+                      // Add 'active' class to the next image
+                      images[currentIndex].classList.add('active');
+                    }
+
+                    // Initialize zoom for each image
+                    images.forEach(img => {
+                      const options = {
+                        width: 400,
+                        height: 400,
+                        zoomWidth: 400,
+                        zoomHeight: 50,
+                        zoomStyle: 'z-index: 99999999',
+                        offset: { vertical: 0, horizontal: -60 }
+                      };
+                      new ImageZoom(img, options);
+                    });
+                  </script>
+
+                  <!-- Thumbnail Slider -->
+                  <div class="slider-nav-thumbnails">
+                    <% product.productImage.forEach((image) => { %>
+                    <div>
+                      <img src="http://localhost:3000/<%= image %>" alt="Thumbnail Image">
+                    </div>
+                    <% }); %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="detail-info">
+                  <h2 class="title-detail"><%= product.productName %></h2>
+                  <div class="product-detail-rating">
+                    <div class="pro-details-brand">
+                      <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                    </div>
+                    <div class="product-rate-cover text-end">
+                      <div class="product-rate d-inline-block">
+                        <div class="product-rating" style="width:90%; color: yellow; height: 90%;"></div>
+                      </div>
+                      <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                    </div>
+                  </div>
+                  <div class="clearfix product-price-cover">
+                    <div class="product-price primary-color float-left">
+                      <ins><span class="text-brand">$<%= product.salePrice %></span></ins>
+                      <ins><span class="old-price font-md ml-15">$<%= product.regularPrice %></span></ins>
+                      <span class="save-price font-md color3 ml-15">
+                        <% if(!totalOffer) { %>
+                        No Offers
+                        <% } else { %>
+                        <%= totalOffer %>% Offer
+                        <% } %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                  <div class="short-desc mb-30">
+                    <p><%= product.description %></p>
+                  </div>
+                  <div class="product_sort_info font-xs mb-30">
+                    <ul>
+                      <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
+                      <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
+                      <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                    </ul>
+                  </div>
+
+                  <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                  <div class="detail-extralink">
+                    <div class="detail-qty border radius">
+                      <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                      <span class="qty-val" id="quantity">1</span>
+                      <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                    </div>
+                    <div class="product-extra-link2">
+                      <button type="submit" class="button button-add-to-cart" style="top: 520px; margin-left: 50px ;">Add to cart</button>
+                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                    </div>
+                  </div>
+                  <ul class="product-meta font-xs color-grey mt-50">
+                    <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
+                    <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"><%= category.name %></a> </li>
+                    <li>Availability: <span class="in-stock text-success ml-5"><%= quantity %> Items in Stock.</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+<script>
+  // $(document).ready(function () {
+  //   $('.slider-nav-thumbnails').slick({
+  //     slidesToShow: 4,
+  //     slidesToScroll: 1,
+  //     asNavFor: '.slider-wrapper',
+  //     dots: false,
+  //     centerMode: true,
+  //     focusOnSelect: true,
+  //   });
+
+  //   $('.slider-wrapper').slick({
+  //     slidesToShow: 1,
+  //     slidesToScroll: 1,
+  //     fade: true,
+  //     asNavFor: '.slider-nav-thumbnails',
+  //   });
+  // });
+</script>
+
+<%- include("../../views/partials/user/footer") %>

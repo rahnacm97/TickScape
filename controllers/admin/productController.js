@@ -46,7 +46,7 @@ const addProducts = async (req, res) => {
                         .resize({ width: 440, height: 440 })
                         .toFile(resizedImagePath);
 
-                    images.push('uploads/product-images/' + req.files[i].filename);  // Relative path for DB
+                    images.push('uploads/product-images/' + req.files[i].filename);  
                 }
             }
 
@@ -137,17 +137,15 @@ const addProducts = async (req, res) => {
 const getAllProducts = async (req, res) => {
     try {
         const search = req.query.search || "";
-        const page = parseInt(req.query.page) || 1; // Ensure `page` is an integer
+        const page = parseInt(req.query.page) || 1; 
         const limit = 4;
 
-        // Create a search filter
         const searchFilter = search ? { 
         
                 productName: { $regex: new RegExp(search, "i") }  
                 
         } : {};
 
-        // Fetch the products with pagination and search filter
         const productData = await Product.find(searchFilter)
             .limit(limit)
             .skip((page - 1) * limit)
@@ -155,13 +153,10 @@ const getAllProducts = async (req, res) => {
             .populate("brand")
             .exec();
 
-        // Count the total number of documents matching the filter
         const count = await Product.countDocuments(searchFilter);
 
-        // Fetch the categories
         const category = await Category.find({ isListed: true });
 
-        // Fetch unblocked brands
         const brand = await Brand.find({ isBlocked: false });
 
         if (category && brand) {
@@ -172,7 +167,7 @@ const getAllProducts = async (req, res) => {
                 totalPages: Math.ceil(count / limit),
                 category: category,
                 brand: brand,
-                searchQuery: search, // Pass the search query to the template
+                searchQuery: search, 
             });
         } else {
             res.render("/pageerror");
@@ -209,8 +204,8 @@ const addProductOffer = async (req, res) => {
     try {
         const { productId, percentage } = req.body;
         
-       console.log(percentage);
-        // Ensure percentage is a number
+        console.log(percentage);
+
         const offerPercentage = parseFloat(percentage);
         if (isNaN(offerPercentage)) {
             return res.status(400).json({ status: false, message: "Invalid input: percentage must be a number." });
@@ -228,7 +223,6 @@ const addProductOffer = async (req, res) => {
 
         await findProduct.save();
 
-        // Reset the category offer
         findCategory.categoryOffer = 0;
         await findCategory.save();
 
@@ -441,13 +435,11 @@ const deleteSingleImage = async (req, res) => {
         console.log('productId:', productIdToServer);
         console.log('imageName:', imageNameToServer);
         
-        // Update database
         const product = await Product.findByIdAndUpdate(
             productIdToServer,
             { $pull: { productImage: imageNameToServer } }
         );
         
-        // Check if image exists on server
         const imagePath = path.join("public", imageNameToServer);
         console.log('Image path:', imagePath);
         

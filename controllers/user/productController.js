@@ -12,12 +12,19 @@ const productDetails = async(req,res) => {
         const categoryOffer = findCategory ?.categoryOffer || 0;
         const productOffer = product.productOffer || 0;
         const totalOffer = categoryOffer + productOffer;
+
+        const relatedProducts = await Product.find({
+            category: findCategory._id,
+            _id: { $ne: productId } // Exclude the current product
+        }).limit(3);
+
         res.render('product-details',{
             user: userData,
             product: product,
             quantity: product.quantity,
             totalOffer: totalOffer,
-            category: findCategory
+            category: findCategory,
+            relatedProducts: relatedProducts,
         });
     } catch (error) {
         console.log("Error in product view",error);

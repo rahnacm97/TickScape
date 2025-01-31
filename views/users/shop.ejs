@@ -285,9 +285,12 @@
            <ul>
             <% if (Array.isArray(brand) && brand.length > 0) { %>
               <% for (let i = 0; i < brand.length; i++) { %>
-                  <li class="filter-item">
+               
+                  <% if (brand[i].brandName) { %>  <!-- Ensure brandName exists -->
+                    <li class="filter-item">
                       <a href="/filter?brand=<%= brand[i]._id %>"><%= brand[i].brandName %></a>
-                  </li>
+                    </li>
+                  <% } %>
               <% } %>
           <% } else { %>
               <p>No brands available.</p>
@@ -311,12 +314,14 @@
 
      <main class="product-grid">
       <%for(let i=0;i<products.length;i++){%>
-         <div class="product-card">
+         <div class="product-card" style="height: 400px;">
            <span class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">❤️</span>
            <a href="/productDetails?id=<%= products[i]._id %>">
-             <img src="http://localhost:3000/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" />
+             <img src="http://localhost:3000/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" style = "height: 200px; width:200px"/>
              <h4><%= products[i].productName%></h4>
-             <p>Brand: <%= products[i].brand.brandName %></p>
+             <% if (products[i].brand && products[i].brand.brandName) { %>
+              <p>Brand: <%= products[i].brand.brandName %></p>
+            <% } %>
              <p>Price: $<%= products[i].salePrice.toLocaleString('en-IN')%> <span class="text-muted"><strike>$<%= products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
            </a>
            <button class="add-to-cart-btn" onclick="">Add to Cart</button>
@@ -325,17 +330,22 @@
      </main>
    </div>
 <!-- Pagination -->
-   <div class="pagination">
-     <% if (currentPage > 1) { %>
-       <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
-     <% } %>
-     <% for (let i = 1; i <= totalPages; i++) { %>
-       <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %>"><%= i %></a>
-     <% } %>
-     <% if (currentPage < totalPages) { %>
-       <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
-     <% } %>
-   </div>
+<div class="pagination">
+  <% if (currentPage > 1) { %>
+      <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
+  <% } %>
+  
+  <% for (let i = 1; i <= totalPages; i++) { %>
+      
+          <a class="btn" href="/shop?page=<%= i %>"><%= i %></a>
+      
+  <% } %>
+  
+  <% if (currentPage < totalPages) { %>
+      <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
+  <% } %>
+</div>
+
 </section>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>

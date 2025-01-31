@@ -169,12 +169,11 @@ const editCategory = async(req,res) => {
 
 const searchCategory = async (req, res) => {
     try {
-      const searchQuery = req.query.search || ''; // Get the search query
-      const currentPage = parseInt(req.query.page) || 1; // Current page number
-      const itemsPerPage = 4; // Items per page
-      const skip = (currentPage - 1) * itemsPerPage; // Skip for pagination
+      const searchQuery = req.query.search || ''; 
+      const currentPage = parseInt(req.query.page) || 1; 
+      const itemsPerPage = 4; 
+      const skip = (currentPage - 1) * itemsPerPage; 
   
-      // Search categories by name or description
       const categories = await Category.find({
         $or: [
           { name: { $regex: searchQuery, $options: 'i' } },
@@ -184,7 +183,6 @@ const searchCategory = async (req, res) => {
       .skip(skip)
       .limit(itemsPerPage);
   
-      // Get total categories count for pagination
       const totalCategories = await Category.countDocuments({
         $or: [
           { name: { $regex: searchQuery, $options: 'i' } },
@@ -192,7 +190,7 @@ const searchCategory = async (req, res) => {
         ]
       });
   
-      const totalPages = Math.ceil(totalCategories / itemsPerPage); // Total pages for pagination
+      const totalPages = Math.ceil(totalCategories / itemsPerPage); 
   
       res.render('admin/category', {
         cat: categories,

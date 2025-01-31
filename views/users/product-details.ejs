@@ -1,6 +1,6 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-    body {
+  body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -11,7 +11,7 @@
     margin-top: 20px;
     background-color: #eee2e9;
     padding: 10px 0;
-}
+  }
 
   .breadcrumb-wrap {
     background-color: #007bff;
@@ -30,6 +30,48 @@
 
   .detail-gallery {
     position: relative;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .slider-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .slider-image {
+    width: 100%;
+    border-radius: 30px;
+    display: none;
+  }
+
+  .slider-image.active {
+    display: block;
+  }
+
+  button {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    background-color: rgba(161, 161, 161, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  button.prev {
+    left: 10px;
+  }
+
+  button.next {
+    right: 10px;
+  }
+
+  button:hover {
+    background-color: rgba(97, 95, 95, 0.8);
   }
 
   .product-image-slider figure {
@@ -48,36 +90,16 @@
     border-color: #007bff;
   }
 
-  .zoom-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  border-radius: 50%;
-  cursor: zoom-in;
-  display: none; /* Initially hidden */
-}
+  .product-image-slider .zoom-icon {
+    display: block;
+  }
 
-.product-image-slider .zoom-icon {
-  display: block; /* Show on hover or zoom state */
-}
   .product-image-slider img {
     width: 100%;
     height: auto;
     cursor: pointer;
     transition: transform 0.3s ease;
   }
-
-  .image-zoomed img {
-    transform: scale(1.5);  /* Zoom effect */
-  }
-
-  .image-zoomed .zoom-icon {
-    cursor: zoom-out;  /* Change cursor to zoom-out when zoomed */
-  }
-
 
   .short-desc,
   .product-price-cover {
@@ -123,196 +145,323 @@
     background-color: #0056b3;
   }
 
-  .action-btn {
+  .button-new{
+    margin-top: 25px;
     font-size: 18px;
     color: #077625;
     text-decoration: none;
-    margin-left: 15px;
+    margin-left: 50px;
+  }
+
+  .action-btn {
+    margin-top: 190px;
+    font-size: 18px;
+    color: #077625;
+    text-decoration: none;
+    margin-left: 50px;
   }
 
   .action-btn:hover {
     color: #0056b3;
   }
+   
+  .related-products {
+  padding: 50px 0;
+  background-color: #f9f9f9;
+}
+
+.related-title {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.related-product-item {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.related-product-item:hover {
+  transform: translateY(-10px);
+}
+
+.related-product-item .product-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.related-product-item .product-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.related-product-item .product-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0;
+}
+
+.related-product-item .product-price {
+  font-size: 14px;
+  color: #007bff;
+}
+
+.related-product-item .product-price .old-price {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.related-product-item .button-add-to-cart {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #166d29;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 15px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.related-product-item .button-add-to-cart:hover {
+  background-color: #0056b3;
+}
+
+.row{
+  margin-top: 10px;
+}
+
+  
 </style>
 
 <main class="main">
- <div class="page-header breadcrumb-wrap">
-     <div class="container">
-         <div class="breadcrumb">
-             <a href="/" rel="nofollow">Home</a>
-             <span></span><a href="/shop" rel="nofollow">Shop</a>
-             <span></span>Product
-         </div>
-     </div>
- </div>
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span><a href="/shop" rel="nofollow">Shop</a>
+        <span></span>Product
+      </div>
+    </div>
+  </div>
 
- <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
+  <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
 
- 
- <section class="mt-50 mb-50">
-     <div class="container">
-         <div class="row">
-             <div class="col-lg-9">
-                 <div class="product-detail accordion-detail">
-                     <div class="row mb-50">
-                         <div class="col-md-6 col-sm-12 col-xs-12">
-                            <div class="detail-gallery">
-                              <span class="zoom-icon"><i class="fi-rs-search"></i></span>
-                              
+  <section class="mt-50 mb-50">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="product-detail accordion-detail">
+            <div class="row mb-50">
+              <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="detail-gallery">
+                  <!-- Main Image Slider -->
+                  <div class="slider-wrapper">
+                    <% product.productImage.forEach((image, index) => { %>
+                    <figure class="border-radius-10 magnify image-class slider-image <%= index === 0 ? 'active' : '' %>">
+                      <img id="image-container" src="http://localhost:3000/<%= image %>" alt="Product Image" style="
+                        max-width: 400px;  
+                        max-height: 400px;  
+                        object-fit: cover;  
+                      ">
+                    </figure>
+                    <% }); %>
+                  </div>
+                  <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+                  <button class="next" onclick="moveSlide(1)">&#10095;</button>
 
+                  <script>
+                    const images = document.querySelectorAll('.slider-image');
+                    const totalImages = images.length;
+                    let currentIndex = 0;
 
-                              
-                              
-                              <!-- Main Image Slider -->
-                                <div class="product-image-slider" style="overflow: visible;">
-                                  <% product.productImage.forEach((image) => { %>
-                                    <figure class=" border-radius-10 magnify image-class" >
-                                      <img id="image-container"  src="http://localhost:3000/<%= image %>" alt="Product Image">
-                                    </figure>
-                                  <% }); %> </div>
-                               
-                             
-                          
-                                  <script>
-                                    // Select all images with the class 'image-class'
-                                    const images = document.querySelectorAll('.image-class');
-                                  console.log(images);
-                                  
-                                    // Log the 'src' of each image
-                                    images.forEach(img => {
-                                      console.log(img.src);
-                                  
-                                      // Apply the ImageZoom effect to each image
-                                      var options = {
-                                        width: 400,
-                                        zoomWidth: 400,
-                                        zoomStyle: 'z-index: 99999999', // Add z-index to the zoomed image
-                                        offset: {vertical: 0, horizontal: -60,}
-                                      };
-                                      new ImageZoom(img, options);  // Initialize ImageZoom for each image
-                                    });
+                    function moveSlide(direction) {
+                      // Remove 'active' class from current image
+                      images[currentIndex].classList.remove('active');
+                      currentIndex = (currentIndex + direction + totalImages) % totalImages;
 
-                                  </script>
-                                <!-- Thumbnail Slider -->
-                                <div class="slider-nav-thumbnails">
-                                    <% product.productImage.forEach((image) => { %>
-                                    <div>
-                                        <img src="http://localhost:3000/<%= image %>" alt="Thumbnail Image">
-                                    </div>
-                                    <% }); %>
-                                </div>
-                            </div>
-                              
-                         </div>
-                         <div class="col-md-6 col-sm-12 col-xs-12">
-                             <div class="detail-info">
-                                 <h2 class="title-detail"><%= product.productName %></h2>
-                                 <div class="product-detail-rating">
-                                     <div class="pro-details-brand">
-                                         <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
-                                     </div>
-                                     <div class="product-rate-cover text-end">
-                                         <div class="product-rate d-inline-block">
-                                             <div class="product-rating" style="width:90%; color: yellow; height: 90%;">
-                                             </div>
-                                         </div>
-                                         <span class="font-small ml-5 text-muted"> (25 reviews)</span>
-                                     </div>
-                                 </div>
-                                 <div class="clearfix product-price-cover">
-                                     <div class="product-price primary-color float-left">
-                                         <ins><span class="text-brand">$<%= product.salePrice %></span></ins>
-                                         <ins><span class="old-price font-md ml-15">$<%= product.regularPrice %></span></ins>
-                                         <span class="save-price  font-md color3 ml-15">
-                                            <% if(!totalOffer) {%>
-                                                No Offers
-                                            <% } else { %>
-                                                <%= totalOffer %>% Offer
-                                            <% } %>
-                                       </span>
-                                     </div>
-                                 </div>
-                                 <div class="bt-1 border-color-1 mt-15 mb-15"></div>
-                                 <div class="short-desc mb-30">
-                                     <p><%= product.description %></p>
-                                 </div>
-                                 <div class="product_sort_info font-xs mb-30">
-                                     <ul>
-                                         <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
-                                         <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
-                                         <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
-                                     </ul>
-                                 </div>
-                               
-                                 <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                 <div class="detail-extralink">
-                                     <div class="detail-qty border radius">
-                                         <a href="#" class="qty-down" onclick="" ><i class="fi-rs-angle-small-down"></i></a>
-                                         <span class="qty-val" id="quantity">1</span>
-                                         <a href="#" class="qty-up" onclick=""><i class="fi-rs-angle-small-up"></i></a>
-                                     </div>
-                                     <div class="product-extra-link2">
-                                      
-                                         <button type="submit" class="button button-add-to-cart" onclick="">Add to cart</button>
-                                       
-                                         <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
-                                     </div>
-                                 </div>
-                                 <ul class="product-meta font-xs color-grey mt-50">
-                                     <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
-                                     <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"><%= category.name %></a> </li>
-                                     <li>Availability:<span class="in-stock text-success ml-5"><%= quantity %> Items in Stock.</span></li>
-                                 </ul>
-                             </div>
-                         </div>
-                     </div>
-                    
-                 </div>
-             </div>
-         </div>
-     </div>
+                      // Add 'active' class to the next image
+                      images[currentIndex].classList.add('active');
+                    }
 
+                    // Initialize zoom for each image
+                    images.forEach(img => {
+                      const options = {
+                        width: 400,
+                        height: 400,
+                        zoomWidth: 400,
+                        zoomHeight: 50,
+                        zoomStyle: 'z-index: 99999999',
+                        offset: { vertical: 0, horizontal: -60 }
+                      };
+                      new ImageZoom(img, options);
+                    });
+                  </script>
 
- </section>
+                  <!-- Thumbnail Slider -->
+                  <div class="slider-nav-thumbnails">
+                    <% product.productImage.forEach((image) => { %>
+                    <div>
+                      <img src="http://localhost:3000/<%= image %>" alt="Thumbnail Image">
+                    </div>
+                    <% }); %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="detail-info">
+                  <h2 class="title-detail"><%= product.productName %></h2>
+                  <div class="product-detail-rating">
+                    <div class="pro-details-brand">
+                      <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                    </div>
+                    <div class="product-rate-cover text-end">
+                      <div class="product-rate d-inline-block">
+                        <div class="product-rating" style="width:90%; color: yellow; height: 90%;"></div>
+                      </div>
+                      <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                    </div>
+                  </div>
+                  <div class="clearfix product-price-cover">
+                    <div class="product-price primary-color float-left">
+                      <ins><span class="text-brand">$<%= product.salePrice %></span></ins>
+                      <ins><span class="old-price font-md ml-15">$<%= product.regularPrice %></span></ins>
+                      <span class="save-price font-md color3 ml-15">
+                        <% if(!totalOffer) { %>
+                        No Offers
+                        <% } else { %>
+                        <%= totalOffer %>% Offer
+                        <% } %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                  <div class="short-desc mb-30">
+                    <p><%= product.description %></p>
+                  </div>
+                  <div class="product_sort_info font-xs mb-30">
+                    <ul>
+                      <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
+                      <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
+                      <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                    </ul>
+                  </div>
+
+                  <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                  <div class="detail-extralink">
+                    <div class="detail-qty border radius">
+                      <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                      <span class="qty-val" id="quantity">1</span>
+                      <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                    </div>
+                    <div class="product-extra-link2">
+                      <button type="submit" class="button button-add-to-cart button-new" style="top: 520px; margin-left: 50px ;">Add to cart</button>
+                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                    </div>
+                  </div>
+                  <ul class="product-meta font-xs color-grey mt-50">
+                    <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
+                    <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"><%= category.name %></a> </li>
+                    <li>Availability: <span class="in-stock text-success ml-5"><%= quantity %> Items in Stock.</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="related-product-area section_gap_bottom">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+          <div class="section-title">
+            <h1>Others Also Bought</h1>
+            <p>Check out what other customers loved!</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-9">
+          <% if (relatedProducts && relatedProducts.length > 0) { %>
+            <div class="row gy-4"> <!-- Added spacing between rows -->
+              <% for (let i = 0; i < relatedProducts.length; i++) { %>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                  <div class="card shadow-sm h-100"> <!-- Ensures all cards have equal height -->
+                    <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
+                      <img src="http://localhost:3000/<%= relatedProducts[i].productImage[0] %>" 
+                        alt="<%= relatedProducts[i].productName %>" class="card-img-top" 
+                        style="height: 300px; width:400px; object-fit: cover; border-radius: 8px;">
+                    </a>
+                    <div class="card-body d-flex flex-column">
+                      <h5 class="card-title mb-2">
+                        <a href="/productDetails?id=<%= relatedProducts[i]._id %>" class="text-dark text-decoration-none"><%= relatedProducts[i].productName %></a>
+                      </h5>
+                      <div class="mt-auto"> <!-- Pushes the price section to the bottom -->
+                        <div class="price d-flex justify-content-between align-items-center">
+                          <span class="text-success fw-bold">$<%= relatedProducts[i].salePrice %></span>
+                          <% if (relatedProducts[i].originalPrice) { %>
+                            <span class="text-muted text-decoration-line-through">$<%= relatedProducts[i].originalPrice %></span>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="text-center">
+              <p>No related products available.</p>
+            </div>
+          <% } %>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- <section class="col-lg-3">
+    <div class="advertisement">
+      <a href="#" target="_blank">
+        <img class="img-fluid d-block mx-auto" src="assets/img/gallery/card2.png" alt="Advertisement" style="border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"> 
+      </a>
+    </div>
+  </section> -->
 
 </main>
-   
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
 <script>
+  // $(document).ready(function () {
+  //   $('.slider-nav-thumbnails').slick({
+  //     slidesToShow: 4,
+  //     slidesToScroll: 1,
+  //     asNavFor: '.slider-wrapper',
+  //     dots: false,
+  //     centerMode: true,
+  //     focusOnSelect: true,
+  //   });
 
-$(document).ready(function () {
-  // Initialize image sliders
-  $('.product-image-slider').slick({
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    fade: true,
-    asNavFor: '.slider-nav-thumbnails',
-  });
-
-  $('.slider-nav-thumbnails').slick({
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    asNavFor: '.product-image-slider',
-    dots: false,
-    focusOnSelect: true,
-    arrows: false,
-  });
-})
-  // Zoom Functionality
-
-
+  //   $('.slider-wrapper').slick({
+  //     slidesToShow: 1,
+  //     slidesToScroll: 1,
+  //     fade: true,
+  //     asNavFor: '.slider-nav-thumbnails',
+  //   });
+  // });
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-
-
-
-
 <%- include("../../views/partials/user/footer") %>
-
-
-

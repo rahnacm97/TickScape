@@ -211,8 +211,6 @@ const resendOtp = async (req,res) =>{
     }
 }
 
-
-
 const logout = async (req,res) => {
     try{
         req.session.destroy((err) => {
@@ -236,8 +234,8 @@ const loadShoppingPage = async(req,res) => {
         const categories = await Category.find({isListed:true});
         const categoryIds = categories.map((category) => category._id.toString());
         const page = parseInt(req.query.page) || 1;
-        const limit = 9;
-        const skip = (page-1)*limit;
+        const limit = 6;
+        const skip = (page-1) * limit;
         const products = await Product.find({
             isBlocked:false,
             category:{$in:categoryIds},
@@ -248,7 +246,7 @@ const loadShoppingPage = async(req,res) => {
         });
 
         const totalProducts = await Product.countDocuments({
-            isblocked:false,
+            isBlocked:false,
             category:{$in:categoryIds},
             quantity:{$gt:0},
         });
@@ -264,8 +262,8 @@ const loadShoppingPage = async(req,res) => {
             currentPage:page,
             totalPages:totalPages
         });
-        console.log("The product is",products);
-        console.log(products.map(product => product.brand ? product.brand.brandName : 'No Brand'));
+        // console.log("The product is",products);
+        // console.log(products.map(product => product.brand ? product?.brand?.brandName : 'No Brand'));
     } catch (error) {
         res.redirect('/pageNotFound');
     }

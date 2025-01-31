@@ -11,6 +11,10 @@ db();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use((req, res, next) => {
+    res.set("Cache-Control", "no-store");
+    next();
+  });
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -26,6 +30,7 @@ app.use(session({
 //     res.locals.user = req.session.user || null;
 //     next();
 // });
+
 
 app.use(passport.initialize());
 app.use(passport.session());

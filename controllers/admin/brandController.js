@@ -7,17 +7,17 @@ const getBrandsPage = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
         const skip = (page - 1) * limit;
-        const searchQuery = req.query.search || ''; // Get search query from the URL
+        const searchQuery = req.query.search || ''; 
 
         let brandData;
         if (searchQuery) {
-            // If there's a search query, filter brands based on the search text
-            brandData = await Brand.find({ name: new RegExp(searchQuery, 'i') }) // Case-insensitive search
+           
+            brandData = await Brand.find({ name: new RegExp(searchQuery, 'i') }) 
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);
         } else {
-            // If no search query, just fetch the latest brands
+            
             brandData = await Brand.find({})
                 .sort({ createdAt: -1 })
                 .skip(skip)
@@ -34,7 +34,7 @@ const getBrandsPage = async (req, res) => {
             totalPages: totalPages,
             totalBrands: totalBrands,
             limit: limit,
-            searchQuery: searchQuery // Pass searchQuery to the view
+            searchQuery: searchQuery 
         });
     } catch (error) {
         res.redirect('/pageerror');
@@ -72,7 +72,7 @@ const blockBrand = async (req, res) => {
     try {
         const { id } = req.query;
         if (!id || !mongoose.Types.ObjectId.isValid(id.trim())) {
-            return res.status(400).redirect('/pageerror'); // Validate the ID
+            return res.status(400).redirect('/pageerror'); 
         }
         await Brand.updateOne({ _id: id.trim() }, { $set: { isBlocked: true } });
         res.redirect('/admin/brands');
@@ -86,7 +86,7 @@ const unBlockBrand = async (req, res) => {
     try {
         const { id } = req.query;
         if (!id || !mongoose.Types.ObjectId.isValid(id.trim())) {
-            return res.status(400).redirect('/pageerror'); // Validate the ID
+            return res.status(400).redirect('/pageerror'); 
         }
         await Brand.updateOne({ _id: id.trim() }, { $set: { isBlocked: false } });
         res.redirect('/admin/brands');
