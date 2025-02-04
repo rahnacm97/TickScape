@@ -146,7 +146,7 @@
       if (name === "") {
         displayErrorMessage("name-error", "Please enter a name");
         isValid = false;
-      } else if (!/^[a-zA-Z\s']+$/.test(name)) {
+      } else if (!/^[a-zA-Z\s']+$/i.test(name)) {
         displayErrorMessage("name-error", "Category name should only contain alphabetic characters");
         isValid = false;
       }

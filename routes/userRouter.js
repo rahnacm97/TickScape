@@ -4,6 +4,7 @@ const passport = require('passport');
 const userController = require('../controllers/user/userController');
 const profileController = require('../controllers/user/profileController');
 const productController = require('../controllers/user/productController');
+const cartController = require("../controllers/user/cartController");
 const wishlistController = require('../controllers/user/wishlistController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
@@ -55,10 +56,19 @@ router.get('/deleteAddress',userAuth,profileController.deleteAddress);
 router.get('/shop',userController.loadShoppingPage);
 router.get('/filter',userAuth,userController.filterProducts);
 router.get('/filterPrice',userAuth,userController.filterByPrice);
+router.get('/sort',userAuth,userController.getSortProduct);
+router.get('/sortProducts',userAuth,userController.sortProducts);
 router.post('/search',userAuth,userController.searchProducts);
 
 //Product Management
 router.get('/productDetails',userAuth,productController.productDetails);
+
+// Cart Management
+router.get("/cart",userAuth,cartController.getCartPage);
+router.post("/addToCart",userAuth,cartController.addToCart);
+router.post("/changeQuantity",userAuth,cartController.changeQuantity);
+router.get("/deleteProduct",userAuth,cartController.deleteProduct);
+router.get("/checkout",userAuth,cartController.getCheckout);
 
 //Wishlist Management
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);

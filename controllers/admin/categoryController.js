@@ -40,24 +40,30 @@ const getAddCategory = async (req,res) => {
     }
 }
 
-const addCategory = async (req,res) => {
+const addCategory = async (req, res) => {
     try {
         const { name, description } = req.body;
-        const existingCategory = await Category.findOne({name:name});
-        if(existingCategory){
-            return res.status(400).json({error:"Category already exists"});
+        const trimmedName = name.trim().toUpperCase();
+        
+        const existingCategory = await Category.findOne({ name: trimmedName });
+        if (existingCategory) {
+            return res.status(400).json({ error: "Category already exists" });
         }
+
         const newCategory = new Category({
-            name,
-            description,
-        })
+            name: trimmedName,  
+            description: description.trim(), 
+        });
+
         await newCategory.save();
-        return res.json({message:"Category added successfully"})
+
+        return res.json({ message: "Category added successfully" });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({error:"Internal Server Error"})
+        console.error("Error in addCategory:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
+
 
 const addCategoryOffer = async(req,res) => {
     try {

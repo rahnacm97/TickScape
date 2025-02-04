@@ -319,7 +319,9 @@
                   <h2 class="title-detail"><%= product.productName %></h2>
                   <div class="product-detail-rating">
                     <div class="pro-details-brand">
-                      <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                      <% if (product.brand && product.brand.brandName) { %>
+                        <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                      <% } %>
                     </div>
                     <div class="product-rate-cover text-end">
                       <div class="product-rate d-inline-block">
@@ -361,8 +363,8 @@
                       <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                     </div>
                     <div class="product-extra-link2">
-                      <button type="submit" class="button button-add-to-cart button-new" style="top: 520px; margin-left: 50px ;">Add to cart</button>
-                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                      <button type="submit" class="button button-add-to-cart button-new" style="top: 520px; margin-left: 50px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
+                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
                     </div>
                   </div>
                   <ul class="product-meta font-xs color-grey mt-50">
@@ -445,6 +447,74 @@
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
 <script>
+
+function addToWishlist(productId){
+    $.ajax({
+      url:'/addToWishlist',
+      method:'POST',
+      data: {productId: productId},
+      success: (response) => {
+        console.log(response);
+        if(response.status){
+          Swal.fire({
+            title:'Added to Wishlist',
+            text: 'The product has been added to your wishlist',
+            icon: 'success',
+            timer: 2000
+          })
+        }else{
+          Swal.fire({
+            title: 'Already in Wishlist',
+            text: response.message,
+            icon:'info',
+            timer: 2000
+          })
+        }
+      },
+      error: (error) => {
+        Swal.fire({
+            title: 'Error',
+            text: 'There was an error adding wishlist',
+            icon:'error',
+            timer: 2000
+          })
+      }
+    })
+  }
+
+  function addToCart(productId){
+    $.ajax({
+      url:'/addToCart',
+      method:'POST',
+      data: {productId: productId},
+      success: (response) => {
+        console.log("response is",response);
+        if(response.status){
+          Swal.fire({
+            title:'Added to Cart',
+            text: response.message || 'The product has been added to your cart.',
+            icon: 'success',
+            timer: 2000
+          })
+        }else{
+          Swal.fire({
+            title: 'Already in Cart',
+            text: response.message || 'This product is already in your cart.',
+            icon:'info',
+            timer: 2000
+          })
+        }
+      },
+      error: (error) => {
+        Swal.fire({
+            title: 'Error',
+            text: 'There was an error adding cart',
+            icon:'error',
+            timer: 2000
+          })
+      }
+    })
+  }
   // $(document).ready(function () {
   //   $('.slider-nav-thumbnails').slick({
   //     slidesToShow: 4,

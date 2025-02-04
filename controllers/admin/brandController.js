@@ -110,6 +110,101 @@ const deleteBrand = async (req, res) => {
     }
 };
 
+const getEditBrand = async (req, res) => {
+    try {
+        const id = req.query.id;
+        if (!id) {
+            return res.redirect('/pageerror');
+        }
+        const brand = await Brand.findById(id);
+        if (!brand) {
+            return res.redirect('/pageerror');
+        }
+        res.render('edit-brand', { brand });
+    } catch (error) {
+        res.redirect('/pageerror');
+    }
+};
+
+const editBrand = async (req, res) => {
+    try {
+        const id = req.params.id.trim(); 
+
+        if (!id) {
+            return res.status(400).send("Invalid brand ID");
+        }
+
+        const brand = await Brand.findOne({ _id: id });
+        if (!brand) {
+            return res.status(404).send("Brand not found");
+        }
+
+        const existingBrand = await Brand.findOne({
+            brandName: req.body.brandName,
+            _id: { $ne: id },
+        });
+
+        if (existingBrand) {
+            return res.status(400).json({
+                error: "Brand with this name already exists. Please try with another name.",
+            });
+        }
+
+        const image = [];
+        if (req.files && req.files.length > 0) {
+            image.push(`uploads/product-images/${file.filename}`);
+        }
+
+        const updateFields = {
+            brandName: req.body.brandName,
+        };
+
+        if (image.length > 0) {
+            // Replace the existing images
+            updateFields.brandImage = image;
+        }
+
+        const updatedBrand = await Brand.findByIdAndUpdate(id, updateFields, { new: true });
+        res.render('edit-brand', { brand: updatedBrand });
+
+    } catch (error) {
+        console.error("Error in edit brand:", error);
+        res.redirect("/pageerror");
+    }
+};
+
+
+
+const deleteSingleImage = async(req,res) => {
+    try {
+        console.log('halooo');
+        
+        const { imageNameToServer, brandIdToServer } = req.body;
+        console.log('brandId:', brandIdToServer);
+        console.log('imageName:', imageNameToServer);
+        
+        const brand = await Brand.findByIdAndUpdate(
+            brandIdToServer,
+            { $pull: { brandImage: imageNameToServer } }
+        );
+        
+        const imagePath = path.join("public", imageNameToServer);
+        console.log('Image path:', imagePath);
+        
+        if (fs.existsSync(imagePath)) {
+            await fs.unlinkSync(imagePath);
+            console.log(`Image ${imageNameToServer} deleted successfully.`);
+        } else {
+            console.log(`Image ${imageNameToServer} not found.`);
+        }
+
+        res.send({ status: true });
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        res.redirect("/pageerror");
+    }
+}
+ 
 module.exports = {
     getBrandsPage,
     getAddBrand,
@@ -117,5 +212,7 @@ module.exports = {
     blockBrand,
     unBlockBrand,
     deleteBrand,
-
+    getEditBrand,
+    editBrand,
+    deleteSingleImage,
 }

@@ -6,6 +6,7 @@ const adminController = require('../controllers/admin/adminController');
 const customerController = require('../controllers/admin/customerController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
+const orderController = require("../controllers/admin/orderController");
 const bannerController = require('../controllers/admin/bannerController');
 const brandController = require('../controllers/admin/brandController');
 const couponController = require('../controllers/admin/couponController');
@@ -54,6 +55,9 @@ router.post('/addBrand',adminAuth,uploads.single("image"),brandController.addBra
 router.get('/blockBrand',adminAuth,brandController.blockBrand);
 router.get('/unBlockBrand',adminAuth,brandController.unBlockBrand);
 router.get('/deleteBrand',adminAuth,brandController.deleteBrand);
+router.get('/editBrand/',adminAuth,brandController.getEditBrand);
+router.post('/editBrand/:id',adminAuth,uploads.single("brandImage"),brandController.editBrand);
+router.delete('/deletebrandImage',adminAuth,brandController.deleteSingleImage);
 
 //Product management
 router.get('/products',adminAuth,productController.getAllProducts);
@@ -67,6 +71,12 @@ router.get('/editProduct/:id',adminAuth,productController.getEditProduct);
 router.post('/editProduct/:id',adminAuth,uploads.array("images"),productController.editProduct);
 router.delete('/deleteImage',adminAuth,productController.deleteSingleImage);
 router.get('/deleteProduct',adminAuth,productController.deleteProduct);
+
+// Order Management
+router.get("/orderList", adminAuth, orderController.getOrderListPageAdmin)
+router.get("/orderDetailsAdmin", adminAuth, orderController.getOrderDetailsPageAdmin)
+router.get("/changeStatus", adminAuth, orderController.changeOrderStatus);
+
 
 //Banner Management
 router.get('/banner',adminAuth,bannerController.getBanner);

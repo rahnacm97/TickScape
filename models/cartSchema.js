@@ -15,7 +15,8 @@ const cartSchema = new Schema({
         },
         quantity: {
             type: Number,
-            default: 1
+            default: 1,
+            min: [1, 'Quantity must be at least 1']
         },
         price: {
             type: Number,
@@ -27,7 +28,7 @@ const cartSchema = new Schema({
         },
         status: {
             type: String,
-            default: "placed"
+            default: "pending"
         },
         cancellationReason: {
             type: String,
@@ -36,6 +37,7 @@ const cartSchema = new Schema({
     }]
 })
 
-const Cart = mongoose.model("Cart",cartSchema);
+const Cart = mongoose.model('Cart', cartSchema);
 
 module.exports = Cart;
+

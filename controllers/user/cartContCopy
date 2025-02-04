@@ -1,0 +1,124 @@
+const User = require("../../models/userSchema");
+const Product = require("../../models/productSchema");
+const Cart = require('../../models/cartSchema');
+const mongodb = require("mongodb");
+const mongoose = require('mongoose');
+
+const getCartPage = async (req, res) => {
+  try {
+    const id = req.session.user;
+    const user = await User.findOne({ _id: id });
+
+    if (!user) {
+      return res.redirect("/pageNotFound");
+    }
+
+    if (!user.cart || user.cart.length === 0) {
+      return res.render("cart", { user, quantity: 0, data: [], grandTotal: 0 });
+    }
+
+    const productIds = user.cart.map((item) => item.productId);
+    const oid = new mongodb.ObjectId(id);
+
+    const data = await User.aggregate([
+      { $match: { _id: oid } },
+      { $unwind: "$cart" },
+      {
+        $project: {
+          proId: { $toObjectId: "$cart.productId" },
+          quantity: "$cart.quantity",
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "proId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+    ]);
+
+    let quantity = 0;
+    let grandTotal = 0;
+    data.forEach((item) => {
+      quantity += item.quantity;
+      if (item.productDetails && item.productDetails.length > 0) {
+        grandTotal += item.productDetails[0].salePrice * item.quantity;
+      }
+    });
+
+    req.session.grandTotal = grandTotal;
+
+    res.render("cart", {
+      user,
+      quantity,
+      data,
+      grandTotal,
+    });
+  } catch (error) {
+    console.error(error);
+    res.redirect("/pageNotFound");
+  }
+}
+
+
+const addToCart = async (req, res) => {
+  try {
+    const id = req.body.productId;
+    const userId = req.session.user;
+    const findUser = await User.findById(userId);
+    const product = await Product.findById({ _id: id }).lean();
+    
+    if (!product) {
+      return res.json({ status: "Product not found" });
+    }
+    
+    if (product.quantity <= 0) {
+      return res.json({ status: "Out of stock" });
+    }
+
+    const cartIndex = findUser.cart.findIndex((item) => item.productId == id);
+
+    if (cartIndex === -1) {
+      const quantity = 1;
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: {
+          cart: {
+            productId: id,
+            quantity: quantity,
+          },
+        },
+      });
+      return res.json({
+        status: "Product added", // or "Product quantity updated"
+        cartLength: findUser.cart.length,
+        cart: findUser.cart, // Send the updated cart items
+        user: userId
+      });
+    } else {
+      const productInCart = findUser.cart[cartIndex];
+      if (productInCart.quantity < product.quantity) {
+        const newQuantity = productInCart.quantity + 1;
+        await User.updateOne(
+          { _id: userId, "cart.productId": id },
+          { $set: { "cart.$.quantity": newQuantity } }
+        );
+        return res.json({ status: true, cartLength: findUser.cart.length, user: userId });
+      } else {
+        return res.json({ status: "Out of stock" });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    return res.redirect("/pageNotFound");
+  }
+};
+
+
+
+module.exports = { 
+  getCartPage,
+  addToCart,
+
+}

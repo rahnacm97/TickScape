@@ -44,34 +44,113 @@
    </form>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-   document.getElementById('submitButton').addEventListener('click', function (event) {
-       if (!validateForm()) {
-           event.preventDefault();
-       }
-   });
+   $(document).ready(function () {
+       $('#submitButton').click(function (event) {
+           if (!validateForm()) {
+               event.preventDefault();
+           }
+       });
 
+       function validateForm() {
+           let isValid = true;
+           const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
+           
+           // Clear previous error messages
+           $(".text-danger").remove();
 
-   function validateForm() {
-       let isValid = true;
-       const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
-       requiredFields.forEach(function (field) {
-           const input = document.getElementById(field);
-           if (input.value.trim() === "") {
+           requiredFields.forEach(function (field) {
+               const input = $("#" + field);
+               if (input.val().trim() === "") {
+                   input.after('<div class="text-danger">This field is required.</div>');
+                   isValid = false;
+               }
+           });
+
+           // Custom validation for phone numbers and pincode
+           const namePattern = /^[A-Za-z\s]+$/;
+           const pincodePattern = /^\d{6}$/;
+           const phonePattern = /^\d{10}$/;
+
+           if (!namePattern.test($("#name").val())) {
                Swal.fire({
                    title: 'Error',
-                   text: `Please fill all the field.`,
+                   text: 'Name should contain alphabets only.',
                    icon: 'error'
                });
                isValid = false;
            }
-       });
 
+           if (!namePattern.test($("#city").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'City should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
 
-       return isValid;
-   }
+           if (!namePattern.test($("#landMark").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Landmark should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!namePattern.test($("#state").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'State should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!pincodePattern.test($("#pincode").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Pincode should be a 6-digit number.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!phonePattern.test($("#phone").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Phone number should be a 10-digit number.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!phonePattern.test($("#altPhone").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Alternate phone number should be a 10-digit number.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if ($("#phone").val() === $("#altPhone").val()) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Phone number and alternate phone number should be different.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           return isValid;
+       }
+   });
 </script>
+
 <%- include("../../views/partials/user/footer") %>
 
 

@@ -160,11 +160,11 @@
                                         <span class="flaticon-search"></span>
                                     </div>
                                 </li>
-                                <li><a href="cart.html"><span class="flaticon-shopping-cart"></span></a></li>
+                                <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a></li>
                                 <li><a href="/wishlist"><span class="flaticon-heart"></span></a></li>
                                 <%if(locals.user){%>
                                     <li class="dropdown">
-                                        <a href="#" class="sign-in-link"><%= locals.user.fname%></a>
+                                        <a href="#" class="sign-in-link"><%= locals.user.fname %> <%= locals.user.lname %></a>
                                         <div class="dropdown-content">
                                             <a href="/userProfile">Profile</a>
                                             <a href="/logout">Logout</a>

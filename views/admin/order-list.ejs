@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order List</title>
+</head>
+<body>
+  <h1>Order List</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>User ID</th>
+        <th>Status</th>
+        <th>Total Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(order => { %>
+        <tr>
+          <td><%= order.orderId %></td>
+          <td><%= order.userId %></td>
+          <td><%= order.status %></td>
+          <td><%= order.totalPrice %></td>
+          <td>
+            <form action="/admin/changeOrderStatus" method="GET">
+              <input type="hidden" name="orderId" value="<%= order._id %>" />
+              <input type="hidden" name="userId" value="<%= order.userId %>" />
+              <select name="status">
+                <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
+              </select>
+              <button type="submit">Update Status</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div>
+    <% if (currentPage > 1) { %>
+      <a href="/admin/orderList?page=<%= currentPage - 1 %>">Previous</a>
+    <% } %>
+    <% if (currentPage < totalPages) { %>
+      <a href="/admin/orderList?page=<%= currentPage + 1 %>">Next</a>
+    <% } %>
+  </div>
+</body>
+</html>

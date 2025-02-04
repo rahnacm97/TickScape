@@ -1,5 +1,11 @@
 <%- include("../../views/partials/user/header") %>
 
+<!-- Include Flat UI CSS and Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css" 
+    integrity="sha512-6f7HT84a/AplPkpSRSKWqbseRTG4aRrhadjZezYQ0oVk/B+nm/US5KzQkyyOyh0Mn9cyDdChRdS9qaxJRHayww==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 <style>
 
 .page-header.breadcrumb-wrap {
@@ -9,20 +15,93 @@
 }
 
 .breadcrumb-wrap {
-  padding: 15px 0;
-  background-color: #1e918b;
-  color: #fff;
+    padding: 15px 0;
+    background-color: #1e918b;
+    color: #fff;
 }
 
 .breadcrumb a {
-  color: #221e1e;
-  text-decoration: none;
+    color: #221e1e;
+    text-decoration: none;
 }
 
 .breadcrumb span {
-  margin: 0 5px;
+    margin: 0 5px;
 }
 
+.table-shopping-summery {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-shopping-summery th,
+.table-shopping-summery td {
+    padding: 10px;
+    text-align: center;
+}
+
+.table-shopping-summery .product-thumbnail img {
+    max-width: 50px;
+    height: auto;
+}
+
+.table-shopping-summery .price span {
+    font-weight: bold;
+}
+
+.table-shopping-summery .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.table-shopping-summery .btn-sm {
+    padding: 6px 12px;
+}
+
+.table-shopping-summery .btn {
+    background-color: #1e918b;
+    color: #fff;
+    border: none;
+}
+
+.table-shopping-summery .btn:hover {
+    background-color: #18877c;
+}
+
+.table-shopping-summery .fi-rs-trash {
+    font-size: 18px;
+    color: #d33;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.pagination a {
+  padding: 8px 12px;
+  background: #fff;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.pagination a:hover {
+  background-color: #1e918b;
+  color: white;
+  transform: scale(1.05);
+}
+
+.pagination .active {
+  background-color: #1e918b;
+  color: white;
+}
 </style>
 
 <main class="main">
@@ -52,7 +131,7 @@
                                </tr>
                            </thead>
                            <tbody>
-                             <%if(wishlist.length>0){ %>
+                             <% if(wishlist.length > 0){ %>
                                <% for(let product of wishlist){ %>
                                        <tr>
                                            <td class="image product-thumbnail">
@@ -65,10 +144,12 @@
                                                    </a>
                                                </h5>
                                                <p class="font-xs">
-                                                    <%= product.category.name%>
-                                                   <br />
-                                                  <%= product.brand %>
-                                               </p>
+                                                <%= product.category.name %> <br/>
+                                                <% if (product.brand && product.brand.brandName) { %>
+                                                    <span> Brand: <%= product.brand.brandName %> </span>
+                                                <% } %>
+                                            
+                                            </p>
                                            </td>
                                            <td class="price" data-title="Price">$<span>
                                              <%= product.salePrice %>
@@ -96,10 +177,26 @@
                </div>
            </div>
        </div>
+       <div class="pagination" style="background: #fff;">
+        <% if (currentPage > 1) { %>
+            <a class="btn" href="/wishlist?page=<%= currentPage - 1 %>">Prev</a>
+        <% } %>
+        
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            
+            <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/wishlist?page=<%= i %>"><%= i %></a>
+            
+        <% } %>
+        
+        <% if (currentPage < totalPages) { %>
+            <a class="btn" href="/wishlist?page=<%= currentPage + 1 %>">Next</a>
+        <% } %>
+      </div>
    </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    
     function confirmRemove(productId){
         Swal.fire({
             title: 'Are you sure?',

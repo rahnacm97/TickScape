@@ -198,8 +198,6 @@
                                                 </option>
                                             <% } %>
                                         </select>
-                                        
-
                                            <div id="category-error" class="error-message"></div>
                                        </div>
                                    </div>
@@ -407,6 +405,11 @@
                 required: true,
                 number: true
             },
+            quantity: {
+                required: true,
+                number: true,
+                min: 1
+            },
             color: {
                 required: true
             }
@@ -429,6 +432,10 @@
                 required: "Please enter sale price.",
                 number: "Please enter a valid number."
             },
+            quantity: {
+                required: "Please enter quantity value.",
+                number: "Quantity must be greater than 0."
+            },
             color: {
                 required: "Enter a color value."
             }
@@ -441,14 +448,14 @@
             formData.delete('images')
 
             for (const [key, value] of formData) {
-  console.log('»', key, value)
+            console.log('»', key, value)
 }
             // Append cropped images
             
 
             console.log(croppedImages, 'croppedImages'); // Debugging log
             if(croppedImages.length> 0){
-                croppedImages.forEach((image, index) => {
+            croppedImages.forEach((image, index) => {
     // You can append each image with a unique name (e.g., 'image1', 'image2', etc.)
     formData.append('images', image);
   });
@@ -488,7 +495,7 @@
 // }
 
 function deleteSingleImage(imageId, productId) {
-    const status = window.confirm('Are you wanted to delete this one?')
+    const status = window.confirm('Are you sure you want to delete this image?')
     if(!status){
         return true;
     }
