@@ -1,5 +1,41 @@
 <%- include("../../views/partials/user/header") %>
 <style>
+  /* Custom styling for the SweetAlert popup */
+.swal-popup-custom {
+    position: relative;
+    font-size: 16px; 
+}
+
+.swal-btn-confirm {
+    position: absolute;
+    margin-top: 120px; /* Distance from the bottom */
+    left: 50%; /* Position it horizontally in the center */
+    transform: translateX(-50%); /* Adjust the button to be centered */
+    height: 35px;  
+    padding: 3px 20px;  
+    font-size: 12px; 
+}
+
+/* Position the confirm button at the bottom center */
+.swal-btn-custom {
+    position: absolute;
+    margin-top: 120px; /* Distance from the bottom */
+    left: 40%; /* Position it horizontally in the center */
+    transform: translateX(-50%); /* Adjust the button to be centered */
+    height: 35px;  
+    padding: 3px 20px;  
+    font-size: 12px; 
+}
+.swal-btn-custom1 {
+    position: absolute;
+    margin-top: 120px; /* Distance from the bottom */
+    left: 60%; /* Position it horizontally in the center */
+    transform: translateX(-50%); /* Adjust the button to be centered */
+    height: 35px;  
+    padding: 3px 20px;  
+    font-size: 12px; 
+}
+
   body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -357,13 +393,9 @@
 
                   <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                   <div class="detail-extralink">
-                    <div class="detail-qty border radius">
-                      <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                      <span class="qty-val" id="quantity">1</span>
-                      <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
-                    </div>
+                    
                     <div class="product-extra-link2">
-                      <button type="submit" class="button button-add-to-cart button-new" style="top: 520px; margin-left: 50px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
+                      <button type="submit" class="button button-add-to-cart button-new" style="top: 500px; margin-left: 100px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
                       <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
                     </div>
                   </div>
@@ -445,93 +477,115 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 
-function addToWishlist(productId){
-    $.ajax({
-      url:'/addToWishlist',
-      method:'POST',
-      data: {productId: productId},
+function addToWishlist(productId) {
+   $.ajax({
+      url: '/addToWishlist',
+      method: 'POST',
+      data: { productId: productId },
       success: (response) => {
-        console.log(response);
-        if(response.status){
-          Swal.fire({
-            title:'Added to Wishlist',
-            text: 'The product has been added to your wishlist',
-            icon: 'success',
-            timer: 2000
-          })
-        }else{
-          Swal.fire({
-            title: 'Already in Wishlist',
-            text: response.message,
-            icon:'info',
-            timer: 2000
-          })
-        }
+         console.log(response);
+         if (response.status) {
+            Swal.fire({
+               title: 'Added to Wishlist',
+               text: 'The product has been added to your wishlist',
+               icon: 'success',
+               timer: 2000,
+               showConfirmButton: true,
+               customClass: {
+                  popup: 'swal-popup-custom', 
+                  confirmButton: 'swal-btn-confirm'
+               }
+            });
+         } else {
+            Swal.fire({
+               title: 'Already in Wishlist',
+               text: response.message,
+               icon: 'info',
+               timer: 2000,
+               showConfirmButton: true,
+               customClass: {
+                  popup: 'swal-popup-custom', 
+                  confirmButton: 'swal-btn-confirm'
+               }
+            });
+         }
       },
       error: (error) => {
-        Swal.fire({
+         Swal.fire({
             title: 'Error',
             text: 'There was an error adding wishlist',
-            icon:'error',
-            timer: 2000
-          })
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: true,
+               customClass: {
+                  popup: 'swal-popup-custom', 
+                  confirmButton: 'swal-btn-confirm'
+               }
+         });
       }
-    })
-  }
+   });
+}
 
-  function addToCart(productId){
-    $.ajax({
-      url:'/addToCart',
-      method:'POST',
-      data: {productId: productId},
+function addToCart(productId) {
+   $.ajax({
+      url: '/addToCart',
+      method: 'POST',
+      data: { productId: productId },
       success: (response) => {
-        console.log("response is",response);
-        if(response.status){
-          Swal.fire({
-            title:'Added to Cart',
-            text: response.message || 'The product has been added to your cart.',
-            icon: 'success',
-            timer: 2000
-          })
-        }else{
-          Swal.fire({
-            title: 'Already in Cart',
-            text: response.message || 'This product is already in your cart.',
-            icon:'info',
-            timer: 2000
-          })
-        }
+         console.log("response is", response);
+         if (response.status) {
+            Swal.fire({
+               title: 'Added to Cart',
+               text: response.message || 'The product has been added to your cart.',
+               icon: 'success',
+               timer: 2000,
+               showConfirmButton: true,
+               showCancelButton: true,
+               confirmButtonText: 'Go to Cart',
+               cancelButtonText: 'Okay!',
+               customClass: {
+                  popup: 'swal-popup-custom',  
+                  confirmButton: 'swal-btn-custom',
+                  cancelButton: 'swal-btn-custom1'
+               }
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  window.location.href = '/cart';
+               }
+            });
+         } else {
+            Swal.fire({
+               title: 'Already in Cart',
+               text: response.message || 'This product is already in your cart.',
+               icon: 'info',
+               timer:2000,
+               showConfirmButton: true,
+               customClass: {
+                  popup: 'swal-popup-custom', 
+                  confirmButton: 'swal-btn-confirm'
+               }
+            });
+         }
       },
       error: (error) => {
-        Swal.fire({
+         Swal.fire({
             title: 'Error',
             text: 'There was an error adding cart',
-            icon:'error',
-            timer: 2000
-          })
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: true,
+               customClass: {
+                  popup: 'swal-popup-custom', 
+                  confirmButton: 'swal-btn-confirm'
+               }
+         });
       }
-    })
-  }
-  // $(document).ready(function () {
-  //   $('.slider-nav-thumbnails').slick({
-  //     slidesToShow: 4,
-  //     slidesToScroll: 1,
-  //     asNavFor: '.slider-wrapper',
-  //     dots: false,
-  //     centerMode: true,
-  //     focusOnSelect: true,
-  //   });
-
-  //   $('.slider-wrapper').slick({
-  //     slidesToShow: 1,
-  //     slidesToScroll: 1,
-  //     fade: true,
-  //     asNavFor: '.slider-nav-thumbnails',
-  //   });
-  // });
+   });
+}
 </script>
 
 <%- include("../../views/partials/user/footer") %>

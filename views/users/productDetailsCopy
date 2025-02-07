@@ -145,6 +145,14 @@
     background-color: #0056b3;
   }
 
+  .button-new{
+    margin-top: 25px;
+    font-size: 18px;
+    color: #077625;
+    text-decoration: none;
+    margin-left: 50px;
+  }
+
   .action-btn {
     margin-top: 190px;
     font-size: 18px;
@@ -156,6 +164,77 @@
   .action-btn:hover {
     color: #0056b3;
   }
+   
+  .related-products {
+  padding: 50px 0;
+  background-color: #f9f9f9;
+}
+
+.related-title {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.related-product-item {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.related-product-item:hover {
+  transform: translateY(-10px);
+}
+
+.related-product-item .product-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.related-product-item .product-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.related-product-item .product-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0;
+}
+
+.related-product-item .product-price {
+  font-size: 14px;
+  color: #007bff;
+}
+
+.related-product-item .product-price .old-price {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.related-product-item .button-add-to-cart {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #166d29;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 15px;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.related-product-item .button-add-to-cart:hover {
+  background-color: #0056b3;
+}
+
+.row{
+  margin-top: 10px;
+}
 
   
 </style>
@@ -240,7 +319,9 @@
                   <h2 class="title-detail"><%= product.productName %></h2>
                   <div class="product-detail-rating">
                     <div class="pro-details-brand">
-                      <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                      <% if (product.brand && product.brand.brandName) { %>
+                        <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                      <% } %>
                     </div>
                     <div class="product-rate-cover text-end">
                       <div class="product-rate d-inline-block">
@@ -276,14 +357,10 @@
 
                   <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                   <div class="detail-extralink">
-                    <div class="detail-qty border radius">
-                      <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                      <span class="qty-val" id="quantity">1</span>
-                      <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
-                    </div>
+                    
                     <div class="product-extra-link2">
-                      <button type="submit" class="button button-add-to-cart" style="top: 520px; margin-left: 50px ;">Add to cart</button>
-                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                      <button type="submit" class="button button-add-to-cart button-new" style="top: 500px; margin-left: 100px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
+                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
                     </div>
                   </div>
                   <ul class="product-meta font-xs color-grey mt-50">
@@ -300,31 +377,166 @@
       </div>
     </div>
   </section>
+  <section class="related-product-area section_gap_bottom">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+          <div class="section-title">
+            <h1>Others Also Bought</h1>
+            <p>Check out what other customers loved!</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-9">
+          <% if (relatedProducts && relatedProducts.length > 0) { %>
+            <div class="row gy-4"> <!-- Added spacing between rows -->
+              <% for (let i = 0; i < relatedProducts.length; i++) { %>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                  <div class="card shadow-sm h-100"> <!-- Ensures all cards have equal height -->
+                    <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
+                      <img src="http://localhost:3000/<%= relatedProducts[i].productImage[0] %>" 
+                        alt="<%= relatedProducts[i].productName %>" class="card-img-top" 
+                        style="height: 300px; width:400px; object-fit: cover; border-radius: 8px;">
+                    </a>
+                    <div class="card-body d-flex flex-column">
+                      <h5 class="card-title mb-2">
+                        <a href="/productDetails?id=<%= relatedProducts[i]._id %>" class="text-dark text-decoration-none"><%= relatedProducts[i].productName %></a>
+                      </h5>
+                      <div class="mt-auto"> <!-- Pushes the price section to the bottom -->
+                        <div class="price d-flex justify-content-between align-items-center">
+                          <span class="text-success fw-bold">$<%= relatedProducts[i].salePrice %></span>
+                          <% if (relatedProducts[i].originalPrice) { %>
+                            <span class="text-muted text-decoration-line-through">$<%= relatedProducts[i].originalPrice %></span>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="text-center">
+              <p>No related products available.</p>
+            </div>
+          <% } %>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- <section class="col-lg-3">
+    <div class="advertisement">
+      <a href="#" target="_blank">
+        <img class="img-fluid d-block mx-auto" src="assets/img/gallery/card2.png" alt="Advertisement" style="border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"> 
+      </a>
+    </div>
+  </section> -->
+
 </main>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  // $(document).ready(function () {
-  //   $('.slider-nav-thumbnails').slick({
-  //     slidesToShow: 4,
-  //     slidesToScroll: 1,
-  //     asNavFor: '.slider-wrapper',
-  //     dots: false,
-  //     centerMode: true,
-  //     focusOnSelect: true,
-  //   });
 
-  //   $('.slider-wrapper').slick({
-  //     slidesToShow: 1,
-  //     slidesToScroll: 1,
-  //     fade: true,
-  //     asNavFor: '.slider-nav-thumbnails',
-  //   });
-  // });
+function addToWishlist(productId) {
+   $.ajax({
+      url: '/addToWishlist',
+      method: 'POST',
+      data: { productId: productId },
+      success: (response) => {
+         console.log(response);
+         if (response.status) {
+            Swal.fire({
+               title: 'Added to Wishlist',
+               text: 'The product has been added to your wishlist',
+               icon: 'success',
+               timer: 2000,
+               customClass: {
+                  popup: 'swal-popup-custom',  // Custom class for popup
+               }
+            });
+         } else {
+            Swal.fire({
+               title: 'Already in Wishlist',
+               text: response.message,
+               icon: 'info',
+               timer: 2000,
+               customClass: {
+                  popup: 'swal-popup-custom',  // Custom class for popup
+               }
+            });
+         }
+      },
+      error: (error) => {
+         Swal.fire({
+            title: 'Error',
+            text: 'There was an error adding wishlist',
+            icon: 'error',
+            timer: 2000,
+            customClass: {
+               popup: 'swal-popup-custom',  // Custom class for popup
+            }
+         });
+      }
+   });
+}
+
+function addToCart(productId) {
+   $.ajax({
+      url: '/addToCart',
+      method: 'POST',
+      data: { productId: productId },
+      success: (response) => {
+         console.log("response is", response);
+         if (response.status) {
+            Swal.fire({
+               title: 'Added to Cart',
+               text: response.message || 'The product has been added to your cart.',
+               icon: 'success',
+               timer: 2000,
+               showCancelButton: true,
+               confirmButtonText: 'Go to Cart',
+               cancelButtonText: 'Okay!',
+               customClass: {
+                  popup: 'swal-popup-custom',  // Custom class for popup
+               }
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  window.location.href = '/cart';
+               }
+            });
+         } else {
+            Swal.fire({
+               title: 'Already in Cart',
+               text: response.message || 'This product is already in your cart.',
+               icon: 'info',
+               timer: 2000,
+               customClass: {
+                  popup: 'swal-popup-custom',  // Custom class for popup
+               }
+            });
+         }
+      },
+      error: (error) => {
+         Swal.fire({
+            title: 'Error',
+            text: 'There was an error adding cart',
+            icon: 'error',
+            timer: 2000,
+            customClass: {
+               popup: 'swal-popup-custom',  // Custom class for popup
+            }
+         });
+      }
+   });
+}
 </script>
 
 <%- include("../../views/partials/user/footer") %>

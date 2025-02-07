@@ -1,0 +1,79 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+     .page-header.breadcrumb-wrap {
+    margin-top: 10px;
+    background-color: #ede9ec;
+    padding: 10px 0;
+  }
+
+  .breadcrumb-wrap {
+    padding: 15px 0;
+    background-color: #1e918b;
+    color: #fff;
+  }
+
+  .breadcrumb a {
+    color: #088178;
+    text-decoration: none;
+  }
+
+  .breadcrumb span {
+    margin: 0 5px;
+    color: rgb(125, 124, 124);
+  }
+</style>
+<body>
+    <section class="content-main">
+        <div class="page-header breadcrumb-wrap">
+          <div class="container">
+            <div class="breadcrumb">
+              <a href="/" rel="nofollow">Home</a>
+              <span></span> <a href="/shop" rel="nofollow">Shop</a> <span></span>
+              <a href="/cart" rel="nofollow">Cart</a> <span></span>
+              Order Details
+            </div>
+          </div>
+        </div>
+       <div class="container mt-10">
+        <h2>Order Details</h2>
+        
+        
+            <table>
+                <tr>
+                    <th>Order ID</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Product Name</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Quantity</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Price per Unit</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Total Price</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Final Amount</th>
+                    <td>/td>
+                </tr>
+            </table>
+        
+            <p>Order details not found.</p>
+        
+        
+        <a href="/orders" class="btn">Back to Orders</a>
+    </div>
+    </section>
+</body>
+<%- include("../../views/partials/user/footer") %>

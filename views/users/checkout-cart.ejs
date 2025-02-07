@@ -1,13 +1,32 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-    .products {
-        padding: 20px;
-        margin-top: 20px;
-    }
+.products {
+    border: 2px solid #ddd; 
+    border-radius: 10px; 
+    padding: 20px; 
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
+.address {
+    border: 2px solid #ddd; 
+    border-radius: 10px; 
+    padding: 20px; 
+    margin-top: 20px;
+    background-color: #f9f9f9; 
+}
 
-    .page-header.breadcrumb-wrap {
+.payments{
+    margin-left: 20%;
+    width:60%;
+    border: 2px solid #ddd; 
+    border-radius: 10px; 
+    padding: 20px; 
+    margin-top: 20px;
+    background-color: #f9f9f9; 
+}
+.page-header.breadcrumb-wrap {
     margin-top: 10px;
-    background-color: #eee2e9;
+    background-color: #ede9ec;
     padding: 10px 0;
 }
 
@@ -18,12 +37,13 @@
 }
 
 .breadcrumb a {
-    color: #221e1e;
+    color: #088178;
     text-decoration: none;
 }
 
 .breadcrumb span {
     margin: 0 5px;
+    color: rgb(125, 124, 124);
 }
 /* General Styling */
 
@@ -73,7 +93,7 @@
 }
 
 .custom-radio {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .custom-radio input {
@@ -85,7 +105,7 @@
 }
 
 .table th {
-    background-color: #f1f1f1;
+    background-color: #d5d0d0;
 }
 
 input[type="text"], .form-check-label {
@@ -100,10 +120,12 @@ input[type="text"], .form-check-label {
 .btn-primary {
     background-color: #066e2c;
     border-color: #076338;
+    width: 150px; /* Adjust width as needed */
+   
 }
 
 input[type="text"] {
-    border: 1px solid #ced4da;
+    border: 1px solid #5c88b4;
     border-radius: 5px;
 }
 
@@ -162,222 +184,204 @@ input[type="text"] {
                     <a href="/" rel="nofollow">Home</a>
                     <span></span> <a href="/shop" rel="nofollow">Shop</a>
                     <span></span> <a href="/cart" rel="nofollow">Cart</a>
-                    <span></span> CheckOut
+                    <span></span> Check Out
                 </div>
             </div>
         </div>
-        <div class="container products">
+        <div class="container">
             <div class="row">
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="order_review">
-                            <div class="mb-20">
-                                <h4>Products</h4>
-                            </div>
+                    <div class="col-md-12 products">
+                        <div class="mb-20">
+                            <h3>Products</h3>
+                        </div>
+                        <div class="card">
                             <div class="table-responsive order_table text-center">
                                 <table>
                                     <thead>
                                         <tr>
+                                            <th>Sl. No</th>
                                             <th>Image</th>
                                             <th>Product</th>
+                                            <th>Price</th>
                                             <th>Quantity</th>
-                                            <th>Total</th>
-                                            <th>Delete</th>
+                                            <th>Product Total</th>
+                                            <!-- <th>Delete</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
-
+                                        <% if (carts && carts.items && carts.items.length > 0) { %>
+                                            <% carts.items.forEach((item,index) => { %>
                                                 <tr>
-                                                    <td class="image product-thumbnail"><img
-                                                            src=""
-                                                            alt="#"></td>
-                                                    <td>
-                                                        <h5><a href="shop-product-full.html">
-                                                                
-                                                            </a></h5>
+                                                    <td><%= index + 1 %></td>
+                                                    <td scope="row">
+                                                        <div class="d-flex align-items-center mt-2">
+                                                            <img src="<%= item.productId.productImage[0] %>" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                                        </div>
                                                     </td>
-                                                       <td>
-                                                        
-                                                    </td> 
-                                                    <td>
-                                                       
-                                                    </td>
-                                                    <td class="action" data-title="Remove" onclick="return confirm('Are you sure you want remove this product from cart?')">
+                                                    <td class="py-5"><%=item.productId.productName%></td>
+                                                    <td class="py-5">$<%= item.price.toFixed(2) %></td>
+                                                    <td class="py-5"><%= item.quantity %></td>
+                                                    <td class="py-5">$<%= item.totalPrice.toFixed(2) %></td>
+                                                    
+                                                    <!-- <td class="action" data-title="Remove" onclick="return confirm('Are you sure you want remove this product from cart?')">
                                                         <a class="btn btn-sm"
                                                             href="">
                                                             <i class="fi-rs-trash"></i>
                                                         </a>
-                                                    </td>
+
+                                                    </td> -->
+                                                    <td><input type="hidden" id="productid" value="<%=item.productId._id%>"></td>
+                                                    
                                                 </tr>
                                                 
+                                                <% }); %>
+                                                <% } else { %>
                                                         <tr>
                                                             <td colspan="4">No products found</td>
                                                         </tr>
-                                                     
-                                    
+                                                <% } %>  
+                                                <tr>
+                                                    
+                                                    <td colspan="5" class="py-1">
+                                                        <p class="mb-0 text-dark py-1">Total</p>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        
+                                                            <p class="mb-0 text-dark"> $<%= total %></p>
+                                                    
+                                                    </td>
+                                                </tr>   
+                                                <tr>
+                                                    
+                                                    <td class="py-1 w-100 " colspan = "5" >
+                                                        <p class="mb-0 text-dark py-1">Shipping Charge </p>
+                                                    </td>
+                                                    <td colspan=""><p class="mb-0 text-dark py-1">$50</p></td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" colspan="5">
+                                                        <p class="mb-0 text-dark py-1">Discount</p>
+                                                    </td>
+                                                    <td colspan="" id="discount">
+                                                        <p class="mb-0 text-dark py-1">$20</p>
+                                                    </td>
+                                                    
+                                                 </tr>
+                                                <tr>
+                                                    
+                                                    <td class="py-1" colspan="5">
+                                                        <p class="mb-0 text-dark text-uppercase py-1">Sub Total</p>
+                                                    </td>
+                                                    <td colspan="">
+                                                        <div class="py-1 border-bottom border-top">
+                                                        <p class="mb-0 text-dark">$<%= total + 50 - 20 %></p>
+                                                        </div>
+                                                    </td>
+                                                        
+                                                    </td>
+                                                </tr>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-
-                    <div class="col-8">
-                        <div class="row align-items-start mt-10 ml-190">
+                    <div class="col-12 container address">
+                        <div class="mb-20">
+                            <h3>Addresses</h3>
+                        </div>
+                        <div class="row align-items-start">
+                            <% if (address.length > 0) { %>
+                                <% address.forEach(function (userAddress) { %>
+                                    <% userAddress.address.forEach(function (addr) { %>
+                                        <div class="col-lg-6">
+                                            <div class="card">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio"
+                                                        id="addressRadio<%= addr._id %>" name="selectedAddress"
+                                                        value="<%= addr._id %>">
+                                                </div>
                             
-                                    <div class="col-lg-6">
-                                        <div class="card">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio"
-                                                    id="" name="selectedAddress"
-                                                    value="">
-                                                <label class="form-check-label"
-                                                    for="">Select Address</label>
-                                            </div>
-
-                                            <div class="card-header">
-                                                <h5 class="mb-0">
-                                                   
-                                                </h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <address>
-                                                    <br />
-                                                        <br />
-                                                         <br />
-                                                               
-                                                </address>
-                                                <p>
-                                                  
-                                                </p>
-                                                <p>
-                                                    
-                                                </p>
-                                                <p>
-                                                    
-                                                </p>
-                                                <div class="d-flex justify-content-between">
-                                                    <a href="/editAddress?id="
-                                                        class="btn-small">Edit</a>
-                                                    <a href="/deleteAddress?id="
-                                                        class="btn-small" onclick="return confirm('Are you sure you want to delete this address?')">Delete</a>
+                                                <div class="card-header">
+                                                    <h5 class="mb-0">
+                                                        <%= addr.addressType %>
+                                                    </h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <address>
+                                                        <%= addr.name %>, <br>
+                                                        <%= addr.city %>,
+                                                        <%= addr.landMark %>,
+                                                        <%= addr.state %>,
+                                                    </address>
+                                                    <p><%= addr.pincode %>,
+                                                    <%= addr.phone %>,
+                                                    <%= addr.altPhone%></p>
+                            
+                                                    <div class="d-flex justify-content-between">
+                                                        <a href="/editAddress?id=<%= addr._id %>"
+                                                            class="btn-small">Edit</a>
+                                                        <a href="/deleteAddress?id=<%= addr._id %>"
+                                                            class="btn-small" onclick="return confirm('Are you sure you want to delete this address?')">Delete</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    <% }) %>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="col-lg-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0"></h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <address>No address</address>
+                                        </div>
                                     </div>
-                                    
-                                            <div class="col-lg-6 mb-3">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h5 class="mb-0"></h5>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <address>
-                                                            No address
-                                                        </address>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                                <div class="col-lg-6 mb-3">
-                                                    <a href="/addAddress">
-                                                        <button class="btn btn-primary w-100">Add address</button>
-                                                    </a>
-                                                </div>
-                        </div>
-                    </div>
-
-                    <div class="col-6">  
-                        <div class="input-group mb-1 col-2" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 10px;">
-                            <input type="text" class="form-control" id="inputCoupon" placeholder="Paste Coupon Name">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" id="applyButton" type="button" onclick="applyCoupon('')">Apply</button>
-
+                                </div>
+                            <% } %>
+                            
+                            <div class="col-lg-6 mb-3">
+                                <a href="/addAddress">
+                                    <button class="btn btn-primary w-50 " style="margin-left: 400px;">Add address</button>
+                                </a>
                             </div>
-                        </div>
-                            </div>
-
-                            <div class="mb-25 ml-150 pt-10">
-                                <h5>Available Coupons</h5>
-                            </div>
-
-                            <ul>
                                 
-                                        <li>
-                                            <div class="coupon-card col-4" style="margin-left: 150px;">
-                                                <div class="coupon-details">
-                                                    <span class="coupon-name">
-                                                      
-                                                    </span><br>
-                                                </div>
-                                                <button onclick="useCoupon('')" id="useButton_" class="use-button">Use</button>
-                                                <button onclick="cancelCoupon('')" id="cancelButton_" class="cancel-button btn-danger" style="display: none;">Cancel</button>
-                                            </div>
-                                        </li>
-                                        
-                                        
+                            </div>
 
-                                                <h3>No coupons available</h3>
-
-                                            
-                            </ul>
                         </div>
-                        <div class="payment_method">
-                            <div class="mb-25 ml-150">
-                                <h5>Payment</h5>
-                            </div>
-                            <div class="custome-radio ml-150">
-                                <input class="form-check-input payment" type="radio" value="cod" name="payment_option"
-                                    id="CashOnDelivey" checked="">
-                                <label class="form-check-label" for="CashOnDelivey" product-bs-toggle="collapse"
-                                    product-target="#CashOnDelivey" aria-controls="CashOnDelivey">Cash on
-                                    Delivery</label>
-                            </div>
-                           
-                            <div class="custome-radio ml-150">
-                                <input class="form-check-input payment" required="" value="razorpay" type="radio"
-                                    name="payment_option" id="Razorpay" checked="">
-                                <label class="form-check-label" for="Razorpay" data-bs-toggle="collapse"
-                                    data-target="#Razorpay" aria-controls="paypal">Razorpay</label>
-                            </div> <div class="custome-radio ml-150">
-                                <input class="form-check-input payment" required="" value="wallet" type="radio"
-                                    name="payment_option" id="wallet" checked="">
-                                <label class="form-check-label" for="wallet" data-bs-toggle="collapse"
-                                    data-target="#wallet" aria-controls="wallet">wallet</label>
-                            </div>
-                       
-                            </div>
-                        </div>
-    
                     </div>
-                    <div class="container col-6 mt-3">
-                        
-                        
+                    <div class="payments">
+                        <div class="mb-20">
+                            <h3>Payment Methods</h3>
+                        </div>
+                        <div class="payment_method col-6">   
+                            <input type="radio" class="form-check-input" id="Onlinepayment" name="paymentMethod" value="Online Payment">
+                            <label class="form-check-label" for="Onlinepayment">Online Payment(via Razorpay)</label><br>
+                            
+                            <input type="radio" class="form-check-input" id="paymentMethodCOD" name="paymentMethod" value="Cash on Delivery">
+                            <label class="form-check-label" for="paymentMethodCOD">Cash on Delivery</label> <br>
+                            
+                            <input type="radio" class="form-check-input" id="paymentWallet" name="paymentMethod" value="Wallet">
+                            <label class="form-check-label" for="paymentWallet">Wallet</label><br>
+
+                            <input type="radio" class="form-check-input" id="creditCard" name="paymentMethod" value="Credit">
+                            <label class="form-check-label" for="paymentWallet">Credit Card</label><br>
+
+                            <input type="radio" class="form-check-input" id="banktransfer" name="paymentMethod" value="Bank">
+                            <label class="form-check-label" for="paymentWallet">Bank Transfer</label><br>
+
+                        </div>
+                    </div>
+
+                    <div class="container col-6 mt-3"> 
                         <div class="ml-150">
-                            <table class="table mt-45">
-                                <tbody>
-                                    <tr>
-                                        <th>Shipping</th>
-                                        <td colspan="2"><em>Free Shipping</em></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Discount</th>
-                                        <td colspan="2" id="discount">
-                                            
-                                        </td>
-                                        
-                                     </tr>
-                                    <tr>
-                                        <th>Total for All Products</th>
-                                        <td colspan="2" class="product-subtotal" >
-                                            <span class="font-xl text-brand fw-900" id="totalValue">$</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
                     
                             <div class="ml-65">
                                 
-                                    <button type="button" class="btn" onclick="placeOrder('')">Place Order</button>
+                                    <button type="button" class="btn" id="placeorder" onclick="placeOrder('')">Place Order</button>
                                
                             </div>
                            
@@ -386,287 +390,117 @@ input[type="text"] {
                 </div>
             </div>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-    <script>
-        async function placeOrder(userId, productId) {
-            let address = $("input[name='selectedAddress']:checked").val();
-            let payment = $("input[name='payment_option']:checked").val();
+<script>
+function placeOrder() {
+    // Extract Cart Items
+    let orderedItems = [];
+    document.querySelectorAll("tbody tr").forEach(row => {
+        let productId = row.querySelector("#productid")?.value; // Get product ID
+        let quantity = row.cells[4]?.textContent; // Quantity column
+        let price = row.cells[3]?.textContent.replace("$", ""); // Price column
+        let productTotal = row.cells[5]?.textContent.replace("$", "");
 
-            const sum = document.getElementById("totalValue").textContent;
-            const numericValue = parseInt(sum.replace(/[^\d.]/g, ''));
-            console.log(numericValue);
-            
-
-            if (!payment) {
-                Swal.fire({
-                    title: 'NO PAYMENT FOUND!',
-                    text: 'Please select your Payment.',
-                    icon: 'error',
-                    timer: 3000,
-                });
-            } else if (!address) {
-                Swal.fire({
-                    title: 'NO ADDRESS FOUND!',
-                    text: 'Please select your address.',
-                    icon: 'error',
-                    timer: 3000,
-                });
-            } else if(payment === "cod" && numericValue > 1000){
-                Swal.fire({
-            title: 'COD Not Allowed!',
-            text: 'Orders above ₹1000 are not allowed for Cash on Delivery (COD).',
-            icon: 'error',
-            timer: 3000,
-        });
-            }else {
-                $.ajax({
-                    url: '/orderPlaced',
-                    method: 'POST',
-                    data:{
-                        totalPrice: numericValue,
-                        createdOn: new Date().getTime(),
-                        date: new Date(),
-                        addressId: address,
-                        payment: payment,
-                        discount : discount
-                    },
-                    success: function (response) {
-                        let orderId = response.order._id
-                        if (response.method === "cod") {
-                        Swal.fire({
-                            title: "Order success",
-                            text: "order placed successfully",
-                            icon: "success",
-                            showCancelButton: true,
-                            confirmButtonText: "view orders",
-                            cancelButtonText: "continue shopping",
-                            reverseButtons: true
-                        }).then(function (result) {
-                            if (result.value) {
-                                let orderId = response.order._id
-                                location.href =`/orderDetails?id=${orderId}`;
-                            } else if (result.dismiss === "cancel") {
-                                location.href = '/'
-                            }
-                        });
-                    
-                        }else if (response.method === "wallet") {
-                            if(response.payment===true){
-                        Swal.fire({
-                            title: "Order success",
-                            text: "order placed successfully",
-                            icon: "success",
-                            showCancelButton: true,
-                            confirmButtonText: "view orders",
-                            cancelButtonText: "continue shopping",
-                            reverseButtons: true
-                        }).then(function (result) {
-                            if (result.value) {
-                                let orderId = response.order._id
-                                location.href = `/orderDetails?id=${orderId}`;
-                            } else if (result.dismiss === "cancel") {
-                                location.href = '/'
-                            }
-                        });
-                    }else {
-    Swal.fire({
-        title: "Order failed",
-        text: "Wallet amount is not enough",
-        icon: "error",
-        showConfirmButton: true,
-    }).then(function(result) {
-        if (result.value) {
-            location.href = '/';
+        if (productId) {
+            orderedItems.push({
+                product: productId,  // ✅ Match Schema Field
+                quantity: parseInt(quantity),
+                price: parseFloat(price),
+                totalPrice: parseFloat(productTotal) // ✅ Ensure total price is sent
+            });
         }
+    });
+
+    // Check if there are any products in the cart
+    if (orderedItems.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Your cart is empty!',
+        });
+        return;
+    }
+
+    // Extract Address
+    let selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
+    if (!selectedAddress) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select an address!',
+        });
+        return;
+    }
+
+    // Extract Payment Method
+    let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+    if (!paymentMethod) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select a payment method!',
+        });
+        return;
+    }
+
+    // Calculate Total Price
+    let totalPrice = orderedItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    let shipping = 50;
+    let discount = 20;
+    let finalAmount = totalPrice + shipping - discount;
+
+    // Send Order Request
+    fetch("/placeOrder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            orderedItems,
+            totalPrice, 
+            discount,
+            shipping,
+            finalAmount,
+            address: selectedAddress,
+            status: "Processing",
+            paymentMethod: paymentMethod
+        })
+    })
+    .then(response => response.json())
+    .then(response => {
+        console.log(response,'response');
+        localStorage.setItem('orders',JSON.stringify(response.orders))
+        
+        if (response.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Order Placed!',
+                text: 'Your order has been successfully placed.',
+            }).then(() => {
+                const orders = JSON.parse(localStorage.getItem('orders'));
+                if (orders) {
+                const encodedOrders = encodeURIComponent(JSON.stringify(orders));
+                window.location.href = `/orderDetails?orders=${encodedOrders}`;
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'There was an issue placing your order.',
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again later.',
+        });
     });
 }
 
-                        }                 
-                            else if (response.method === "razorpay") {
-                           let orderAmount=Math.round(numericValue*100);
-                            var options = {
-                                "key": "rzp_test_vWkG4lrwiDnQ0g",
-                                "amount": orderAmount,
-                                "currency": "INR",
-                                "name": "Trend Setter",
-                                "description": "Test Transaction",
-                                "image": "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad",
-                                "order_id": response.razorPayOrder.id,
-                                "handler": function (status) {
-                                    verifyPayment(response.razorPayOrder, status,response.order._id);
-                                },
-                                "prefill": {
-                                    "name": "Customer Name",
-                                    "email": "customer@example.com",
-                                    "contact": "9961618585"
-                                },
-
-                                "theme": {
-                                    "color": "#3399cc"
-                                }
-                            }
-                            var rzp1 = new Razorpay(options);
-                            rzp1.open();
-
-                        } else {
-                            Swal.fire({
-                                title: 'Error Occured',
-                                text: "Can't process order error occured",
-                                icon: 'fail',
-                                timer: 5000
-                            })
-                        }
-                    },
-                });
-            }
-        }
-
-        function verifyPayment(order, payment,orderId) {
-            $.ajax({
-                url: '/verifyPayment',
-                method: 'post',
-                data: {
-                    order,
-                    payment
-                }, success: (response) => {
-                    if (response.status) {
-                        $.ajax({
-                            url:'/paymentConfirm',
-                            method:'post',
-                            data :{
-                                status:"Pending",
-                                orderId
-                            },
-                            success:(response)=>{
-                            }
-                        })
-                        Swal.fire({
-                            title: "Order success",
-                            text: "order placed successfully",
-                            icon: "success",
-                            showCancelButton: true,
-                            confirmButtonText: "view orders",
-                            cancelButtonText: "continue shopping",
-                            reverseButtons: true
-                        }).then(function (result) {
-                            if (result.value) {
-                                console.log("I am success");
-                                var orderDetailsUrl = `/orderDetails?id=${orderId}`;
-            location.href = orderDetailsUrl;
-                            } else if (result.dismiss === "cancel") {
-                                console.log("Nopppp");
-                                location.href = '/'
-                            }
-                        });
-                    }
-
-                }
-            })
-        }
-        
-        function showCouponDetails(couponName) {
-            Swal.fire({
-                title: 'Coupon Details',
-                text: `${couponName}`,
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    copyToClipboard(couponName);
-                }
-            });
-        }
-
-        function copyToClipboard(text) {
-            var tempInput = document.createElement('input');
-            document.body.appendChild(tempInput);
-            tempInput.value = text;
-
-            tempInput.select();
-            document.execCommand('copy');
-
-            document.body.removeChild(tempInput);
-
-            Swal.fire({
-                title: 'Copied!',
-                text: 'Coupon name has been copied to the clipboard.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        }
-
-        let discount = 0;
-
-
-
- const applyCoupon = async (totalAmount) => {
-  const couponName = document.getElementById("inputCoupon").value.trim();
-  if (!couponName) {
-    Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter a coupon code.' });
-    return;
-  }
-
-  try {
-    const response = await fetch('/applyCoupon', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ coupon: couponName, total: totalAmount }),
-    });
-
-    const data = await response.json();
-    if (data.success) {
-      Swal.fire({ icon: 'success', title: 'Success', text: `Coupon Discount ${data.offerPrice} Applied` });
-      document.getElementById("totalValue").innerText = `₹${data.gt}`;
-      document.getElementById("discount").innerText = data.offerPrice;
-      document.getElementById("inputCoupon").value = "";
-      discount = data.offerPrice;
-    } else {
-      Swal.fire({ icon: 'error', title: 'Error', text: data.message });
-    }
-  } catch (error) {
-    console.error('Error applying coupon:', error);
-    Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to apply coupon.' });
-  }
-};
-
-
- 
-    
-        var usedCoupon = null;
-    const useCoupon = async (couponName) =>{
-        disableOtherCoupons(couponName);
-        copyToClipboard(couponName);
-        document.getElementById("inputCoupon").value = couponName;
-        document.getElementById('useButton_' + couponName).style.display = 'none';
-        document.getElementById('cancelButton_' + couponName).style.display = 'block';
-        usedCoupon = couponName;
-    }
-
-   const cancelCoupon = async (couponName) =>{
-        enableAllCoupons();
-        document.getElementById('useButton_' + couponName).style.display = 'block';
-        document.getElementById('cancelButton_' + couponName).style.display = 'none';
-        usedCoupon = null;
-        window.location.reload();
-    }
-    function disableOtherCoupons(excludeCoupon) {
-        var couponButtons = document.querySelectorAll('.use-button');
-        couponButtons.forEach(function (button) {
-            var couponName = button.id.replace('useButton_', '');
-            if (couponName !== excludeCoupon) {
-                button.disabled = true;
-            }
-        });
-    }
-
-    function enableAllCoupons() {
-        var couponButtons = document.querySelectorAll('.use-button');
-        couponButtons.forEach(function (button) {
-            button.disabled = false;
-        });
-    }
-    </script>
+</script>
 
 <%- include("../../views/partials/user/footer") %>
 

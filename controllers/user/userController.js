@@ -48,8 +48,9 @@ const loadHomePage = async(req,res) => {
 
 const loadLoginPage = async(req,res) => {
     try{
-       
-            return res.render('login');
+        return res.render('login',{
+            user: req.session.user || null
+        });
     }catch(err){
         res.redirect('/pageNotFound');
     }
@@ -70,6 +71,8 @@ const login = async(req,res) => {
             return res.render("login",{message:"Incorrect Password"});
         }
         req.session.user = findUser;
+        // Pass user to all views using res.locals
+        res.locals.user = req.session.user;
         res.redirect('/');
     }catch(err){
         console.error("Login error",err);
@@ -130,6 +133,7 @@ const signup = async(req,res) => {
         if(findUser){
             return res.render('signup',{message:"Email already exists"});
         }
+        console.log
 
         const otp = generateOtp();
 

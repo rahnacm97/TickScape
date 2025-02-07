@@ -3,31 +3,38 @@ const {Schema} = mongoose;
 const {v4:uuidv4} = require('uuid');
 
 const orderSchema = new Schema({
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
     orderId: {
         type: String,
         default: () => uuidv4(),
         unique: true
     },
-    orderedItems: [{
-        product: {
+    productId: {
             type: Schema.Types.ObjectId,
             ref: "Product",
             required: true
-        },
-        quantity: {
+    },
+    quantity: {
             type: Number,
             required: true
-        },
-        price: {
+    },
+    price: {
             type: Number,
             default: 0
-        }
-    }],
+    },
     totalPrice: {
         type: Number,
         required: true
     },
     discount: {
+        type: Number,
+        default: 0
+    },
+    shipping: {
         type: Number,
         default: 0
     },
@@ -37,16 +44,17 @@ const orderSchema = new Schema({
     },
     address: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Address',
         required: true
     },
     invoiceDate: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     status: {
         type: String,
         required: true,
-        enum: ["Delivered","Shipped","Cancelled","Intransit"]
+        enum: ["Delivered","Shipped","Cancelled","Intransit","Processing"]
     },
     createdOn: {
         type: Date,
@@ -56,6 +64,11 @@ const orderSchema = new Schema({
     couponApplied: {
         type: Boolean,
         default: false
+    },
+    paymentMethod: {
+        type: String,
+        required: false,
+        enum: ["Credit Card", "Online Payment","Wallet", "Cash on Delivery", "Bank Transfer"]
     }
 })
 

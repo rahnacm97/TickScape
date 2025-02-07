@@ -20,23 +20,25 @@
 }
 
 .page-header.breadcrumb-wrap {
-    background-color: #eee2e9;
+    margin-top: 10px;
+    background-color: #ede9ec;
     padding: 10px 0;
 }
 
 .breadcrumb-wrap {
-  padding: 15px 0;
-  background-color: #1e918b;
-  color: #fff;
+    padding: 15px 0;
+    background-color: #1e918b;
+    color: #fff;
 }
 
 .breadcrumb a {
-  color: #221e1e;
-  text-decoration: none;
+    color: #088178;
+    text-decoration: none;
 }
 
 .breadcrumb span {
-  margin: 0 5px;
+    margin: 0 5px;
+    color: rgb(125, 124, 124);
 }
 
 .shop-topbar {
@@ -407,11 +409,18 @@
         console.log("response is",response);
         if(response.status){
           Swal.fire({
-            title:'Added to Cart',
-            text: response.message || 'The product has been added to your cart.',
-            icon: 'success',
-            timer: 2000
-          })
+                    title: 'Added to Cart',
+                    text: response.message || 'The product has been added to your cart.',
+                    icon: 'success',
+                    timer: 2000,
+                    showCancelButton: true, 
+                    confirmButtonText: 'Go to Cart', 
+                    cancelButtonText: 'Okay!', // 
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/cart';
+                    }
+                });
         }else{
           Swal.fire({
             title: 'Already in Cart',

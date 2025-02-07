@@ -1,5 +1,6 @@
 const User = require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
+const Order = require('../../models/orderSchema');
 const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
@@ -162,11 +163,17 @@ const postNewPassword = async(req,res) => {
 const userProfile = async(req,res) => {
     try {
         const userId = req.session.user;
+        //console.log("User ID:", userId);
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({userId:userId});
+        const orders = await Order.find({ userId: userId }).populate('productId').exec();
+
+        console.log("Fetched Orders:", orders);
+
         res.render('profile',{
             user:userData,
             userAddress:addressData,
+            orders,
         })
     } catch (error) {
         console.error("Error retriving user profile",error);

@@ -7,10 +7,16 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 <style>
-
+.products {
+    border: 2px solid #ddd; 
+    border-radius: 10px; 
+    padding: 20px; 
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
 .page-header.breadcrumb-wrap {
     margin-top: 10px;
-    background-color: #eee2e9;
+    background-color: #ede9ec;
     padding: 10px 0;
 }
 
@@ -21,14 +27,14 @@
 }
 
 .breadcrumb a {
-    color: #221e1e;
+    color: #088178;
     text-decoration: none;
 }
 
 .breadcrumb span {
     margin: 0 5px;
+    color: rgb(125, 124, 124);
 }
-
 .table-shopping-summery {
     width: 100%;
     border-collapse: collapse;
@@ -36,6 +42,7 @@
 
 .table-shopping-summery th,
 .table-shopping-summery td {
+    font-size: 10px;
     padding: 10px;
     text-align: center;
 }
@@ -51,7 +58,7 @@
 
 .table-shopping-summery .btn {
     padding: 8px 16px;
-    font-size: 14px;
+    font-size: 12px;
     text-transform: uppercase;
     cursor: pointer;
 }
@@ -115,35 +122,38 @@
        </div>
    </div>
 
-   <section class="mt-50 mb-50">
+   <section class="mt-10 mb-50">
        <div class="container">
            <div class="row">
-               <div class="col-12">
+               <div class="col-12 products">
                    <div class="table-responsive">
-                       <table class="table shopping-summery text-center clean">
-                           <thead>
-                               <tr class="main-heading">
-                                   <th scope="col">Image</th>
-                                   <th scope="col">Name</th>
-                                   <th scope="col">Price</th>
-                                   <th scope="col">Add to Cart</th>
-                                   <th scope="col">Remove</th>
+                       <table class="table shopping-summery text-center clean" style="font-size: 15px; border: 1px solid #e6e1e1;
+    border-collapse: collapse;">
+                           <thead style="border: 1px solid #e6e1e1;">
+                               <tr class="main-heading" style="border: 1px solid #e6e1e1;">
+                                   <th scope="col" style="border: 1px solid #e6e1e1;">Sl. No</th>
+                                   <th scope="col" style="border: 1px solid #e6e1e1;">Image</th>
+                                   <th scope="col" style="border: 1px solid #e6e1e1;">Name</th>
+                                   <th scope="col" style="border: 1px solid #e6e1e1;">Price</th>
+                                   <th scope="col" style="border: 1px solid #e6e1e1;">Add to Cart</th>
+                                   <th scope="col" style="border: 1px solid #e6e1e1;">Remove</th>
                                </tr>
                            </thead>
-                           <tbody>
+                           <tbody style="font-size: 12px; border: 1px solid #e6e1e1;">
                              <% if(wishlist.length > 0){ %>
-                               <% for(let product of wishlist){ %>
+                               <% wishlist.forEach((product, index) => { %>
                                        <tr>
-                                           <td class="image product-thumbnail">
+                                           <td style="border: 1px solid #e6e1e1;" class="py-5"><%= index + 1 %></td>
+                                           <td class="image product-thumbnail" style="border: 1px solid #e6e1e1;">
                                                <img src="http://localhost:3000/<%= product.productImage[0]%>" />
                                            </td>
-                                           <td class="product-des product-name">
-                                               <h5 class="product-name">
+                                           <td class="product-des product-name py-4" style="border: 1px solid #e6e1e1; ">
+                                               <p class="product-name">
                                                    <a href="">
                                                       <%= product.productName %>
                                                    </a>
-                                               </h5>
-                                               <p class="font-xs">
+                                                </p>
+                                               <p class="font-xxs">
                                                 <%= product.category.name %> <br/>
                                                 <% if (product.brand && product.brand.brandName) { %>
                                                     <span> Brand: <%= product.brand.brandName %> </span>
@@ -151,19 +161,19 @@
                                             
                                             </p>
                                            </td>
-                                           <td class="price" data-title="Price">$<span>
+                                           <td class="price py-5" data-title="Price" style="border: 1px solid #e6e1e1;">$<span>
                                              <%= product.salePrice %>
                                            </span></td>
-                                           <td class="text-center" data-title="Add to Cart">
-                                               <a href="#" onclick="" class="btn btn-sm">Add to Cart</a>
+                                           <td class="text-center py-5 px-4" data-title="Add to Cart" style="border: 1px solid #e6e1e1; width:100px">
+                                               <a href="#" onclick="addToCart('<%= product._id %>')" class="btn btn-sm">Add to Cart</a>
                                            </td>
-                                           <td class="action" data-title="Remove">
+                                           <td class="action py-5" data-title="Remove" style="border: 1px solid #e6e1e1;">
                                                <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= product._id %>')">
                                                    <i class="fi-rs-trash"></i>
                                                </a>
                                            </td>
                                        </tr>
-                                       <%}%>
+                                       <% }) %>
                                        <%} else {%>
                                    <tr>
                                         <td colspan="5" class="text-center">
@@ -196,7 +206,55 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    
+    function addToCart(productId) {
+   $.ajax({
+      url: '/addToCart',
+      method: 'POST',
+      data: { productId: productId },
+      success: (response) => {
+         console.log("response is", response);
+         if (response.status) {
+            Swal.fire({
+               title: 'Added to Cart',
+               text: response.message || 'The product has been added to your cart.',
+               icon: 'success',
+               timer: 2000,
+               showCancelButton: true,
+               confirmButtonText: 'Go to Cart',
+               cancelButtonText: 'Okay!',
+               customClass: {
+                  popup: 'swal-popup-custom',  // Custom class for popup
+               }
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  window.location.href = '/cart';
+               }
+            });
+         } else {
+            Swal.fire({
+               title: 'Already in Cart',
+               text: response.message || 'This product is already in your cart.',
+               icon: 'info',
+               timer: 2000,
+               customClass: {
+                  popup: 'swal-popup-custom',  // Custom class for popup
+               }
+            });
+         }
+      },
+      error: (error) => {
+         Swal.fire({
+            title: 'Error',
+            text: 'There was an error adding cart',
+            icon: 'error',
+            timer: 2000,
+            customClass: {
+               popup: 'swal-popup-custom',  // Custom class for popup
+            }
+         });
+      }
+   });
+}
     function confirmRemove(productId){
         Swal.fire({
             title: 'Are you sure?',

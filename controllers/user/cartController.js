@@ -6,6 +6,7 @@ const Cart = require("../../models/cartSchema");
 const Order = require("../../models/orderSchema");
 const env = require("dotenv").config();
 const session = require("express-session");
+const { default: mongoose } = require("mongoose");
 
 const getCartPage = async (req, res) => {
   try {
@@ -25,8 +26,10 @@ const getCartPage = async (req, res) => {
       populate: [{ path: "category", select: "name" }, { path: "brand", select: "brandName" }]
     });
 
-    if (!carts) {
-      return res.render('cart', { carts: [], totalPrice: 0, cart: carts });
+    if (!carts || carts.items.length === 0) {
+      return res.render('cart', { carts: [], total: 0, cart: carts , user: req.session.user, data: [], cart: null, 
+        currentPage: 1, 
+        totalPages: 1});
     }
 
     const paginatedItems = carts.items.slice(skip, skip + limit);
@@ -94,8 +97,8 @@ const addToCart = async (req, res) => {
           return res.status(400).json({ status: false, message: `Only ${product.quantity} units are available` });
         }
 
-        if (existingProduct.quantity + 1 > 5) {
-          return res.status(400).json({ status: false, message: "You cannot add more than 5 units of this product" });
+        if (existingProduct.quantity + 1 > 3) {
+          return res.status(400).json({ status: false, message: "You cannot add more than 3 units of this product" });
         }
 
         existingProduct.quantity += 1;
@@ -123,11 +126,15 @@ const addToCart = async (req, res) => {
 const changeQuantity = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-
     const parsedQuantity = parseInt(quantity);
 
-    if (!productId || isNaN(parsedQuantity)) {
-      return res.status(400).json({ error: "Product ID and valid quantity are required" });
+    // Validate inputs
+    if (!productId || isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      return res.status(400).json({ error: "Valid Product ID and quantity greater than 0 are required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ error: "Invalid Product ID" });
     }
 
     const cart = await Cart.findOne({ userId: req.session.user._id });
@@ -145,21 +152,40 @@ const changeQuantity = async (req, res) => {
       return res.status(404).json({ error: "Product not found in inventory" });
     }
 
+    // Use the salePrice or regularPrice
+    const price = product.salePrice || product.regularPrice;
+
+    // Validate product price
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ error: "Invalid product price" });
+    }
+
+    // Update item and calculate totalPrice
     item.quantity = parsedQuantity;
-    item.totalPrice = parsedQuantity * product.price;
+    item.totalPrice = parsedQuantity * price;
+
+    // Validate totalPrice
+    if (isNaN(item.totalPrice) || item.totalPrice <= 0) {
+      return res.status(400).json({ error: "Invalid total price for the item" });
+    }
 
     await cart.save();
-    const cartitemcount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
-    res.status(200).json({
-      newTotalPrice: item.totalPrice,quantity:item.quantity,
-      cartitemcount,
+    // Calculate the grand total
+    const grandTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
+
+    return res.status(200).json({
+      message: "Cart updated successfully",
+      updatedCart: cart,
+      grandTotal: grandTotal,
     });
   } catch (error) {
     console.error("Error updating cart:", error);
     res.status(500).json({ error: "Failed to update cart", details: error.message });
   }
 };
+
+
 
 const deleteProduct = async (req, res) => {
   try {
@@ -210,19 +236,10 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const getCheckout = async (req, res) => {
-  try {
-    res.render('checkout-cart');
-  } catch (error) {
-    res.redirect("/pageNotFound");
-  }
-};
-
 
 module.exports = { 
   getCartPage,
   addToCart,
   changeQuantity,
   deleteProduct,
-  getCheckout,
 }

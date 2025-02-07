@@ -5,6 +5,8 @@ const userController = require('../controllers/user/userController');
 const profileController = require('../controllers/user/profileController');
 const productController = require('../controllers/user/productController');
 const cartController = require("../controllers/user/cartController");
+const checkoutController = require("../controllers/user/checkoutController");
+const orderController = require("../controllers/user/orderController");
 const wishlistController = require('../controllers/user/wishlistController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
@@ -18,10 +20,32 @@ router.post('/signup',userController.signup);
 router.post('/verify-otp',userController.verifyOtp);
 router.post('/resend-otp',userController.resendOtp);
 router.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}));
-router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/signup'}),(req,res) => {
-    res.locals.user = req.user;
-    res.redirect('/');
+// router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/signup'}),(req,res) => {
+//      const user = req.session.user;
+//         //req.session.user = findUser;
+//         // Pass user to all views using res.locals
+//         res.locals.user = req.session.user;
+//     console.log("user");
+//     res.redirect('/');
+// });
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.redirect('/signup');
+        }
+        
+        req.session.user = user; 
+        res.locals.user = req.session.user;
+        
+        console.log("User logged in:", user);
+        res.redirect('/');
+    } catch (err) {
+        console.error("Google OAuth Error:", err);
+        res.redirect('/signup');
+    }
 });
+
 
 //Login Management && Home
 router.get('/',userController.loadHomePage);
@@ -68,7 +92,16 @@ router.get("/cart",userAuth,cartController.getCartPage);
 router.post("/addToCart",userAuth,cartController.addToCart);
 router.post("/changeQuantity",userAuth,cartController.changeQuantity);
 router.get("/deleteProduct",userAuth,cartController.deleteProduct);
-router.get("/checkout",userAuth,cartController.getCheckout);
+
+// CheckOut Management
+router.get("/checkout",userAuth,checkoutController.getCheckout);
+//router.get("/deleteItem", userAuth,checkoutController.deleteProduct);
+router.post('/placeOrder',userAuth,checkoutController.placeOrder);
+
+//Order Mangement
+router.get("/orderDetails",userAuth,orderController.getConfirmation);
+router.get('/viewOrder',userAuth,orderController.viewOrder);
+
 
 //Wishlist Management
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);

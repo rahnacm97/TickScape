@@ -8,16 +8,11 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: '/auth/google/callback',
 },
-async (accessToken,refreshToken,profile,done) => {
-    try{
+async (accessToken, refreshToken, profile, done) => {
+    try {
         let user = await User.findOne({ $or: [{ googleId: profile.id }, { email: profile.emails[0].value }] });
-        //let user = await User.findOne({googleId:profile.id});
-        // if(user){
-        //     return done(null,user);
-        // }
+
         if (user) {
-    
-            //if (!user.googleId && profile.id) {
             if (!user.googleId) {
                 user.googleId = profile.id;
                 await user.save();
@@ -27,30 +22,31 @@ async (accessToken,refreshToken,profile,done) => {
                 await user.save();
             }
             return done(null, user);
-        }
-        else{
+        } else {
             if (!profile.id) {
                 return done(new Error("Google ID is missing, cannot create user"), null);
             }
-            //const googleId = profile.id || "defaultGoogleId";
 
+            let fullName = profile.displayName;
+            let nameParts = fullName.split(" ");
+            
             user = new User({
-
-                fname: profile.displayName,
-                lname: profile.displayName,
+                fname: nameParts[0], 
+                lname: nameParts.length > 1 ? nameParts.slice(1).join(" ") : "A",
                 email: profile.emails[0].value,
-                googleId: profile.id,  
+                googleId: profile.id,
             });
 
             await user.save();
             return done(null, user);
         }
-    }catch(error){
+    } catch (error) {
         console.error("Error during Google OAuth:", error);
-        return done(error,null)
+        return done(error, null);
     }
 }
 ));
+
 
 passport.serializeUser((user,done) => {
     done(null,user.id)
