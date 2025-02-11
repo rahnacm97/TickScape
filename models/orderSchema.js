@@ -54,11 +54,13 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ["Delivered","Shipped","Cancelled","Intransit","Processing"]
+        default: 'Order Placed',
+        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned'],      
     },
     createdOn: {
         type: Date,
-        default: Date.now,
+        // default: Date.now,
+        default: () => new Date().toISOString().slice(0, 19) + "Z",
         required: true
     },
     couponApplied: {
@@ -69,7 +71,17 @@ const orderSchema = new Schema({
         type: String,
         required: false,
         enum: ["Credit Card", "Online Payment","Wallet", "Cash on Delivery", "Bank Transfer"]
-    }
+    },
+    cancellationReason: {
+        type: String,
+        default: null
+    },
+    trackingHistory: [
+        {
+            date: { type: Date, default: Date.now },
+            status: { type: String, required: true }
+        }
+    ]
 })
 
 const Order = mongoose.model("Order",orderSchema);

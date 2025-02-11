@@ -339,12 +339,10 @@ body {
                           <span class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">❤️</span>
     
                       </div>
-
-
                       <div class="product-content-wrap">
                           <h6><%=products[i].productName%></h6>
-                          <h5>$<%=products[i].salePrice%></h5>
-                          <a href="/addToCart?id=<%=products[i]._id%>">Add To Cart</a>
+                          <h5>$<%=products[i].salePrice%></h5>      
+                          <a><button class="add-to-cart-btn" onclick="addToCart('<%= products[i]._id %>')" style="background-color: #ff6b6b; border: none;">Add to Cart</button></a>
                       </div>
                   </div>
               </div>
@@ -389,7 +387,46 @@ body {
         }
       })
     }
-
+    function addToCart(productId){
+    $.ajax({
+      url:'/addToCart',
+      method:'POST',
+      data: {productId: productId},
+      success: (response) => {
+        console.log("response is",response);
+        if(response.status){
+          Swal.fire({
+                    title: 'Added to Cart',
+                    text: response.message || 'The product has been added to your cart.',
+                    icon: 'success',
+                    timer: 2000,
+                    showCancelButton: true, 
+                    confirmButtonText: 'Go to Cart', 
+                    cancelButtonText: 'Okay!', // 
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/cart';
+                    }
+                });
+        }else{
+          Swal.fire({
+            title: 'Already in Cart',
+            text: response.message || 'This product is already in your cart.',
+            icon:'info',
+            timer: 2000
+          })
+        }
+      },
+      error: (error) => {
+        Swal.fire({
+            title: 'Error',
+            text: 'There was an error adding cart',
+            icon:'error',
+            timer: 2000
+          })
+      }
+    })
+  }
 
   </script>
 <%- include("../../views/partials/user/footer") %>

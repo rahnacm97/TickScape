@@ -813,7 +813,7 @@ h5.widget-title {
 /*COMPONENTS -> BUTTONS*/
 .btn-default {
   color: #fff;
-  background-color: #088178;
+  background-color: #368108;
   border-radius: 50px;
   padding: 13px 28px;
 }
@@ -872,8 +872,8 @@ h5.widget-title {
 }
 
 .btn-brand {
-  background-color: #088178;
-  border-color: #088178;
+  background-color: #088157;
+  border-color: #088155;
 }
 
 button.submit, button[type='submit'] {

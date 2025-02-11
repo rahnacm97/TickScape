@@ -78,10 +78,11 @@ router.get('/deleteAddress',userAuth,profileController.deleteAddress);
 
 //Shopping Management
 router.get('/shop',userController.loadShoppingPage);
+//router.get('/filter',userAuth,userController.filterAndSortProducts);
 router.get('/filter',userAuth,userController.filterProducts);
-router.get('/filterPrice',userAuth,userController.filterByPrice);
-router.get('/sort',userAuth,userController.getSortProduct);
-router.get('/sortProducts',userAuth,userController.sortProducts);
+// router.get('/filterPrice',userAuth,userController.filterByPrice);
+// router.get('/sort',userAuth,userController.getSortProduct);
+// router.get('/sortProducts',userAuth,userController.sortProducts);
 router.post('/search',userAuth,userController.searchProducts);
 
 //Product Management
@@ -100,7 +101,8 @@ router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 
 //Order Mangement
 router.get("/orderDetails",userAuth,orderController.getConfirmation);
-router.get('/viewOrder',userAuth,orderController.viewOrder);
+router.get('/viewOrder/:orderId',userAuth,orderController.viewOrder);
+router.delete('/cancelOrder/:orderId', userAuth,orderController.cancelOrder);
 
 
 //Wishlist Management

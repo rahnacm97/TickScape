@@ -43,13 +43,6 @@
             margin-right: 2rem;
         }
 
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: black;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
         .error-section {
             background-color: white;
             padding: 2rem;
@@ -83,22 +76,17 @@
         .back-link:hover {
             text-decoration: underline;
         }
-
-        .logo-text {
-            font-size: 1.2rem;
-            margin-top: 1rem;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="content-wrapper">
             <div class="logo-section">
-                <img src="assets\img\logo\tslogo2.png" alt="image">
+                <img src="/assets/img/logo/tslogo2.png" alt="image">
             </div>
             <div class="error-section">
                 <div class="error-code">404</div>
-                <div class="error-message">Page Not Found...!</div>
+                <div class="error-message"><%= message || "Page Not Found...!" %></div>
                 <div class="error-text">
                     Check the address or <a href="/" class="back-link">go back</a>
                 </div>

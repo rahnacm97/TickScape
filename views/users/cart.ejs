@@ -352,7 +352,16 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
     const newQuantity = currentQuantity + count;
 
     // Prevent quantity going below 1 or above stock limit
-    if (newQuantity < 1 || newQuantity > 3) {
+    if (newQuantity < 1) {
+    Swal.fire({
+        title: 'Invalid Quantity!',
+        text: 'You must add at least 1 item to your cart.',
+        icon: 'error',
+        timer: 5000
+    });
+    return;
+}
+    if (newQuantity > 3) {
         Swal.fire({
             title: 'Limit Exceeded!',
             text: 'You can only add up to 3 items to your cart.',

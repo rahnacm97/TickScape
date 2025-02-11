@@ -28,10 +28,17 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
 
 app.set('view engine','ejs');
 app.set('views',[path.join(__dirname,'views/users'),path.join(__dirname,'views/admin')]);
 app.use(express.static(path.join(__dirname,'public')));
+app.use('/viewOrder/assets', express.static(path.join(__dirname, 'public/assets')));
+app.use('/viewOrder/user-assets', express.static(path.join(__dirname, 'public/user-assets')));
+
 
 app.use('/',userRouter);
 app.use('/admin',adminRouter);

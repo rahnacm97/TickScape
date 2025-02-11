@@ -1,0 +1,111 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+  body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container1 {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .order-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: rgb(30, 30, 30);
+        }
+        .order-info {
+            padding: 20px;
+            border-radius: 4px;
+            background-color: #f5f7f5;
+            margin-bottom: 15px;
+        }
+        .order-detail {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .order-detail span {
+            font-weight: bold;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+    .page-header.breadcrumb-wrap {
+    margin-top: 10px;
+    background-color: #ede9ec;
+    padding: 15px 0;
+  }
+
+  .breadcrumb-wrap {
+    padding: 15px 0;
+    background-color: #1e918b;
+    color: #fff;
+  }
+
+  .breadcrumb a {
+    color: #088178;
+    text-decoration: none;
+  }
+
+  .breadcrumb span {
+    margin: 0 5px;
+    color: rgb(125, 124, 124);
+  }
+</style>
+<main class="main">
+    <section class="pt-10 pb-10">
+        <div class="page-header breadcrumb-wrap">
+          <div class="container">
+            <div class="breadcrumb">
+              <a href="/" rel="nofollow">Home</a>
+              <span></span> <a href="/shop" rel="nofollow">Shop</a> <span></span>
+              <a href="/cart" rel="nofollow">Cart</a> <span></span>
+              Order Details
+            </div>
+          </div>
+        </div>
+    <div class="container1">
+      <div class="order-header">Order Details</div>
+      
+      <div class="order-info"> 
+          <div class="image container">Image</div>
+          <div class="order-detail"><span>Order ID:</span> <%= order._id %> </div>
+          <div class="order-detail"><span>Product Name:</span> P-PLUS INTERNATIONAL Spatula</div>
+          <div class="order-detail"><span>Quantity:</span> 1</div>
+          <div class="order-detail"><span>Price per Unit:</span> ₹220</div>
+          <div class="order-detail"><span>Total Price:</span> ₹220</div>
+          <div class="order-detail status confirmed">Order Confirmed, Today, Feb 07</div>
+          <div class="order-detail status cancelled">Cancelled, Today, Feb 07</div>
+          <div class="order-detail"><span>Final Amount:</span> ₹0 (Cancelled)</div>
+      </div>
+      <a href="/orders" class="btn">Back to Orders</a>
+  </div>
+</section>
+  </main>
+<%- include("../../views/partials/user/footer") %>

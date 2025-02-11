@@ -1,9 +1,227 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-     .page-header.breadcrumb-wrap {
+  /* Other Products Section */
+  .text-danger {
+    color: red;
+}
+.text-default {
+    color: black;
+}
+.otherItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 1150px;
+  margin: 20px auto;
+  font-size: 12px;
+
+    /* max-width: 1150px;
+    margin-top: 20px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); */
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* List Styling */
+.list {
+    width: 1100px;
+    list-style: none;
+    padding: 0;
+}
+
+.list li {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Product Image */
+.list li img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+/* Product Details */
+.list li p {
+    font-size: 14px;
+    margin: 3px 0;
+    color: #333;
+    flex: 1;
+}
+
+/* Bold Labels */
+.list li p strong {
+    color: #555;
+}
+
+/* Status Colors */
+.text-danger {
+    color: red;
+    font-weight: bold;
+}
+
+.text-success {
+    color: green;
+    font-weight: bold;
+}
+
+/* Divider */
+hr {
+    border: 0;
+    height: 1px;
+    background: #ddd;
     margin-top: 10px;
-    background-color: #ede9ec;
-    padding: 10px 0;
+}
+
+  body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+      /* General Styling */
+.container1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 1150px;
+  margin: 20px auto;
+  font-size: 12px;
+}
+.container2 {
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 1150px;
+  margin: 20px auto;
+  font-size: 12px;
+}
+
+
+/* Image Styling */
+.image.container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.image.container img {
+  width: auto;
+  height: 400px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* Order Info Styling */
+.order-info {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: Arial, sans-serif;
+}
+
+.order-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.order-detail {
+  font-size: 16px;
+  color: #555;
+  display: flex;
+  /* justify-content: space-between; */
+  border-bottom: 1px solid #ddd;
+  padding: 5px 0;
+}
+
+.order-detail span {
+  font-weight: bold;
+  color: #000;
+}
+
+/* Address Styling */
+.order-detail div {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Buttons */
+.btn1-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 15px;
+  margin: 10px 5px;
+  text-decoration: none;
+  color: #fff;
+  background: #007bff;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+
+.btn-sm {
+  background: #dc3545;
+}
+
+.btn-sm:hover {
+  background: #c82333;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container1 {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .image.container {
+    max-width: 100%;
+  }
+}
+
+ .page-header .breadcrumb-wrap {
+    margin-top: 10px;
+    padding: 15px 0;
   }
 
   .breadcrumb-wrap {
@@ -21,59 +239,299 @@
     margin: 0 5px;
     color: rgb(125, 124, 124);
   }
+  /* Tracking Information Section */
+/* Tracking Information Section */
+.tracking-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 30px 0;
+  padding: 20px;
+  width: 80%;
+  margin: auto;
+  font-size: 12px;
+}
+
+/* Status-specific colors */
+.order-placed { color: blue; }
+.processing { color: orange; }
+.cancelled { color: red; }
+.shipped { color: purple; }
+.out-for-delivery { color: darkgreen; }
+.delivered { color: green; }
+
+/* Completed steps */
+.completed {
+    font-weight: bold;
+}
+
+.completed-circle {
+    background-color: green !important;
+    color: white !important;
+}
+
+.cancelled .circle {
+    background-color: red !important;
+    color: white !important;
+}
+
+.tracking-step {
+  text-align: center;
+  flex: 1;
+  position: relative;
+  font-size: 12px;
+}
+
+.tracking-step .circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ccc;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  font-size: 12px;
+}
+
+/* Connector Line */
+.tracking-step::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background-color: #ccc;
+  top: 50%;
+  left: -50%;
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+.tracking-step:first-child::before {
+  display: none;
+}
+.tracking-step small {
+    display: block;
+    position: absolute;
+    font-size: 12px;
+    margin-left: 50px;
+    line-height: 1; /* Improves readability */
+}
 </style>
-<body>
-    <section class="content-main">
-        <div class="page-header breadcrumb-wrap">
+<main class="main">
+    <section class="pt-10 pb-10">
+        <div class="page-header breadcrumb-wrap" style="background-color: #ede9ec;">
           <div class="container">
             <div class="breadcrumb">
               <a href="/" rel="nofollow">Home</a>
-              <span></span> <a href="/shop" rel="nofollow">Shop</a> <span></span>
-              <a href="/cart" rel="nofollow">Cart</a> <span></span>
+              <span></span> <a href="/userProfile" rel="nofollow">Profile</a> <span></span>
+              <!-- <a href="/cart" rel="nofollow">Cart</a> <span></span> -->
               Order Details
             </div>
           </div>
         </div>
-       <div class="container mt-10">
-        <h2>Order Details</h2>
+        <div class="order-item">
+          <div class="order-header" style="margin-left: 20px;margin-top: 20px;">Order Details</div>
+          <div class="container1">
+            <div class="image container">
+              <img src="http://localhost:3000/<%= order.productId.productImage[0] %>" alt="Image">
+            </div>
+            <div class="order-info">          
+              <div class="order-detail"><span>Order ID:</span> <%= order._id%></div>
+              <div class="order-detail"><span>Product Name: <%= order.productId.productName %></span></div>
+              <div class="order-detail"><span>Brand:</span> <%= order.productId.brand.brandName %></div>
+              <div class="order-detail"><span>Category:</span> <%= order.productId.category.name %></div>
+              <div class="order-detail"><span>Quantity:</span> <%= order.quantity %></div>
+              <div class="order-detail"><span>Price per Unit:</span> $<%= order.productId.salePrice %></div>
+              <div class="order-detail"><span>Total Price:</span> $<%= order.totalPrice %></div>
+              <div class="order-detail">
+                <span>Invoice Date:</span> 
+                <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %>
+              </div>
+              <div class="order-detail"><span>Final Amount:</span> $<%= order.finalAmount %></div>
+              <div class="order-detail"><span>Order Status:</span> <%= order.status %></div>
+              <div class="order-detail">
+                <span>Deliver To: <%= address.name %></span>           
+                <div style="margin-top: 20px;">
+                  <p class="address"><strong><%= address.addressType %></strong></p>
+                  <p class="address"><%= address.city%>, <%= address.state%>,<br>
+                    <%= address.landMark%>, <%= address.pincode%>,<br>
+                    <%= address.phone%>, <%= address.altPhone%>
+                  </p>
+                </div>
+              </div>       
+            </div>
+          </div>  
+          
+          <!-- Tracking Information Section -->
+          <div class="tracking-info">
+            <h3 style="margin-left: 20px; margin-top: 20px;">Track Your Order</h3>
+            <div class="container2">
+                <div>
+                    <p><strong class="status">Current Status:</strong> <span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
+                </div>
+              <div class="tracking-progress">
+                <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"]; %>
+                
+                <% let latestStatusEntry = trackingHistory[trackingHistory.length - 1]; %>
+                <% let currentIndex = statuses.indexOf(latestStatusEntry?.status || order.status); %>
+                <% const isCancelled = order.status === "Cancelled"; %>
+            
+                <% if (isCancelled) { %>
+                    <div class="tracking-step completed cancelled">
+                        <div class="circle" style="background-color: red; color: white;">X</div>
+                        <p>Cancelled</p>
+                    </div>
+                <% } else { %>
+                    <% statuses.forEach((step, index) => { 
+                        let trackingEntry = trackingHistory.find(entry => entry.status === step);
+                    %>
+                        <div class="tracking-step <%= index <= currentIndex ? 'completed' : '' %> <%= step.toLowerCase().replace(/\s+/g, '-') %>">
+                            <div class="circle <%= index <= currentIndex ? 'completed-circle' : '' %>">
+                                <%= index + 1 %>
+                            </div>
+                            <p><%= step %></p>
+                            <% if (trackingEntry) { %>
+                                <small><%= new Date(trackingEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></small>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+            
+            <% if (expectedDeliveryDate) { %>
+                <div class="expected-delivery">
+                    <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+                </div>
+            <% } %>
+            
+          
+              <div class="order-status">
+              <% if (order.status === 'Order Placed') { %>
+                <p style="color: rgb(0, 42, 255);">Your order has been placed.</p>
+                <% } else if (order.status === 'Processing') { %>
+                  <p style="color: orange;">Your order is still being processed. Please check back later for updates.</p>
+              <% } else if (order.status === 'Shipped') { %>
+                <p style="color: rgb(109, 6, 213);">Your order has been shipped. You can expect delivery soon.</p>
+                <% } else if (order.status === 'Out for Delivery') { %>
+                  <p style="color: green;">Your order has been out for delivery!</p>
+              <% } else if (order.status === 'Delivered') { %>
+                <p style="color: rgb(6, 168, 6);">Your order has been delivered. Thank you for shopping with us!</p>
+                <% } else if (order.status === 'Cancelled') { %>
+                  <p style="color: rgb(241, 8, 8);">Your order has been Cancelled!</p>
+              <% } %>
+            </div>
+            </div>
+            
+        </div>        
+  
+</div>
         
+          <div class="btn1-container"> 
+            <a href="/userProfile" class="btn">Back to Orders</a>
+            <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= order._id %>')">
+              <i class="fa fa-times-circle"></i>Cancel This Item
+            </a>
+          </div>
+        </div>
         
-            <table>
-                <tr>
-                    <th>Order ID</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Product Name</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Quantity</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Price per Unit</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Total Price</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Final Amount</th>
-                    <td>/td>
-                </tr>
-            </table>
-        
-            <p>Order details not found.</p>
-        
-        
-        <a href="/orders" class="btn">Back to Orders</a>
-    </div>
-    </section>
-</body>
+<h3 style="margin-left: 20px;margin-top: 20px;">Other Products in this Order:</h3>
+<div class="otherItem">
+  <% if (orderItems.length > 0) { %>
+    <ul class="list">
+        <% orderItems.forEach(item => { %>
+            <li >
+              <p>
+                <a href="/viewOrder/<%= item._id %>">
+                    <img src="http://localhost:3000/<%= item.productDetail.productImage[0] %>" alt="<%= item.productDetail.productName %>">
+                </a>
+            </p>
+                <p><strong>Product Name:</strong> <%= item.productDetail.productName %></p>
+                <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                <p><strong>Price:</strong> $<%= item.price %></p>
+                <p><strong>Total Price:</strong> $<%= item.finalAmount %></p>
+                <p>
+                  <strong>Status:</strong> 
+                  <span class="<%= item.status === 'Cancelled' ? 'text-danger' : 'text-default' %>">
+                      <%= item.status %>
+                  </span>
+              </p>
+                <p><strong>Payment Method:</strong> <%= item.paymentMethod %></p>
+                <hr>
+            </li>
+        <% }) %>
+    </ul>
+<% } else { %>
+    <p>No other products in this order.</p>
+<% } %>
+</div>
+
+</div>
+</section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function confirmCancel(element, orderId) { 
+    console.log("Order ID to cancel:", orderId);  
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Please select a reason for cancellation:",
+        icon: "warning",
+        input: "select",
+        inputOptions: {
+            "Changed My Mind": "Changed My Mind",
+            "Found a Better Price": "Found a Better Price",
+            "Item No Longer Needed": "Item No Longer Needed",
+            "Ordered by Mistake": "Ordered by Mistake",
+            "Other": "Other"
+        },
+        inputPlaceholder: "Select a reason",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Cancel it",
+        cancelButtonText: "No, Keep it",
+        preConfirm: (reason) => {
+            if (!reason) {
+                Swal.showValidationMessage("Please select a reason");
+                return false;
+            }
+            return reason;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send cancellation request using DELETE method
+            fetch(`/cancelOrder/${orderId}`, {  
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ reason: result.value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
+                        .then(() => {
+                            element.closest(".order-item").remove(); // Remove order from UI
+                        });
+                } else {
+                  Swal.fire({
+                  title: "Error",
+                  text: "You cannot cancel shipped orders.",
+                  icon: "error"
+                  });
+                }
+            })
+            .catch(error => {
+                console.error("Error cancelling order:", error);
+                Swal.fire("Error", "Something went wrong.", "error");
+            });
+        }
+    });
+}
+</script>
 <%- include("../../views/partials/user/footer") %>

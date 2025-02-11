@@ -65,9 +65,6 @@ section p {
 .clearfix:after {
     clear: both;
 }
-.clearfix {
-    *zoom: 1;
-}
 
 .tan {
   margin-bottom: 10px;

@@ -74,8 +74,8 @@ router.get('/deleteProduct',adminAuth,productController.deleteProduct);
 
 // Order Management
 router.get("/orderList", adminAuth, orderController.getOrderListPageAdmin)
-router.get("/orderDetailsAdmin", adminAuth, orderController.getOrderDetailsPageAdmin)
-router.get("/changeStatus", adminAuth, orderController.changeOrderStatus);
+router.get("/orderDetailsAdmin/:id", adminAuth, orderController.getOrderDetailsPageAdmin)
+router.post('/update-order-status',adminAuth,orderController.updateOrderStatus);
 
 
 //Banner Management

@@ -1,6 +1,35 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-
+  .small-card {
+    max-width: auto; /* Adjust width */
+    font-size: 12px; /* Reduce text size */
+}
+.small-card .card-body {
+    padding: 5px;
+}
+.small-card .price {
+    font-size: 14px;
+    font-weight: bold;
+}
+.small-card .btn-small1 {
+    font-size: 12px;
+    padding: 3px 8px;
+}
+.order-card {
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .price {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
   /* General Styles */
   body {
     font-family: 'Arial', sans-serif;
@@ -79,7 +108,7 @@
   .dashboard-menu .nav-link {
     font-size: 16px;
     font-weight: bold;
-    color: #3e53ca;
+    color: #0e0e12;
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 5px;
@@ -87,12 +116,12 @@
   }
 
   .dashboard-menu .nav-link.active {
-    background-color: #5b6dd5;
+    background-color: #089f7c;
     color: #fff;
   }
 
   .dashboard-menu .nav-link:hover {
-    background-color: #2b41be;
+    background-color: #048b6b;
     color: #fff;
   }
 
@@ -166,7 +195,7 @@
 
   .card-body {
     padding: 20px;
-    line-height: 1.6; /* Adds line spacing for better readability */
+    line-height: 1;
   }
 
   address {
@@ -392,69 +421,54 @@
                </div>
 
 
-               <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab" style="width: 800px;">
+               <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab" style="width: 800px; font-size: 12px;">
                  <div class="card">
                    <div class="card-header">
                      <h5 class="mb-0">My Orders</h5>
                    </div>
-                   <div class="card-body">
-                     <div class="table-responsive">
-                       <table class="table">
-                         <thead>
-                           <tr>
-                             <th>Sl. No</th>
-                             <th>Product Details</th>
-                             <th>Status</th>
-                             <th>Total</th>
-                             <th>Date
-
-                             </th>
-                             <th>Actions</th>
-                           </tr>
-                         </thead>
-                         <tbody>
-                          <% if (orders.length > 0) { %>
-                            <% orders.forEach((order, index) => { %>
-                                <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td>
-                                        <ul>
-                                            <% if (order.productId) { %>  <!-- Check if productId exists -->
-                                                <li>
-                                                    Product Name: <%= order.productId.productName %> <br> 
-                                                    Quantity: <%= order.quantity %> <br>
-                                                    Price: $<%= (order.quantity * order.price).toFixed(2) %>
-                                                </li>
-                                            <% } else { %>
-                                                <li>Product details not available</li>
-                                            <% } %>
-                                        </ul>
-                                    </td>
-                                    <td><%= order.status %></td>
-                                    <td>$<%= order.finalAmount.toFixed(2) %></td>
-                                    <td>
-                                      <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', {
-                                         weekday: 'short', 
-                                         month: 'short', 
-                                         day: 'numeric', 
-                                         year: 'numeric'
-                                      }) %>
-                                   </td>
-                                    <td>
-                                      <a href="/viewOrder" class="btn-small1 d-block">View</a>
-                                    </td>       
-                                </tr>
-                            <% }) %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="4">No orders found.</td>
-                            </tr>
-                        <% } %>
-                                                
-                        </tbody>                                                
-                       </table>
-                     </div>
-                   </div>
+                   <div class="container mt-4">
+                    <!-- <div class="search-bar mb-3">
+                      <input type="text" class="form-control" placeholder="Search your orders here">
+                    </div> -->
+                    
+                    <% if (orders.length > 0) { %>
+                      <% orders.forEach((order, index) => { %>
+                        <div class="card mb-2 p-2 order-card small-card">
+                          <div class="row g-0">
+                            <% if (order.productId) { %>
+                            <div class="col-md-2">                        
+                                <img src="<%= order.productImage[0] %>" class="img-fluid" alt="Default Image" style="height:100px;">
+                            </div>
+                            <div class="col-md-6">
+                              <div class="card-body">
+                                <h5 class="card-title"> </h5>
+                                <p class="card-text">Name: <%= order.productName || "N/A" %></p>
+                                <p class="card-text">Quantity: <%= order.quantity %></p>
+                                <p class="card-text">Price per unit: $<%= order.price %> </p> 
+                              </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                              <h5 class="price">Total: $<%= order.finalAmount %></h5>   
+                            </div>
+                            <div class="col-md-2 text-end">
+                              <% if (order.status === 'Cancelled') { %>
+                                <p class="text-danger"><strong>&#x2022; Cancelled on <%= new Date(order.invoiceDate).toDateString() %></strong></p>
+                                <p class="text-muted"><%= order.cancellationReason %></p>
+                              <% } else { %>
+                                <p class="text-success"><strong>Status: <%= order.status %></strong></p>
+                                
+                              <% } %>
+                              <a href="/viewOrder/<%= order.orderId %>" class="btn-small1 d-block">View</a>
+                            </div>
+                            <% } %>
+                          </div>
+                          
+                        </div>
+                      <% }) %>
+                    <% } else { %>
+                      <p>No orders found.</p>
+                    <% } %>
+                  </div>
                  </div>
                </div>
 

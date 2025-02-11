@@ -93,7 +93,7 @@ const placeOrder = async (req, res) => {
         return res.status(404).json({ error: `Product with ID ${item.product} not found.` });
       }
 
-      if (product.stock < item.quantity) {
+      if (product.quantity < item.quantity) {
         return res.status(400).json({ error: `Insufficient stock for product ${product.productName}.` });
       }
 
@@ -116,7 +116,7 @@ const placeOrder = async (req, res) => {
         shipping,
         finalAmount,
         address: fullAddress,
-        status,
+        status: status || "Order Placed",
         paymentMethod
       });
 
@@ -147,7 +147,7 @@ const placeOrder = async (req, res) => {
       previewOrder: previewOrder,
       discount: discount, // Also include discount at the object level
       address: fullAddress,
-      status: status,
+      status: status || "Order Placed",
       paymentMethod: paymentMethod,
       shipping: shipping,
       grandTotal: grandAmount,

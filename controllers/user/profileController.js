@@ -107,7 +107,8 @@ const verifyForgotPassOtp = async(req,res) => {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
             // res.render('reset-password');
-            res.json({success:true,redirectUrl:'/reset-password'});
+            req.session.user = req.session.user || {};
+            res.json({success:true,redirectUrl:'/reset-password',user: req.session.user});
         }else{
             res.json({success:false,message:"OTP does not match"});
         }
@@ -160,30 +161,84 @@ const postNewPassword = async(req,res) => {
     }
 }
 
-const userProfile = async(req,res) => {
+// const userProfile = async(req,res) => {
+//     try {
+//         const userId = req.session.user;
+//         //console.log("User ID:", userId);
+//         const userData = await User.findById(userId);
+//         const addressData = await Address.findOne({userId:userId});
+//         const orders = await Order.find({ userId: userId }).populate('productId').sort({ createdOn: -1 }).exec();
+
+//         console.log("Fetched Orders:", orders);
+
+//         res.render('profile',{
+//             user:userData,
+//             userAddress:addressData,
+//             orders,
+//         })
+//     } catch (error) {
+//         console.error("Error retriving user profile",error);
+//         res.redirect('/pageNotFound');
+//     }
+// }
+
+const userProfile = async (req, res) => {
     try {
-        const userId = req.session.user;
-        //console.log("User ID:", userId);
+        const userId = req.session.user._id;
         const userData = await User.findById(userId);
-        const addressData = await Address.findOne({userId:userId});
-        const orders = await Order.find({ userId: userId }).populate('productId').exec();
+        const addressData = await Address.findOne({ userId: userId });
+        
+        // Fetch orders with populated product details
+        const orders = await Order.find({ userId: userId })
+            .populate('productId')
+            .sort({ createdOn: -1 })
+            .exec();
 
-        console.log("Fetched Orders:", orders);
+        //console.log("Fetched Orders:", orders);
+        
+        const formattedOrders = orders.map(order => ({
+            // productId: {  
+            //     _id: order.productId._id,
+            //     productName: order.productId.productName
+            // },
+            productId: order.productId._id,
+            productName: order.productId.productName,
+            productImage:order.productId.productImage,
+            quantity: order.quantity,
+            price: order.price,
+            totalPrice: order.totalPrice,
+            discount: order.discount,
+            address: order.address,
+            status: order.status,
+            paymentMethod: order.paymentMethod,
+            shipping: order.shipping,
+            orderId: order._id,
+            finalAmount: order.finalAmount,
+            invoiceDate: order.invoiceDate
+        }));        
+       // console.log("formattedOrder",formattedOrders)
+        res.render('profile', {
+            user: userData,
+            userAddress: addressData,
+            orders: formattedOrders, // Pass the reformatted orders
+        });
+        // orders.forEach(order => {
+        //     console.log("Product ID:", order.productId.productName);
+        // });
 
-        res.render('profile',{
-            user:userData,
-            userAddress:addressData,
-            orders,
-        })
     } catch (error) {
-        console.error("Error retriving user profile",error);
+        console.error("Error retrieving user profile", error);
         res.redirect('/pageNotFound');
     }
-}
+};
+
 
 const changeEmail = async(req,res) => {
     try {
-        res.render('change-email');
+        res.render('change-email',{
+            user: req.session.user,
+        }
+        );
     } catch (error) {
         res.redirect('/pageNotFound');
     }
@@ -246,7 +301,9 @@ const updateEmail = async(req,res) => {
 
 const changePassword = async(req,res) =>{
     try {
-        res.render('change-password');
+        res.render('change-password',{
+            user: req.session.user,
+        });
     } catch (error) {
         res.redirect('/pageNotFound');
     }
@@ -285,8 +342,8 @@ const verifyChangePassOtp = async(req,res) => {
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
-            // res.render('reset-password');
-            res.json({success:true,redirectUrl:'/reset-password'});
+            //res.render('reset-password');
+            res.json({success:true,redirectUrl:'/reset-password', user: req.session.user});
         }else{
             res.json({success:false,message:"OTP does not match"});
         }

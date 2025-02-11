@@ -7,6 +7,75 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 <style>
+    .header-right ul {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Adjust gap for spacing */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+        .dropdown {
+        position:relative;
+        display:inline-block;
+        }
+        .dropdown a {
+    color: #10880c;  
+    padding: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+}
+    .dropdown-content {
+   display: none;
+   position:absolute;
+   background-color: white;
+   min-width: 160px;
+   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+   z-index:1000;
+   right:0;
+    }
+
+
+    .dropdown-content a {
+   color: black;
+   padding: 12px 16px;
+   text-decoration: none;
+   display: block;
+   width: 100%;
+    }
+    .dropdown-content a:hover{
+   background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content{
+   display: block;
+}
+.header-area {
+    background-color: #ffffff; /* Set your desired color here */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better visibility */
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensures it stays above other content */
+    transition: background-color 0.3s ease; /* Smooth transition for hover or other interactions */
+}
+
+.header-right ul li a,
+.main-menu nav ul li a {
+    color: #333333; /* Set text/link color to match your design */
+}
+
+.main-header.header-sticky {
+    background-color: inherit; /* Ensure sticky header keeps the set color */
+}
+
+.nav-search span,
+.flaticon-user,
+.flaticon-shopping-cart {
+    color: #333333; /* Adjust icon colors */
+}
+
+
 .products {
     border: 2px solid #ddd; 
     border-radius: 10px; 
