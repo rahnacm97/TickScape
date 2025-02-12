@@ -94,6 +94,7 @@ router.get("/checkout",userAuth,checkoutController.getCheckout);
 router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 
 //Order Mangement
+router.get('/orders',userAuth,orderController.getOrders);
 router.get("/orderDetails",userAuth,orderController.getConfirmation);
 router.get('/viewOrder/:orderId',userAuth,orderController.viewOrder);
 router.delete('/cancelOrder/:orderId', userAuth,orderController.cancelOrder);

@@ -161,70 +161,17 @@ const postNewPassword = async(req,res) => {
     }
 }
 
-// const userProfile = async(req,res) => {
-//     try {
-//         const userId = req.session.user;
-//         //console.log("User ID:", userId);
-//         const userData = await User.findById(userId);
-//         const addressData = await Address.findOne({userId:userId});
-//         const orders = await Order.find({ userId: userId }).populate('productId').sort({ createdOn: -1 }).exec();
-
-//         console.log("Fetched Orders:", orders);
-
-//         res.render('profile',{
-//             user:userData,
-//             userAddress:addressData,
-//             orders,
-//         })
-//     } catch (error) {
-//         console.error("Error retriving user profile",error);
-//         res.redirect('/pageNotFound');
-//     }
-// }
 
 const userProfile = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({ userId: userId });
-        
-        // Fetch orders with populated product details
-        const orders = await Order.find({ userId: userId })
-            .populate('productId')
-            .sort({ createdOn: -1 })
-            .exec();
 
-        //console.log("Fetched Orders:", orders);
-        
-        const formattedOrders = orders.map(order => ({
-            // productId: {  
-            //     _id: order.productId._id,
-            //     productName: order.productId.productName
-            // },
-            productId: order.productId._id,
-            productName: order.productId.productName,
-            productImage:order.productId.productImage,
-            quantity: order.quantity,
-            price: order.price,
-            totalPrice: order.totalPrice,
-            discount: order.discount,
-            address: order.address,
-            status: order.status,
-            paymentMethod: order.paymentMethod,
-            shipping: order.shipping,
-            orderId: order._id,
-            finalAmount: order.finalAmount,
-            invoiceDate: order.invoiceDate
-        }));        
-       // console.log("formattedOrder",formattedOrders)
         res.render('profile', {
             user: userData,
             userAddress: addressData,
-            orders: formattedOrders, // Pass the reformatted orders
         });
-        // orders.forEach(order => {
-        //     console.log("Product ID:", order.productId.productName);
-        // });
 
     } catch (error) {
         console.error("Error retrieving user profile", error);
@@ -352,10 +299,16 @@ const verifyChangePassOtp = async(req,res) => {
     }
 }
 
+
+
 const addAddress = async(req,res) => {
     try {
+        const redirectTo = req.query.redirectTo || "userProfile";
+        console.log(redirectTo)
         const user = req.session.user;
-        res.render('add-address',{user:user});
+        res.render('add-address',{
+            user:user, redirectTo: redirectTo
+        });
     } catch (error) {
         res.redirect('/pageNotFound');
     }
@@ -363,6 +316,8 @@ const addAddress = async(req,res) => {
 
 const userAddAddress = async(req,res) => {
     try {
+        const { redirectTo } = req.body; 
+        console.log("hiii",redirectTo);
         const userId = req.session.user;
         const userData = await User.findOne({_id:userId});
         const {addressType,name,city,landMark,state,pincode,phone,altPhone} = req.body;
@@ -379,7 +334,11 @@ const userAddAddress = async(req,res) => {
             userAddress.address.push({addressType,name,city,landMark,state,pincode,phone,altPhone})
             await userAddress.save();
         }
-        res.redirect('/userProfile');
+        if (redirectTo === "checkout") {
+            res.redirect("/checkout");
+        } else {
+            res.redirect("/userProfile");
+        }
     } catch (error) {
         console.error("Error adding address",error);
         res.redirect('/pageNotFound');

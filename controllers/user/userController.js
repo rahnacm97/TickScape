@@ -426,6 +426,7 @@ const loadShoppingPage = async (req, res) => {
             sort: sort || null,
             searchQuery,
         });
+       
     } catch (error) {
         console.error("Error in loadShoppingPage:", error);
         res.redirect('/pageNotFound');
