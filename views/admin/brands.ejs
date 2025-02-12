@@ -34,7 +34,7 @@
 
 .search-container {
   display: flex;
-  justify-content: flex-end; /* Align button to the right */
+  justify-content: flex-end; 
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
@@ -152,6 +152,12 @@
   <div>
     <header class="card-header">
       <div class="search-container">
+          <form action="/admin/brands/" method="get" class="d-inline" style="margin-right: 500px;">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search brands" name="search" value="<%= searchQuery %>" />
+              <button class="btn" type="submit">Search</button>
+            </div>
+          </form>
         <a href="/admin/addBrand" class="btn btn-primary btn-add-category">Add Brand</a>
       </div>
     </header>
@@ -210,16 +216,16 @@
                     <% } %>
                   </td>
                   <td class="text-start">
-                    <% if(brand.isBlocked === false){ %>
-                    <button class="btn btn-danger" style="width: 90px">
-                      <a href="/admin/blockBrand?id=<%= brand._id %>" class="text-white">Block</a>
+                    <% if (brand.isBlocked === false) { %>
+                    <button class="btn btn-danger" style="width: 90px" onclick="confirmBrandAction('<%= brand._id %>', 'block')">
+                      Block
                     </button>
-                    <%} else {%>
-                    <button class="btn btn-success" style="width: 90px">
-                      <a href="/admin/unBlockBrand?id=<%= brand._id %>" class="text-white">Unblock</a>
+                    <% } else { %>
+                    <button class="btn btn-success" style="width: 90px" onclick="confirmBrandAction('<%= brand._id %>', 'unblock')">
+                      Unblock
                     </button>
-                    <%}%>
-                  </td>
+                    <% } %>
+                  </td>                  
                   <td>
                     <button class="btn btn-success" style="width: 90px">
                       <a href="/admin/editBrand?id=<%= brand._id %>" class="text-white">Edit</a>
@@ -260,10 +266,29 @@
   </div>
 </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmDelete(){
         return confirm("Are you sure, you want to delete this brand?");
     }
+  function confirmBrandAction(brandId, action) {
+    let actionText = action === 'block' ? "Block" : "Unblock";
+    let actionUrl = action === 'block' ? `/admin/blockBrand?id=${brandId}` : `/admin/unBlockBrand?id=${brandId}`;
+
+    Swal.fire({
+      title: `Are you sure you want to ${actionText} this brand?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${actionText} it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = actionUrl;
+      }
+    });
+  }
+
 </script>
 <%- include("../../views/partials/admin/footer") %>
 

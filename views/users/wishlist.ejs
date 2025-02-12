@@ -211,7 +211,7 @@
                            <tbody style="font-size: 12px; border: 1px solid #e6e1e1;">
                              <% if(wishlist.length > 0){ %>
                                <% wishlist.forEach((product, index) => { %>
-                                       <tr>
+                                       <tr id="wishlist-item-<%= product._id %>">
                                            <td style="border: 1px solid #e6e1e1;" class="py-5"><%= index + 1 %></td>
                                            <td class="image product-thumbnail" style="border: 1px solid #e6e1e1;">
                                                <img src="http://localhost:3000/<%= product.productImage[0]%>" />
@@ -246,7 +246,7 @@
                                        <%} else {%>
                                    <tr>
                                         <td colspan="5" class="text-center">
-                                           <p class="lead mb-4">No items found in Wishlist</p>
+                                           <p class="lead mb-4">No items found in the Wishlist</p>
                                        </td>
                                    </tr>
                                    <%}%>
@@ -292,7 +292,7 @@
                confirmButtonText: 'Go to Cart',
                cancelButtonText: 'Okay!',
                customClass: {
-                  popup: 'swal-popup-custom',  // Custom class for popup
+                  popup: 'swal-popup-custom',
                }
             }).then((result) => {
                if (result.isConfirmed) {
@@ -324,21 +324,73 @@
       }
    });
 }
-    function confirmRemove(productId){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You can't able to revert this",
-            icon:'warning',
-            showCancelButton: true,
-            confirmButtonColor:'#3085d6',
-            cancelButtonColor:'#d33',
-            confirmBuutonText: 'Yes, remove it!'
-        }).then((result) => {
-            if(result.isConfirmed){
-                window.location.href = '/removeFromWishlist?productId=${productId}'
-            }
-        });
-    }
+    // function confirmRemove(productId){
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: "You can't able to revert this",
+    //         icon:'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor:'#3085d6',
+    //         cancelButtonColor:'#d33',
+    //         confirmButonText: 'Yes, remove it!'
+    //     }).then((result) => {
+    //         if(result.isConfirmed){
+    //             window.location.href = `/removeFromWishlist?productId=${productId}`
+    //         }
+    //     });
+    // }
+
+    function confirmRemove(productId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/removeFromWishlist?productId=${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    Swal.fire('Error', data.error, 'error');
+                } else {
+                    // Remove item from the UI
+                    const wishlistItem = document.getElementById(`wishlist-item-${productId}`);
+                    if (wishlistItem) {
+                        wishlistItem.remove();
+                    }
+
+                    // Check if wishlist is empty
+                    const wishlistTableBody = document.querySelector("tbody");
+                    if (!wishlistTableBody.querySelector("tr[id^='wishlist-item-']")) {
+                        wishlistTableBody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <p class="lead mb-4">No item found in the Wishlist</p>
+                                </td>
+                            </tr>`;
+                    }
+
+                    Swal.fire('Deleted!', 'Product removed from Wishlist.', 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Failed to remove product.', 'error');
+            });
+        }
+    });
+}
+
+
 </script>
 <%- include("../../views/partials/user/footer") %>
 

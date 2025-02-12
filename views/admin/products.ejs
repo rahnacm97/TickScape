@@ -197,16 +197,16 @@
               </td>
               <td><%= product.quantity %></td>
               <td>
-                <% if(product.isBlocked === false){ %>
-                <button class="btn btn-danger" style="width: 80px;">
-                    <a href="/admin/blockProduct?id=<%= product._id %>" class="text-white" style="text-decoration: none;">Block</a>
+                <% if (product.isBlocked === false) { %>
+                <button class="btn btn-danger" style="width: 80px;" onclick="confirmProductAction('<%= product._id %>', 'block')">
+                  Block
                 </button>
                 <% } else { %>
-                <button class="btn btn-success" style="width: 80px;">
-                    <a href="/admin/unblockProduct?id=<%= product._id %>" class="text-white" style="text-decoration: none;">Unblock</a>
+                <button class="btn btn-success" style="width: 80px;" onclick="confirmProductAction('<%= product._id %>', 'unblock')">
+                  Unblock
                 </button>
                 <% } %>
-            </td>
+              </td>
               <td>
                 <button class="btn btn-danger" onclick="return confirmDelete()"><a href="/admin/deleteProduct?id= <%= product._id %>" class="text-white">Delete</a></button>
               </td>
@@ -317,4 +317,25 @@
     }
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function confirmProductAction(productId, action) {
+    let actionText = action === 'block' ? "Block" : "Unblock";
+    let actionUrl = action === 'block' ? `/admin/blockProduct?id=${productId}` : `/admin/unblockProduct?id=${productId}`;
+
+    Swal.fire({
+      title: `Are you sure you want to ${actionText} this product?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${actionText} it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = actionUrl;
+      }
+    });
+  }
+</script>
+
 <%- include("../../views/partials/admin/footer") %>

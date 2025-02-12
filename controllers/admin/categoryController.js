@@ -173,43 +173,6 @@ const editCategory = async(req,res) => {
     }
 }
 
-const searchCategory = async (req, res) => {
-    try {
-      const searchQuery = req.query.search || ''; 
-      const currentPage = parseInt(req.query.page) || 1; 
-      const itemsPerPage = 4; 
-      const skip = (currentPage - 1) * itemsPerPage; 
-  
-      const categories = await Category.find({
-        $or: [
-          { name: { $regex: searchQuery, $options: 'i' } },
-          { description: { $regex: searchQuery, $options: 'i' } }
-        ]
-      })
-      .skip(skip)
-      .limit(itemsPerPage);
-  
-      const totalCategories = await Category.countDocuments({
-        $or: [
-          { name: { $regex: searchQuery, $options: 'i' } },
-          { description: { $regex: searchQuery, $options: 'i' } }
-        ]
-      });
-  
-      const totalPages = Math.ceil(totalCategories / itemsPerPage); 
-  
-      res.render('admin/category', {
-        cat: categories,
-        searchQuery,
-        currentPage,
-        totalPages
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Error fetching categories');
-    }
-  };
-  
 
 
 module.exports = {
@@ -222,5 +185,4 @@ module.exports = {
     getUnlistCategory,
     getEditCategory,
     editCategory,
-    searchCategory
 }

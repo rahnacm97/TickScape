@@ -78,12 +78,7 @@ router.get('/deleteAddress',userAuth,profileController.deleteAddress);
 
 //Shopping Management
 router.get('/shop',userController.loadShoppingPage);
-//router.get('/filter',userAuth,userController.filterAndSortProducts);
-router.get('/filter',userAuth,userController.filterProducts);
-// router.get('/filterPrice',userAuth,userController.filterByPrice);
-// router.get('/sort',userAuth,userController.getSortProduct);
-// router.get('/sortProducts',userAuth,userController.sortProducts);
-router.post('/search',userAuth,userController.searchProducts);
+//router.get('/filter',userAuth,userController.filterProducts);
 
 //Product Management
 router.get('/productDetails',userAuth,productController.productDetails);
@@ -92,11 +87,10 @@ router.get('/productDetails',userAuth,productController.productDetails);
 router.get("/cart",userAuth,cartController.getCartPage);
 router.post("/addToCart",userAuth,cartController.addToCart);
 router.post("/changeQuantity",userAuth,cartController.changeQuantity);
-router.get("/deleteProduct",userAuth,cartController.deleteProduct);
+router.delete("/deleteProduct", userAuth, cartController.deleteProduct);
 
 // CheckOut Management
 router.get("/checkout",userAuth,checkoutController.getCheckout);
-//router.get("/deleteItem", userAuth,checkoutController.deleteProduct);
 router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 
 //Order Mangement
@@ -108,6 +102,6 @@ router.delete('/cancelOrder/:orderId', userAuth,orderController.cancelOrder);
 //Wishlist Management
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);
 router.post('/addToWishlist',userAuth,wishlistController.addToWishlist);
-router.get('/removeFromWishlist',userAuth,wishlistController.removeProduct);
+router.delete('/removeFromWishlist',userAuth,wishlistController.removeProduct);
 
 module.exports = router;

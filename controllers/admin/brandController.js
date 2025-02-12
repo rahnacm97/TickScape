@@ -10,19 +10,19 @@ const getBrandsPage = async (req, res) => {
         const searchQuery = req.query.search || ''; 
 
         let brandData;
-        if (searchQuery) {
-           
-            brandData = await Brand.find({ name: new RegExp(searchQuery, 'i') }) 
+        if (searchQuery) {           
+            brandData = await Brand.find({ brandName: new RegExp(searchQuery, 'i') }) 
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);
-        } else {
-            
+        } else {           
             brandData = await Brand.find({})
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);
         }
+
+        console.log("1",brandData);
 
         const totalBrands = await Brand.countDocuments();
         const totalPages = Math.ceil(totalBrands / limit);
@@ -36,6 +36,7 @@ const getBrandsPage = async (req, res) => {
             limit: limit,
             searchQuery: searchQuery 
         });
+        
     } catch (error) {
         res.redirect('/pageerror');
     }
@@ -204,6 +205,7 @@ const deleteSingleImage = async(req,res) => {
         res.redirect("/pageerror");
     }
 }
+
  
 module.exports = {
     getBrandsPage,

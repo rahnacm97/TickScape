@@ -46,7 +46,6 @@ router.get('/listCategory',adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory',adminAuth,categoryController.getUnlistCategory);
 router.get('/editCategory',adminAuth,categoryController.getEditCategory);
 router.post('/editCategory/:id',adminAuth,categoryController.editCategory);
-router.get('/admin/searchCategory',adminAuth,categoryController.searchCategory);
 
 // Brand Management
 router.get('/brands',adminAuth,brandController.getBrandsPage);
