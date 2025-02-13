@@ -1,0 +1,241 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+.main-container{
+  gap: 20px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 10px;
+  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 30px auto;
+}
+
+  .order-card {
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .price {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-right: 50px;
+      margin-top: 25%;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .main {
+      padding: 20px 0;
+    }
+  
+    .page-header.breadcrumb-wrap {
+      margin-top: 10px;
+      background-color: #ede9ec;
+      padding: 10px 0;
+  }
+  
+  .breadcrumb-wrap {
+      padding: 15px 0;
+      background-color: #1e918b;
+      color: #fff;
+  }
+  
+  .breadcrumb a {
+      color: #088178;
+      text-decoration: none;
+  }
+  
+  .breadcrumb span {
+      margin: 0 5px;
+      color: rgb(125, 124, 124);
+  }
+  
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .dashboard-menu {
+        padding: 10px;
+      }
+  
+      .dashboard-menu .nav-link {
+        font-size: 14px;
+      }
+  
+      .card-header {
+        font-size: 16px;
+      }
+  
+      .btn-small {
+        font-size: 12px;
+      }
+    }
+
+  
+    .card{
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease-in-out;
+    }
+  
+    .card:hover {
+      transform: scale(1.02);
+    }
+  
+    .card-header {
+      background-color: #007bff;
+      color: #ffffff;
+      font-weight: bold;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      text-align: center;
+    }
+  
+    .card-body {
+      padding: 20px;
+      line-height: 1;
+    }
+  
+    .card-body p {
+      margin: 5px 0;
+    }
+
+    .btn-small1{
+      width: 100px; 
+      margin-top: 25%;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 5px;
+      color: #ffffff;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+      display: inline-block;
+      background-color: #007bff;
+      justify-content: center;
+      padding: 10px 33px;
+    }
+    
+    .btn-small1:hover {
+      transform: scale(1.05);
+      color: white;
+      background-color: #17406c;
+    }
+
+    .text-success{
+        margin-right: 20px;
+    }
+  
+    .d-flex {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+  
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .pagination a {
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.2s;
+  }
+  
+  .pagination a:hover {
+    background-color: #1e918b;
+    color: white;
+    transform: scale(1.05);
+  }
+  
+  .pagination .active {
+    background-color: #1e918b;
+    color: white;
+  }
+  
+  </style>  
+  <main class="main">
+   <div class="page-header breadcrumb-wrap mb-3">
+     <div class="container">
+       <div class="breadcrumb">
+         <a href="/" rel="nofollow">Home</a>
+         <span></span><a href="/userProfile" rel="nofollow">Profile</a>
+         <span></span>Orders
+       </div>
+     </div>
+   </div>
+    <section class="pt-10 pb-10">
+  <div class="container"> 
+        <h3>My Orders</h3>
+    <div class="main-container"> 
+      <div id="orders-container">       
+        <% if (orders && orders.length > 0) { %>
+            <% orders.forEach((order) => { %>
+                <div class="card mb-2 p-2 order-card small-card">
+                    <div class="row g-0">
+                        <% if (order.productId) { %>
+                        <div class="col-md-2">                        
+                            <img src="<%= order.productImage[0] %>" class="img-fluid" alt="Product Image" style="height:120px; width: 120px; margin-left: 20px; border-radius: 5px;">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-body">
+                                <p class="card-text">Name: <%= order.productName || "N/A" %></p>
+                                <p class="card-text">Quantity: <%= order.quantity %></p>
+                                <p class="card-text">Price per unit: $<%= order.price %></p> 
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <h5 style="margin-top: 30%; font-size: 1.2rem;font-weight: bold;">Total: $<%= order.finalAmount %></h5>   
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <% if (order.status === 'Cancelled') { %>
+                                <p class="text-danger"><strong>&#x2022; Cancelled on <%= new Date(order.invoiceDate).toDateString() %></strong></p>
+                                <p class="text-muted"><%= order.cancellationReason %></p>
+                            <% } else { %>
+                                <p class="text-success"><strong>Status: <%= order.status %></strong></p>
+                            <% } %>
+                            <a href="/viewOrder/<%= order.orderId %>" class="btn-small1">View</a>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No orders found.</p>
+        <% } %>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="#" data-page="<%= currentPage - 1 %>" class="btn btn-primary pagination-link">Prev</a>
+    <% } %>
+
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="#" data-page="<%= i %>" class="btn pagination-link <%= i === currentPage ? 'active' : ''  %>">
+            <%= i %>
+        </a>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+        <a href="#" data-page="<%= currentPage + 1 %>" class="btn btn-primary pagination-link">Next</a>
+    <% } %>
+</div>
+    </div>
+</section>
+</main>
+<%- include("../../views/partials/user/footer") %>

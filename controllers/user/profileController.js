@@ -300,10 +300,44 @@ const verifyChangePassOtp = async(req,res) => {
 }
 
 
+const getAddress = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const page = parseInt(req.query.page) || 1; // Get page number from query, default to 1
+        const limit = 4; // Number of addresses per page
+
+        // Fetch user address
+        const addressData = await Address.findOne({ userId: userId });
+
+        if (!addressData || !addressData.address || addressData.address.length === 0) {
+            return res.render('address', {
+                userAddress: null,
+                currentPage: page,
+                totalPages: 0
+            });
+        }
+
+        const totalAddresses = addressData.address.length;
+        const totalPages = Math.ceil(totalAddresses / limit);
+
+        // Paginate addresses (using slice since it's an array inside Address)
+        const paginatedAddresses = addressData.address.slice((page - 1) * limit, page * limit);
+
+        res.render('address', {
+            userAddress: { address: paginatedAddresses },
+            currentPage: page,
+            totalPages: totalPages
+        });
+
+    } catch (error) {
+        console.error("Error retrieving user address", error);
+        res.redirect('/pageNotFound');
+    }
+};
 
 const addAddress = async(req,res) => {
     try {
-        const redirectTo = req.query.redirectTo || "userProfile";
+        const redirectTo = req.query.redirectTo || "address";
         console.log(redirectTo)
         const user = req.session.user;
         res.render('add-address',{
@@ -337,7 +371,7 @@ const userAddAddress = async(req,res) => {
         if (redirectTo === "checkout") {
             res.redirect("/checkout");
         } else {
-            res.redirect("/userProfile");
+            res.redirect("/address");
         }
     } catch (error) {
         console.error("Error adding address",error);
@@ -347,7 +381,12 @@ const userAddAddress = async(req,res) => {
 
 const editAddress = async(req,res) => {
     try {
+
+        console.log("query",req.query);
         const addressId = req.query.id;
+        console.log("addres",addressId);
+        const redirectTo = req.query.redirectTo || "address"; 
+        console.log("addres1",addressId,redirectTo);
         const user = req.session.user;
         const currAddress = await Address.findOne({
             "address._id" : addressId,
@@ -365,7 +404,11 @@ const editAddress = async(req,res) => {
             return res.redirect('/pageNotFound');
         }
 
-        res.render('edit-address',{address:addressData,user:user});
+        res.render('edit-address',{
+            address:addressData,
+            user:user,
+            redirectTo: redirectTo
+        });
     } catch (error) {
         console.error("Error in editing address",error);
         res.redirect('/pageNotFound');
@@ -376,6 +419,7 @@ const userEditAddress = async(req,res) =>{
     try {
         const data = req.body;
         const addressId = req.query.id;
+        const redirectTo = req.body.redirectTo || "address";
         const user = req.session.user;
         const findAddress = await Address.findOne({"address._id":addressId});
         if(!findAddress){
@@ -397,39 +441,37 @@ const userEditAddress = async(req,res) =>{
                 }
             }}
         )
-        res.redirect('/userProfile');
+        if (redirectTo === "checkout") {
+            return res.redirect('/checkout');
+        }
+        return res.redirect('/address');
     } catch (error) {
         console.error("Error in editing address",error);
         res.redirect('/pageNotFound');
     }
 }
 
-const deleteAddress = async(req,res) => {
+const deleteAddress = async (req, res) => {
     try {
         const addressId = req.query.id;
-        const findAddress = await Address.findOne({"address._id":addressId});
-        if(!findAddress){
-            return res.status(404).send("Address Not Found");
+        const redirectTo = req.query.redirectTo || "address";
+
+        const findAddress = await Address.findOne({ "address._id": addressId });
+        if (!findAddress) {
+            return res.status(404).json({ success: false, message: "Address Not Found" });
         }
 
-        await Address.updateOne({
-            "address._id":addressId
-        },
-        {
-            $pull : {
-                address: {
-                    _id: addressId,
-                }
-            }
-        }
-    )
+        await Address.updateOne(
+            { "address._id": addressId },
+            { $pull: { address: { _id: addressId } } }
+        );
 
-    res.redirect('/userProfile');
+        return res.json({ success: true, redirectTo, message: "Address deleted successfully" });
     } catch (error) {
-        console.error("Error in deleting address",error);
-        res.redirect('/pageNotFound');
+        console.error("Error in deleting address", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-}
+};
 
 module.exports = {
     getForgotPassword,
@@ -446,9 +488,11 @@ module.exports = {
     changePassword,
     changePasswordValid,
     verifyChangePassOtp,
+    getAddress,
     addAddress,
     userAddAddress,
     editAddress,
     userEditAddress,
     deleteAddress,
+
 }

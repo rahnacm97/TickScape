@@ -330,8 +330,14 @@ hr {
     position: absolute;
     font-size: 12px;
     margin-left: 50px;
-    line-height: 1; /* Improves readability */
+    line-height: 1; 
 }
+.text-red1 {
+    color: red;
+    font-weight: bold;
+}
+
+
 </style>
 <main class="main">
     <section class="pt-10 pb-10">
@@ -342,7 +348,6 @@ hr {
               <span></span> <a href="/userProfile" rel="nofollow">Profile</a>
               <span></span> <a href="/orders" rel="nofollow">Orders</a>  
               <span></span> Order Details
-              <!-- <a href="/cart" rel="nofollow">Cart</a> <span></span> -->
               
             </div>
           </div>
@@ -367,17 +372,27 @@ hr {
                 <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %>
               </div>
               <div class="order-detail"><span>Final Amount:</span> $<%= order.finalAmount %></div>
-              <div class="order-detail"><span>Order Status:</span> <%= order.status %></div>
               <div class="order-detail">
-                <span>Deliver To: <%= address.name %></span>           
-                <div style="margin-top: 20px;">
-                  <p class="address"><strong><%= address.addressType %></strong></p>
-                  <p class="address"><%= address.city%>, <%= address.state%>,<br>
-                    <%= address.landMark%>, <%= address.pincode%>,<br>
-                    <%= address.phone%>, <%= address.altPhone%>
-                  </p>
-                </div>
-              </div>       
+                <span>Order Status:</span> 
+                <span class="<%= order.status === 'Cancelled' ? 'text-red1' : 'text-black' %>">
+                     <%= order.status %>
+                </span>
+            </div>
+              <div class="order-detail">
+                <% if (address) { %>
+                    <span>Deliver To: <%= address.name %></span>           
+                    <div style="margin-top: 20px;">
+                        <p class="address"><strong><%= address.addressType || 'Address Type Not Provided' %></strong></p>
+                        <p class="address">
+                            <%= address.city || 'City Not Available' %>, <%= address.state || 'State Not Available' %>,<br>
+                            <%= address.landMark || 'Landmark Not Available' %>, <%= address.pincode || 'Pincode Not Available' %>,<br>
+                            <%= address.phone || 'Phone Not Available' %>, <%= address.altPhone || 'Alt Phone Not Available' %>
+                        </p>
+                    </div>
+                <% } else { %>
+                    <p class="no-address">No address available for this order.</p>
+                <% } %>
+            </div>                   
             </div>
           </div>  
           <div class="btn1-container">
@@ -385,8 +400,7 @@ hr {
               <i class="fa fa-times-circle"></i>Cancel This Item
             </a>
           </div>
-          
-          <!-- Tracking Information Section -->
+
           <div class="tracking-info">
             <h3 style="margin-left: 20px; margin-top: 20px;">Track Your Order</h3>
             <div class="container2">
@@ -448,9 +462,7 @@ hr {
             
         </div>        
   
-</div>
-        
-        
+</div>        
 <h3 style="margin-left: 20px;margin-top: 20px;">Other Products in this Order:</h3>
 <div class="otherItem">
   <% if (orderItems.length > 0) { %>
@@ -483,7 +495,7 @@ hr {
 </div>
 
 <div class="btn1-container"> 
-  <a href="/userProfile" class="btn">Back to Orders</a>
+  <a href="/orders" class="btn">Back to Orders</a>
   <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
     <i class="fa fa-ban"></i> Cancel Order
   </a>

@@ -320,10 +320,12 @@ input[type="text"] {
                                                     <%= addr.altPhone%></p>
                             
                                                     <div class="d-flex justify-content-between">
-                                                        <a href="/editAddress?id=<%= addr._id %>"
+                                                        <a href="/editAddress?id=<%= addr._id %>&redirectTo=checkout"
                                                             class="btn-small">Edit</a>
-                                                        <a href="/deleteAddress?id=<%= addr._id %>"
-                                                            class="btn-small" onclick="return confirm('Are you sure you want to delete this address?')">Delete</a>
+                                                        <a href="javascript:void(0);" class="btn-small delete-btn" 
+                                                            data-id="<%= addr._id %>" data-redirect="checkout">
+                                                            Delete
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -390,8 +392,55 @@ input[type="text"] {
                 </div>
             </div>
     </section>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+            const addressId = this.getAttribute("data-id");
+            const redirectTo = this.getAttribute("data-redirect");
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to recover this address!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/deleteAddress?id=${addressId}&redirectTo=${redirectTo}`, {
+                        method: "DELETE"
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire("Deleted!", "Your address has been removed.", "success");
+                            // Remove the address card from the DOM
+                            button.closest(".col-lg-6").remove();
+
+                            // If redirecting to checkout, navigate after deletion
+                            if (redirectTo === "checkout") {
+                                setTimeout(() => {
+                                    window.location.href = "/checkout";
+                                }, 500);
+                            }
+                        } else {
+                            Swal.fire("Error!", data.message || "Something went wrong.", "error");
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire("Error!", "Failed to delete address.", "error");
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
 
 <script>
 function placeOrder() {

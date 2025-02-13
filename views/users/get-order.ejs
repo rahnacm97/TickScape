@@ -139,7 +139,7 @@
       margin-top: 15px;
     }
   
-.pagination-container{
+.pagination {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -181,59 +181,174 @@
     <section class="pt-10 pb-10">
   <div class="container"> 
         <h3>My Orders</h3>
-    <div class="main-container">        
-        <% if (orders && orders.length > 0) { %>
-            <% orders.forEach((order) => { %>
-                <div class="card mb-2 p-2 order-card small-card">
-                    <div class="row g-0">
-                        <% if (order.productId) { %>
-                        <div class="col-md-2">                        
-                            <img src="<%= order.productImage[0] %>" class="img-fluid" alt="Product Image" style="height:120px; width: 120px; margin-left: 20px; border-radius: 5px;">
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card-body">
-                                <p class="card-text">Name: <%= order.productName || "N/A" %></p>
-                                <p class="card-text">Quantity: <%= order.quantity %></p>
-                                <p class="card-text">Price per unit: $<%= order.price %></p> 
-                            </div>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <h5 style="margin-top: 30%; font-size: 1.2rem;font-weight: bold;">Total: $<%= order.finalAmount %></h5>   
-                        </div>
-                        <div class="col-md-2 text-end">
-                            <% if (order.status === 'Cancelled') { %>
-                                <p class="text-danger"><strong>&#x2022; Cancelled on <%= new Date(order.invoiceDate).toDateString() %></strong></p>
-                                <p class="text-muted"><%= order.cancellationReason %></p>
-                            <% } else { %>
-                                <p class="text-success"><strong>Status: <%= order.status %></strong></p>
-                            <% } %>
-                            <a href="/viewOrder/<%= order.orderId %>" class="btn-small1">View</a>
-                        </div>
-                        <% } %>
-                    </div>
-                </div>
-            <% }) %>
-        <% } else { %>
-            <p>No orders found.</p>
-        <% } %>
-    </div>
+        <div class="main-container">
+          <% if (orders && orders.length > 0) { %>
+              <div id="orders-container">
+                  <% orders.forEach((order) => { %>
+                      <div class="card mb-2 p-2 order-card small-card">
+                          <div class="row g-0">
+                              <% if (order.productId) { %>
+                                  <div class="col-md-2">
+                                      <img src="<%= order.productImage[0] %>" class="img-fluid" alt="Product Image" style="height:120px; width: 120px; margin-left: 20px; border-radius: 5px;">
+                                  </div>
+                                  <div class="col-md-6">
+                                      <div class="card-body">
+                                          <p class="card-text">Name: <%= order.productName || "N/A" %></p>
+                                          <p class="card-text">Quantity: <%= order.quantity %></p>
+                                          <p class="card-text">Price per unit: $<%= order.price %></p>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-2 text-center">
+                                      <h5 style="margin-top: 30%; font-size: 1.2rem;font-weight: bold;">Total: $<%= order.finalAmount %></h5>
+                                  </div>
+                                  <div class="col-md-2 text-end">
+                                      <% if (order.status === 'Cancelled') { %>
+                                          <p class="text-danger"><strong>&#x2022; Cancelled on <%= new Date(order.invoiceDate).toDateString() %></strong></p>
+                                          <p class="text-muted"><%= order.cancellationReason %></p>
+                                      <% } else { %>
+                                          <p class="text-success"><strong>Status: <%= order.status %></strong></p>
+                                      <% } %>
+                                      <a href="/viewOrder/<%= order.orderId %>" class="btn-small1">View</a>
+                                  </div>
+                              <% } %>
+                          </div>
+                      </div>
+                  <% }) %>
+              </div>
+          <% } else { %>
+              <p>No orders found.</p>
+          <% } %>
+  </div>
 
-        <div class="pagination-container">
-            <% if (currentPage > 1) { %>
-                <a href="/orders?page=<%= currentPage - 1 %>" class="btn btn-primary">Previous</a>
-            <% } %>
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="#" data-page="<%= currentPage - 1 %>" class="btn btn-primary pagination-link">Prev</a>
+    <% } %>
 
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/orders?page=<%= i %>" class="btn <%= i === currentPage ? 'btn-dark' : 'btn-outline-primary' %>">
-                    <%= i %>
-                </a>
-            <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="#" data-page="<%= i %>" class="btn pagination-link <%= i === currentPage ? 'active' : ''  %>">
+            <%= i %>
+        </a>
+    <% } %>
 
-            <% if (currentPage < totalPages) { %>
-                <a href="/orders?page=<%= currentPage + 1 %>" class="btn btn-primary">Next</a>
-            <% } %>
-        </div>
+    <% if (currentPage < totalPages) { %>
+        <a href="#" data-page="<%= currentPage + 1 %>" class="btn btn-primary pagination-link">Next</a>
+    <% } %>
+</div>
     </div>
 </section>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const paginationLinks = document.querySelectorAll('.pagination-link');
+  
+      paginationLinks.forEach(link => {
+          link.addEventListener('click', function(event) {
+              event.preventDefault();
+              const page = this.getAttribute('data-page');
+              loadOrders(page);
+          });
+      });
+  
+      function loadOrders(page) {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', `/orders?page=${page}`, true);
+          xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+          xhr.onload = function() {
+              if (xhr.status === 200) {
+                  const response = JSON.parse(xhr.responseText);
+                  updateOrders(response.orders);
+                  updatePagination(response.currentPage, response.totalPages);
+              } else {
+                  console.error('Error loading orders');
+              }
+          };
+          xhr.send();
+      }
+  
+      function updateOrders(orders) {
+          const ordersContainer = document.getElementById('orders-container');
+          ordersContainer.innerHTML = '';
+  
+          if (orders.length > 0) {
+              orders.forEach(order => {
+                  const orderCard = document.createElement('div');
+                  orderCard.className = 'card mb-2 p-2 order-card small-card';
+                  orderCard.innerHTML = `
+                      <div class="row g-0">
+                          <div class="col-md-2">
+                              <img src="${order.productImage[0]}" class="img-fluid" alt="Product Image" style="height:120px; width: 120px; margin-left: 20px; border-radius: 5px;">
+                          </div>
+                          <div class="col-md-6">
+                              <div class="card-body">
+                                  <p class="card-text">Name: ${order.productName || "N/A"}</p>
+                                  <p class="card-text">Quantity: ${order.quantity}</p>
+                                  <p class="card-text">Price per unit: $${order.price}</p>
+                              </div>
+                          </div>
+                          <div class="col-md-2 text-center">
+                              <h5 style="margin-top: 30%; font-size: 1.2rem;font-weight: bold;">Total: $${order.finalAmount}</h5>
+                          </div>
+                          <div class="col-md-2 text-end">
+                              ${order.status === 'Cancelled' ? `
+                                  <p class="text-danger"><strong>&#x2022; Cancelled on ${new Date(order.invoiceDate).toDateString()}</strong></p>
+                                  <p class="text-muted">${order.cancellationReason}</p>
+                              ` : `
+                                  <p class="text-success"><strong>Status: ${order.status}</strong></p>
+                              `}
+                              <a href="/viewOrder/${order.orderId}" class="btn-small1">View</a>
+                          </div>
+                      </div>
+                  `;
+                  ordersContainer.appendChild(orderCard);
+              });
+          } else {
+              ordersContainer.innerHTML = '<p>No orders found.</p>';
+          }
+      }
+  
+      function updatePagination(currentPage, totalPages) {
+          const paginationContainer = document.querySelector('.pagination');
+          paginationContainer.innerHTML = '';
+  
+          if (currentPage > 1) {
+              const prevLink = document.createElement('a');
+              prevLink.href = '#';
+              prevLink.setAttribute('data-page', currentPage - 1);
+              prevLink.className = 'btn btn-primary pagination-link';
+              prevLink.textContent = 'Prev';
+              paginationContainer.appendChild(prevLink);
+          }
+  
+          for (let i = 1; i <= totalPages; i++) {
+              const pageLink = document.createElement('a');
+              pageLink.href = '#';
+              pageLink.setAttribute('data-page', i);
+              pageLink.className = `btn pagination-link ${i === currentPage ? 'active' : ''}`;
+              pageLink.textContent = i;
+              paginationContainer.appendChild(pageLink);
+          }
+  
+          if (currentPage < totalPages) {
+              const nextLink = document.createElement('a');
+              nextLink.href = '#';
+              nextLink.setAttribute('data-page', currentPage + 1);
+              nextLink.className = 'btn btn-primary pagination-link';
+              nextLink.textContent = 'Next';
+              paginationContainer.appendChild(nextLink);
+          }
+
+          const newPaginationLinks = document.querySelectorAll('.pagination-link');
+          newPaginationLinks.forEach(link => {
+              link.addEventListener('click', function(event) {
+                  event.preventDefault();
+                  const page = this.getAttribute('data-page');
+                  loadOrders(page);
+              });
+          });
+      }
+  });
+  </script>
 <%- include("../../views/partials/user/footer") %>

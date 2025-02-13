@@ -69,12 +69,13 @@ router.get('/change-password',userAuth,profileController.changePassword);
 router.post('/change-password',userAuth,profileController.changePasswordValid);
 router.post('/verify-changepassword-otp',userAuth,profileController.verifyChangePassOtp);
 
-// Address Management 
+// Address Management
+router.get('/address',userAuth,profileController.getAddress); 
 router.get('/addAddress',userAuth,profileController.addAddress);
 router.post('/addAddress',userAuth,profileController.userAddAddress);
 router.get('/editAddress',userAuth,profileController.editAddress);
 router.post('/editAddress',userAuth,profileController.userEditAddress);
-router.get('/deleteAddress',userAuth,profileController.deleteAddress);
+router.delete('/deleteAddress',userAuth,profileController.deleteAddress);
 
 //Shopping Management
 router.get('/shop',userController.loadShoppingPage);

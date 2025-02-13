@@ -82,6 +82,7 @@
             <div class="breadcrumb">
                 <a href="/" rel="nofollow">Home</a>
                 <span></span><a href="/userProfile" rel="nofollow">Profile</a>
+                <span></span><a href="/address" rel="nofollow">Addresses</a>
                 <span></span> Edit User Address
             </div>
         </div>
@@ -133,8 +134,8 @@
                         <label for="altPhone">Alternate Phone:</label>
                         <input type="number" class="form-control border-3" id="altPhone" value="<%= address.altPhone %>" name="altPhone">
                     </div>
+                    <input type="hidden" name="redirectTo" value="<%= redirectTo %>">
                 </div>
-
                 <button type="submit" id="submitButton" class="btn btn-primary">Update</button>
             </form>
         </div>

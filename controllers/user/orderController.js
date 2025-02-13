@@ -38,11 +38,56 @@ const getConfirmation = async (req, res) => {
     }
 };
 
-const getOrders = async(req,res) => {
-    try { 
+// const getOrders = async(req,res) => {
+//     try { 
+//         const userId = req.session.user._id;
+//         const page = parseInt(req.query.page) || 1;
+//         const limit = 4; 
+//         const skip = (page - 1) * limit;
+
+//         const orders = await Order.find({ userId: userId })
+//             .populate('productId')
+//             .sort({ createdOn: -1 })
+//             .skip(skip)
+//             .limit(limit)
+//             .exec();
+
+//         const totalOrders = await Order.countDocuments({ userId: userId });
+
+//         const formattedOrders = orders.map(order => ({
+//             productId: order.productId._id,
+//             productName: order.productId.productName,
+//             productImage: order.productId.productImage,
+//             quantity: order.quantity,
+//             price: order.price,
+//             totalPrice: order.totalPrice,
+//             discount: order.discount,
+//             address: order.address,
+//             status: order.status,
+//             paymentMethod: order.paymentMethod,
+//             shipping: order.shipping,
+//             orderId: order._id,
+//             finalAmount: order.finalAmount,
+//             invoiceDate: order.invoiceDate
+//         }));
+
+//         res.render('get-order', {
+//             orders: formattedOrders,
+//             totalPages: Math.ceil(totalOrders / limit),
+//             currentPage: page
+//         });
+
+//     } catch (error) {
+//         console.error("Error retrieving orders", error);
+//         res.redirect('/pageNotFound');
+//     }
+// }
+
+const getOrders = async (req, res) => {
+    try {
         const userId = req.session.user._id;
         const page = parseInt(req.query.page) || 1;
-        const limit = 4; 
+        const limit = 4;
         const skip = (page - 1) * limit;
 
         const orders = await Order.find({ userId: userId })
@@ -68,20 +113,30 @@ const getOrders = async(req,res) => {
             shipping: order.shipping,
             orderId: order._id,
             finalAmount: order.finalAmount,
-            invoiceDate: order.invoiceDate
+            invoiceDate: order.invoiceDate,
+            cancellationReason: order.cancellationReason
         }));
 
-        res.render('get-order', {
-            orders: formattedOrders,
-            totalPages: Math.ceil(totalOrders / limit),
-            currentPage: page
-        });
-
+        if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+            // If it's an AJAX request, return JSON
+            res.json({
+                orders: formattedOrders,
+                totalPages: Math.ceil(totalOrders / limit),
+                currentPage: page
+            });
+        } else {
+            // Otherwise, render the full page
+            res.render('get-order', {
+                orders: formattedOrders,
+                totalPages: Math.ceil(totalOrders / limit),
+                currentPage: page
+            });
+        }
     } catch (error) {
         console.error("Error retrieving orders", error);
         res.redirect('/pageNotFound');
     }
-}
+};
 
 const viewOrder = async (req, res) => {
     try {
