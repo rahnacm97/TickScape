@@ -4,6 +4,7 @@ const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
 const Cart = require("../../models/cartSchema");
 const Order = require("../../models/orderSchema");
+const Review = require("../../models/reviewSchema");
 const env = require("dotenv").config();
 const session = require("express-session");
 const mongoose = require('mongoose');
@@ -37,51 +38,6 @@ const getConfirmation = async (req, res) => {
         res.status(500).send("Error loading the page");
     }
 };
-
-// const getOrders = async(req,res) => {
-//     try { 
-//         const userId = req.session.user._id;
-//         const page = parseInt(req.query.page) || 1;
-//         const limit = 4; 
-//         const skip = (page - 1) * limit;
-
-//         const orders = await Order.find({ userId: userId })
-//             .populate('productId')
-//             .sort({ createdOn: -1 })
-//             .skip(skip)
-//             .limit(limit)
-//             .exec();
-
-//         const totalOrders = await Order.countDocuments({ userId: userId });
-
-//         const formattedOrders = orders.map(order => ({
-//             productId: order.productId._id,
-//             productName: order.productId.productName,
-//             productImage: order.productId.productImage,
-//             quantity: order.quantity,
-//             price: order.price,
-//             totalPrice: order.totalPrice,
-//             discount: order.discount,
-//             address: order.address,
-//             status: order.status,
-//             paymentMethod: order.paymentMethod,
-//             shipping: order.shipping,
-//             orderId: order._id,
-//             finalAmount: order.finalAmount,
-//             invoiceDate: order.invoiceDate
-//         }));
-
-//         res.render('get-order', {
-//             orders: formattedOrders,
-//             totalPages: Math.ceil(totalOrders / limit),
-//             currentPage: page
-//         });
-
-//     } catch (error) {
-//         console.error("Error retrieving orders", error);
-//         res.redirect('/pageNotFound');
-//     }
-// }
 
 const getOrders = async (req, res) => {
     try {
@@ -118,14 +74,14 @@ const getOrders = async (req, res) => {
         }));
 
         if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
-            // If it's an AJAX request, return JSON
+            
             res.json({
                 orders: formattedOrders,
                 totalPages: Math.ceil(totalOrders / limit),
                 currentPage: page
             });
         } else {
-            // Otherwise, render the full page
+           
             res.render('get-order', {
                 orders: formattedOrders,
                 totalPages: Math.ceil(totalOrders / limit),
@@ -154,7 +110,7 @@ const viewOrder = async (req, res) => {
                 populate: { path: 'brand', select: 'brandName' }
             })
             .exec();
-        //console.log("order",order);
+        console.log("order",order);
 
         if (!order) {
             return res.redirect("/pageNotFound");
@@ -165,6 +121,15 @@ const viewOrder = async (req, res) => {
         (addr) => addr._id.toString() === order.address.toString()
         );
 
+        let userReviews = [];
+        if (order.productId) {
+            userReviews = await Review.find({
+                productId: order.productId._id,
+                user: userId
+            }).lean();
+
+            order.productId.userReview = userReviews.length > 0 ? userReviews[0] : null;
+        }
 
               if (!order.userId || !order.createdOn) {
                   return res.status(400).send("Missing required order details");
@@ -201,14 +166,14 @@ const viewOrder = async (req, res) => {
         const trackingHistory = order.trackingHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
         const latestTrackingEntry = trackingHistory[trackingHistory.length - 1];
 
-        
+        console.log("Tracking History:", trackingHistory);
+       
         let expectedDeliveryDate = null;
-        const shippedEntry = trackingHistory.find(entry => entry.status === "Shipped");
-        if (shippedEntry) {
-            expectedDeliveryDate = new Date(shippedEntry.date);
-            expectedDeliveryDate.setDate(expectedDeliveryDate.getDate() + 3); 
+        const deliveryEntry = trackingHistory.find(entry => entry.status === "Processing");
+        if (deliveryEntry) {
+            expectedDeliveryDate = new Date(deliveryEntry.date);
+            expectedDeliveryDate.setDate(expectedDeliveryDate.getDate() + 6); 
         }
-
           
         res.render("viewOrder", { 
             order, 
@@ -217,6 +182,7 @@ const viewOrder = async (req, res) => {
             trackingHistory, 
             expectedDeliveryDate 
         });
+        console.log("order",order.productId);
 
     } catch (error) {
         console.error("Error fetching order details:", error);
@@ -246,6 +212,12 @@ const cancelOrder = async (req, res) => {
             return res.json({ success: false, message: "Order is already delivered or cancelled." });
         }
 
+        const product = await Product.findById(order.productId._id);
+        if (product) {
+            product.quantity += order.quantity; 
+            await product.save();
+        }
+
         order.status = "Cancelled";
         order.trackingHistory.push({ date: new Date(), status: "Cancelled - " + reason });
 
@@ -258,9 +230,104 @@ const cancelOrder = async (req, res) => {
     }
 };
 
+
+const cancelParentOrder = async (req, res) => {
+    try {
+        const { parentOrderId } = req.params;
+        const { reason } = req.body;
+
+        if (!parentOrderId || !reason) {
+            return res.json({ success: false, message: "Invalid request data." });
+        }
+
+        const orders = await Order.find({ parentOrderId });
+
+        if (!orders || orders.length === 0) {
+            return res.json({ success: false, message: "Parent order not found or has no associated orders." });
+        }
+
+        const isShippedOrDelivered = orders.some(order => order.status === "Shipped" || order.status === "Delivered");
+
+        if (isShippedOrDelivered) {
+            return res.json({ success: false, message: "One or more orders have already been shipped or delivered and cannot be canceled." });
+        }
+
+        for (const order of orders) {
+            if (order.status !== "Cancelled") {
+                const product = await Product.findById(order.productId._id);
+                if (product) {
+                    product.quantity += order.quantity;
+                    await product.save();
+                }
+            }
+
+            order.status = "Cancelled";
+            order.trackingHistory.push({ date: new Date(), status: "Cancelled - " + reason });
+            await order.save();
+        }
+
+        return res.json({ success: true, message: "All orders under the parent order have been cancelled successfully." });
+    } catch (error) {
+        console.error("Error cancelling parent order:", error);
+        return res.json({ success: false, message: "Internal server error." });
+    }
+};
+
+const getWriteReview = async(req,res) => {
+    try {
+        const { productId, orderId } = req.query;
+
+        if (!productId && !orderId) {
+            return res.status(400).send("Product ID and Order ID is required");
+        }
+
+        res.render('writeReview', { productId, orderId }); 
+    } catch (error) {
+        console.error("Error processing orders:", error);
+        res.status(500).send("Error loading the page");
+    }
+}
+
+const submitReview = async (req, res) => {
+    const { productId, orderId, rating, comment } = req.body;
+    const userId = req.session.user._id;
+
+    try {
+       
+        const productExists = await Product.findById(productId);
+        if (!productExists) return res.status(404).send("Product not found");
+
+
+        if (!userId) return res.status(401).send("User not authenticated");
+
+        const review = new Review({
+            productId,
+            user: userId,
+            rating: parseInt(rating),
+            comment
+        });
+
+        await review.save();
+
+        res.json({ 
+            success: true, 
+            message: "Review submitted successfully!", 
+            orderId: orderId 
+        });
+        
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        res.status(500).send("Error submitting review");
+    }
+};
+
+
 module.exports = {
     getConfirmation,
     getOrders,
     viewOrder,
-    cancelOrder
+    cancelOrder,
+    cancelParentOrder,
+    getWriteReview,
+    submitReview
 }

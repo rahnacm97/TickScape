@@ -6,6 +6,7 @@ const Cart = require("../../models/cartSchema");
 const Order = require("../../models/orderSchema");
 const env = require("dotenv").config();
 const session = require("express-session");
+const { v4: uuidv4 } = require('uuid');
 
 const getCheckout = async (req, res) => {
     try {      
@@ -19,7 +20,7 @@ const getCheckout = async (req, res) => {
           return res.render("checkout-cart", { 
             carts: { items: [] , total : 0},
             total: 0,
-            captureEvents: { items: [], total: 0 }, // Empty cart fallback
+            captureEvents: { items: [], total: 0 }, 
             user: req.session.user ,
             address:address,
           });
@@ -69,6 +70,9 @@ const placeOrder = async (req, res) => {
     let previewOrder = [];
     let fullAddress = null;
 
+    const parentOrderId = uuidv4(); 
+    console.log("Generated Parent Order ID:", parentOrderId);
+
     if (address) {
       const addressDoc = await Address.findOne({ userId: userId });
       
@@ -97,7 +101,6 @@ const placeOrder = async (req, res) => {
         return res.status(400).json({ error: `Insufficient stock for product ${product.productName}.` });
       }
 
-      // Deduct stock
       await Product.findByIdAndUpdate(
         item.product,
         { $inc: { quantity: -item.quantity } },
@@ -105,8 +108,8 @@ const placeOrder = async (req, res) => {
       );
       console.log(`Stock updated for product ID: ${item.product}`);
 
-      // Create a separate order entry for each product
       const newOrder = new Order({
+        parentOrderId,
         userId,
         productId: item.product,
         quantity: item.quantity,
@@ -144,8 +147,9 @@ const placeOrder = async (req, res) => {
     let grandAmount = Price + shipping - (discount || 0); 
 
     let previewOrderObject = {
+      parentOrderId,
       previewOrder: previewOrder,
-      discount: discount, // Also include discount at the object level
+      discount: discount, 
       address: fullAddress,
       status: status || "Order Placed",
       paymentMethod: paymentMethod,
@@ -155,7 +159,6 @@ const placeOrder = async (req, res) => {
 
     console.log(previewOrderObject);
 
-    // Delete user's cart after placing order
     const cartDeleted = await Cart.findOneAndDelete({ userId });
     console.log(cartDeleted ? "Cart deleted successfully" : "No cart found for user");
 

@@ -359,20 +359,20 @@ input[type="text"] {
                         <div class="mb-20">
                             <h3>Payment Methods</h3>
                         </div>
-                        <div class="payment_method col-6">   
-                            <input type="radio" class="form-check-input" id="Onlinepayment" name="paymentMethod" value="Online Payment">
-                            <label class="form-check-label" for="Onlinepayment">Online Payment(via Razorpay)</label><br>
-                            
+                        <div class="payment_method col-6">
                             <input type="radio" class="form-check-input" id="paymentMethodCOD" name="paymentMethod" value="Cash on Delivery">
                             <label class="form-check-label" for="paymentMethodCOD">Cash on Delivery</label> <br>
                             
-                            <input type="radio" class="form-check-input" id="paymentWallet" name="paymentMethod" value="Wallet">
+                            <input type="radio" class="form-check-input" id="Onlinepayment" name="paymentMethod" value="Online Payment" disabled>
+                            <label class="form-check-label" for="Onlinepayment" disabled>Online Payment(via Razorpay)</label><br>
+                            
+                            <input type="radio" class="form-check-input" id="paymentWallet" name="paymentMethod" value="Wallet" disabled>
                             <label class="form-check-label" for="paymentWallet">Wallet</label><br>
 
-                            <input type="radio" class="form-check-input" id="creditCard" name="paymentMethod" value="Credit">
+                            <input type="radio" class="form-check-input" id="creditCard" name="paymentMethod" value="Credit" disabled>
                             <label class="form-check-label" for="paymentWallet">Credit Card</label><br>
 
-                            <input type="radio" class="form-check-input" id="banktransfer" name="paymentMethod" value="Bank">
+                            <input type="radio" class="form-check-input" id="banktransfer" name="paymentMethod" value="Bank" disabled>
                             <label class="form-check-label" for="paymentWallet">Bank Transfer</label><br>
 
                         </div>

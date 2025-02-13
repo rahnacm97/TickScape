@@ -406,6 +406,7 @@ strike{
         <form id="sort-filter-form">
           <div class="sort-options">
             <% const sortOptions = [
+              { value: "new_desc", label: "New Arrivals" },
               { value: "price_asc", label: "Price: Low to High" },
               { value: "price_desc", label: "Price: High to Low" },
               { value: "name_asc", label: "Name: Aa-Zz" },
@@ -428,7 +429,7 @@ strike{
      </aside>
 
      <main class="product-grid">
-      <% if (Array.isArray(products) && products.length > 0) { %>
+      <% if (Array.isArray(products)) { %>
         <% for(let i = 0; i < products.length; i++) { %>
          <div class="product-card" style="height: 400px;">
            <span class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">❤️</span>

@@ -99,6 +99,9 @@ router.get('/orders',userAuth,orderController.getOrders);
 router.get("/orderDetails",userAuth,orderController.getConfirmation);
 router.get('/viewOrder/:orderId',userAuth,orderController.viewOrder);
 router.delete('/cancelOrder/:orderId', userAuth,orderController.cancelOrder);
+router.delete('/cancelParentOrder/:parentOrderId',userAuth,orderController.cancelParentOrder);
+router.get('/writeReview',userAuth,orderController.getWriteReview);
+router.post('/submitReview',userAuth,orderController.submitReview);
 
 
 //Wishlist Management

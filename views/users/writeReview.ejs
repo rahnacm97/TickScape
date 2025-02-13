@@ -1,0 +1,162 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .main-container {
+        padding: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        background-color: #fff;
+    }
+    
+    .star-rating {
+    width: 100%;
+    padding-left: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: none;
+        font-size: 16px;
+    }
+
+</style>
+
+<section class="pt-10 pb-10">
+    <h3>Write a Review</h3>
+    <div class="container">
+        <div class="main-container">
+            <div class="row">
+                <form id="reviewForm">
+                    <input type="hidden" name="productId" value="<%= productId %>">
+                    <input type="hidden" name="orderId" value="<%= orderId %>">
+
+                    <label for="rating">Rating:</label>
+                    <select name="rating" id="rating" class="star-rating">
+                        <option value="">Select a rating</option>
+                        <option value="5">⭐ ⭐ ⭐ ⭐ ⭐</option>
+                        <option value="4">⭐ ⭐ ⭐ ⭐ ☆</option>
+                        <option value="3">⭐ ⭐ ⭐ ☆ ☆</option>
+                        <option value="2">⭐ ⭐ ☆ ☆ ☆</option>
+                        <option value="1">⭐ ☆ ☆ ☆ ☆</option>
+                    </select>
+
+                    <label for="comment">Comments:</label>
+                    <textarea name="comment" id="comment" placeholder="Write your feedback..."></textarea>
+
+                    <button type="submit" style="width: 20%; margin-left: 40%;">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Include jQuery and SweetAlert -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#reviewForm").submit(function (event) {
+            event.preventDefault();
+
+            let rating = $("#rating").val();
+            let comment = $("#comment").val();
+            let productId = $("input[name='productId']").val();
+            let orderId = $("input[name='orderId']").val();
+            
+            if (!rating) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Oops!",
+                    text: "Please select a rating before submitting.",
+                });
+                return;
+            }
+
+            if (comment.trim().length < 5) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Too Short!",
+                    text: "Please write at least 5 characters in your comment.",
+                });
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/submitReview",
+                data: {
+                    rating: rating,
+                    comment: comment,
+                    productId: productId,
+                    orderId: orderId
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Review Submitted!",
+                        text: "Thank you for your feedback.",
+                    }).then(() => {
+                         window.location.href = `/viewOrder/${orderId}`;
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Something went wrong. Please try again later.",
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<%- include("../../views/partials/user/footer") %>

@@ -357,13 +357,15 @@ hr {
         <div class="order-item">         
           <div class="container1">
             <div class="image container">
+              <a href="/productDetails?id=<%= order.productId._id %>">
               <img src="http://localhost:3000/<%= order.productId.productImage[0] %>" alt="Image">
+              </a>
             </div>
             <div class="order-info">          
-              <div class="order-detail"><span>Order ID:</span> <%= order._id%></div>
+              <div class="order-detail"><span>Order ID:</span> <%= order._id || order.parentOrderId %></div>
               <div class="order-detail"><span>Product Name: <%= order.productId.productName %></span></div>
-              <div class="order-detail"><span>Brand:</span> <%= order.productId.brand.brandName %></div>
-              <div class="order-detail"><span>Category:</span> <%= order.productId.category.name %></div>
+              <div class="order-detail"><span>Brand:</span>  <%= order.productId?.brand?.brandName || 'No Brand' %></div>
+              <div class="order-detail"><span>Category:</span> <%= order.productId?.category?.name || 'No Category' %></div>
               <div class="order-detail"><span>Quantity:</span> <%= order.quantity %></div>
               <div class="order-detail"><span>Price per Unit:</span> $<%= order.productId.salePrice %></div>
               <div class="order-detail"><span>Total Price:</span> $<%= order.totalPrice %></div>
@@ -392,7 +394,23 @@ hr {
                 <% } else { %>
                     <p class="no-address">No address available for this order.</p>
                 <% } %>
-            </div>                   
+            </div>  
+
+  <div class="product-section">
+    <% if (order.productId.userReview) { %>
+        <div class="my-review">
+            <h3>My Review</h3>
+            <p><strong>Rating:</strong> <%= order.productId.userReview.rating %> ⭐</p>
+            <p><strong>Comment:</strong> <%= order.productId.userReview.comment %></p>
+            <p><strong>Date:</strong> <%= new Date(order.productId.userReview.createdAt).toLocaleDateString() %></p>
+        </div>
+    <% } else if (order.status === 'Delivered') { %>
+        <div class="review-section">
+            <a href="/writeReview?productId=<%= order.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
+        </div>
+    <% } %>
+  </div>
+            
             </div>
           </div>  
           <div class="btn1-container">
@@ -435,12 +453,18 @@ hr {
                     <% }); %>
                 <% } %>
             </div>
+
+            <% let deliveredEntry = trackingHistory.find(entry => entry.status === "Delivered"); %>
             
-            <% if (expectedDeliveryDate) { %>
-                <div class="expected-delivery">
-                    <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
-                </div>
-            <% } %>
+            <% if (deliveredEntry) { %>
+              <div class="expected-delivery">
+                  <p><strong>Delivered On:</strong> <%= new Date(deliveredEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+              </div>
+          <% } else if (expectedDeliveryDate) { %>
+              <div class="expected-delivery">
+                  <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+              </div>
+          <% } %>
             
           
               <div class="order-status">
@@ -496,7 +520,7 @@ hr {
 
 <div class="btn1-container"> 
   <a href="/orders" class="btn">Back to Orders</a>
-  <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
+  <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order.parentOrderId %>')">
     <i class="fa fa-ban"></i> Cancel Order
   </a>
 </div>
@@ -534,7 +558,7 @@ hr {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            // Send cancellation request using DELETE method
+            
             fetch(`/cancelOrder/${orderId}`, {  
                 method: "DELETE",
                 headers: {
@@ -547,7 +571,73 @@ hr {
                 if (data.success) {
                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
                         .then(() => {
-                            element.closest(".order-item").remove(); // Remove order from UI
+                            element.closest(".order-item").remove(); 
+                        });
+                } else {
+                  Swal.fire({
+                  title: "Error",
+                  text: "You cannot cancel shipped orders.",
+                  icon: "error"
+                  });
+                }
+            })
+            .catch(error => {
+                console.error("Error cancelling order:", error);
+                Swal.fire("Error", "Something went wrong.", "error");
+            });
+        }
+    });
+}
+
+function confirmOrderCancel(element, parentOrderId) { 
+    console.log("Order ID to cancel:", parentOrderId);  
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Please select a reason for cancellation",
+        icon: "warning",
+        input: "select",
+        inputOptions: {
+            "Changed My Mind": "Changed My Mind",
+            "Found a Better Price": "Found a Better Price",
+            "Item No Longer Needed": "Item No Longer Needed",
+            "Ordered by Mistake": "Ordered by Mistake",
+            "Other": "Other"
+        },
+        inputPlaceholder: "Select a reason ⏷",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Cancel it",
+        cancelButtonText: "No, Keep it",
+        preConfirm: (reason) => {
+            if (!reason) {
+                Swal.showValidationMessage("Please select a reason");
+                return false;
+            }
+            return reason;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            
+            fetch(`/cancelParentOrder/${parentOrderId}`, {  
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ reason: result.value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
+                        .then(() => {
+                          const mainContainer = document.querySelector(".main-container");
+                            if (mainContainer) {
+                                mainContainer.innerHTML = `
+                                    <p style="color: red; font-weight: bold; text-align: center;">
+                                        This order has been cancelled.
+                                    </p>
+                                `;
+                            }
+                            element.closest(".order-item").remove();
                         });
                 } else {
                   Swal.fire({

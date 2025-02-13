@@ -279,6 +279,64 @@
   margin-top: 10px;
 }
 
+.product-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.product-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.product-card h4 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.product-card p {
+  font-size: 14px;
+  color: #555;
+  line-height: normal;
+}
+h2{
+ margin-left: 20px;
+ margin-bottom: 10px;
+}
+.customer-reviews {
+    max-width: 1150px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+  }
+  .review {
+    padding: 10px 0;
+  }
+  .review-header {
+    font-weight: bold;
+  }
+  .review-rating {
+    color: #f4c542;
+    font-size: 16px;
+  }
+  .review-comment {
+    font-size: 14px;
+    margin-top: 5px;
+  }
   
 </style>
 
@@ -294,22 +352,24 @@
   </div>
 
   <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.2/easyzoom.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.2/easyzoom.min.js"></script>
 
-  <section class="mt-50 mb-50">
+  <section class="mt-50 mb-10">
     <div class="container">
       <div class="row">
         <div class="col-lg-9">
           <div class="product-detail accordion-detail">
             <div class="row mb-50">
+              <!-- Left Column: Product Images -->
               <div class="col-md-6 col-sm-12 col-xs-12">
                 <div class="detail-gallery">
-                  <!-- Main Image Slider -->
                   <div class="slider-wrapper">
                     <% product.productImage.forEach((image, index) => { %>
                     <figure class="border-radius-10 magnify image-class slider-image <%= index === 0 ? 'active' : '' %>">
                       <img id="image-container" src="http://localhost:3000/<%= image %>" alt="Product Image" style="
-                        max-width: 400px;  
-                        max-height: 400px;  
+                        max-width: 600px;  
+                        max-height: 600px;  
                         object-fit: cover;  
                       ">
                     </figure>
@@ -317,22 +377,17 @@
                   </div>
                   <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
                   <button class="next" onclick="moveSlide(1)">&#10095;</button>
-
                   <script>
                     const images = document.querySelectorAll('.slider-image');
                     const totalImages = images.length;
                     let currentIndex = 0;
-
+  
                     function moveSlide(direction) {
-                      // Remove 'active' class from current image
                       images[currentIndex].classList.remove('active');
                       currentIndex = (currentIndex + direction + totalImages) % totalImages;
-
-                      // Add 'active' class to the next image
                       images[currentIndex].classList.add('active');
                     }
-
-                    // Initialize zoom for each image
+  
                     images.forEach(img => {
                       const options = {
                         width: 400,
@@ -345,8 +400,7 @@
                       new ImageZoom(img, options);
                     });
                   </script>
-
-                  <!-- Thumbnail Slider -->
+  
                   <div class="slider-nav-thumbnails">
                     <% product.productImage.forEach((image) => { %>
                     <div>
@@ -358,68 +412,113 @@
               </div>
 
               <div class="col-md-6 col-sm-12 col-xs-12">
-                <div class="detail-info">
-                  <h2 class="title-detail"><%= product.productName %></h2>
-                  <div class="product-detail-rating">
-                    <div class="pro-details-brand">
-                      <% if (product.brand && product.brand.brandName) { %>
-                        <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
-                      <% } %>
-                    </div>
-                    <div class="product-rate-cover text-end">
-                      <div class="product-rate d-inline-block">
-                        <div class="product-rating" style="width:90%; color: yellow; height: 90%;"></div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="detail-info ml-40 col-lg-12">
+                      <h2 class="title-detail"><%= product.productName %></h2>
+                      <div class="product-detail-rating">
+                        <div class="pro-details-brand">
+                          <% if (product.brand && product.brand.brandName) { %>
+                            <span> Brand: <a href="#"><%= product.brand.brandName %></a></span>
+                          <% } %>
+                        </div>
+                        <div class="product-rate-cover text-end">
+                          <div class="product-rate d-inline-block">
+                            <div class="product-rating" style="width:90%; color: yellow; height: 90%;"></div>
+                          </div>
+                          <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                        </div>
                       </div>
-                      <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                      <div class="clearfix product-price-cover">
+                        <div class="product-price primary-color float-left">
+                          <ins><span class="text-brand">$<%= product.salePrice %></span></ins>
+                          <ins><span class="old-price font-md ml-15">$<%= product.regularPrice %></span></ins>
+                          <span class="save-price font-md color3 ml-15">
+                            <% if(!totalOffer) { %>
+                            No Offers
+                            <% } else { %>
+                            <%= totalOffer %>% Offer
+                            <% } %>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                      <div class="short-desc mb-30">
+                        <p style="text-align: justify;"><%= product.description %></p>
+                      </div>
+                      <div class="product_sort_info font-xs mb-30">
+                        <ul>
+                          <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
+                          <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
+                          <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                        </ul>
+                      </div>
+  
+                      <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                      <div class="detail-extralink">
+                        <div class="product-extra-link2">
+                          <button type="submit" class="button button-add-to-cart button-new" style="top: 500px; margin-left: 100px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
+                          <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
+                        </div>
+                      </div>
+                      <ul class="product-meta font-xs color-grey mt-50">
+                        <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
+                        <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"><%= category.name %></a> </li>
+                        <li>
+                          Stock Status: 
+                          <% if (quantity == 0) { %>
+                            <span style="color: red; font-weight: bold; font-size: 14px;"><%= quantity %> Item</span>
+                          <% } else if (quantity <= 10) { %>
+                            <span style="color: orange; font-weight: bold; font-size: 14px;"> Only <%= quantity %> Item left</span>
+                          <% } else { %>
+                            <span style="color: green; font-weight: bold; font-size: 14px;"><%= quantity %> Items in Stock</span>
+                          <% } %>
+                        </li>
+                        <li>
+                          Availability:
+                          <% if(product.status == 'Out of Stock'){ %>
+                            <span style="color:red;font-weight: bold;font-size: 18px;"><%= product.status %></li>
+                          <% } else {%>
+                            <span style="color:green;font-weight: bold;font-size: 18px;"><%= product.status %></li>
+                          <% } %>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                  <div class="clearfix product-price-cover">
-                    <div class="product-price primary-color float-left">
-                      <ins><span class="text-brand">$<%= product.salePrice %></span></ins>
-                      <ins><span class="old-price font-md ml-15">$<%= product.regularPrice %></span></ins>
-                      <span class="save-price font-md color3 ml-15">
-                        <% if(!totalOffer) { %>
-                        No Offers
-                        <% } else { %>
-                        <%= totalOffer %>% Offer
-                        <% } %>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="bt-1 border-color-1 mt-15 mb-15"></div>
-                  <div class="short-desc mb-30">
-                    <p><%= product.description %></p>
-                  </div>
-                  <div class="product_sort_info font-xs mb-30">
-                    <ul>
-                      <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
-                      <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
-                      <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
-                    </ul>
-                  </div>
-
-                  <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                  <div class="detail-extralink">
-                    
-                    <div class="product-extra-link2">
-                      <button type="submit" class="button button-add-to-cart button-new" style="top: 500px; margin-left: 100px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
-                      <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
-                    </div>
-                  </div>
-                  <ul class="product-meta font-xs color-grey mt-50">
-                    <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
-                    <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"><%= category.name %></a> </li>
-                    <li>Availability: <span class="in-stock text-success ml-5"><%= quantity %> Items in Stock.</span></li>
-                  </ul>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+    
+    <section class="mb-30">
+      <h2>Customer Reviews</h2>
+      <div class="customer-reviews ml-50">
+        <% if (reviews.length > 0) { %>
+          <% reviews.forEach(review => { %>
+            <div class="review">
+              <div class="review-header">
+                <strong><%= review.user.fname %> <%= review.user.lname %></strong>  
+              </div>
+              <div class="review-rating">
+                <span style="color: gold;">⭐</span> <%= review.rating %>/5
+              </div>
+              <p class="review-comment"><%= review.comment %></p>
+            </div>
+            <div>
+              <span class="text-muted"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+            </div>
+            <hr />
+          <% }); %>
+        <% } else { %>
+          <p>No reviews yet. Be the first to review this product!</p>
+        <% } %>
+      </div>
+
+    </section>
+
   <section class="related-product-area section_gap_bottom">
     <div class="container">
       <div class="row justify-content-center">
@@ -430,13 +529,13 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" style="margin-bottom: 5%;">
         <div class="col-lg-9">
           <% if (relatedProducts && relatedProducts.length > 0) { %>
-            <div class="row gy-4"> <!-- Added spacing between rows -->
+            <div class="row gy-4">
               <% for (let i = 0; i < relatedProducts.length; i++) { %>
                 <div class="col-lg-4 col-md-6 col-sm-6">
-                  <div class="card shadow-sm h-100"> <!-- Ensures all cards have equal height -->
+                  <div class="product-card shadow-sm h-100"> 
                     <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
                       <img src="http://localhost:3000/<%= relatedProducts[i].productImage[0] %>" 
                         alt="<%= relatedProducts[i].productName %>" class="card-img-top" 
@@ -446,11 +545,11 @@
                       <h5 class="card-title mb-2">
                         <a href="/productDetails?id=<%= relatedProducts[i]._id %>" class="text-dark text-decoration-none"><%= relatedProducts[i].productName %></a>
                       </h5>
-                      <div class="mt-auto"> <!-- Pushes the price section to the bottom -->
-                        <div class="price d-flex justify-content-between align-items-center">
+                      <div class="mt-auto">
+                        <div class="price">
                           <span class="text-success fw-bold">$<%= relatedProducts[i].salePrice %></span>
-                          <% if (relatedProducts[i].originalPrice) { %>
-                            <span class="text-muted text-decoration-line-through">$<%= relatedProducts[i].originalPrice %></span>
+                          <% if (relatedProducts[i].regularPrice) { %>
+                            <span class="text-muted text-decoration-line-through">$<%= relatedProducts[i].regularPrice %></span>
                           <% } %>
                         </div>
                       </div>

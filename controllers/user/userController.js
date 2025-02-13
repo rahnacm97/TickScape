@@ -347,7 +347,7 @@ const loadShoppingPage = async (req, res) => {
 
         const filterQuery = {
             isBlocked: false,
-            quantity: { $gt: 0 },
+            //quantity: { $gt: 0 },
         };
 
         if (category) {
@@ -381,8 +381,9 @@ const loadShoppingPage = async (req, res) => {
             ];
         }
 
-        let sortOptions = { createdOn: -1 }; 
+        let sortOptions = { createdAt: -1 }; 
         switch (sort) {
+            case 'new_desc': sortOptions = { createdAt: -1 }; break;
             case 'price_asc': sortOptions = { salePrice: 1 }; break;
             case 'price_desc': sortOptions = { salePrice: -1 }; break;
             case 'name_asc': sortOptions = { productName: 1 }; break;
