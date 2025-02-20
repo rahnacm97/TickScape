@@ -1,8 +1,8 @@
 <%- include("../../views/partials/user/header") %>
 <style>
   .small-card {
-    max-width: auto; /* Adjust width */
-    font-size: 12px; /* Reduce text size */
+    max-width: auto; 
+    font-size: 12px; 
 }
 .small-card .card-body {
     padding: 5px;
@@ -30,7 +30,7 @@
     border-radius: 5px;
     border: 1px solid #ccc;
   }
-  /* General Styles */
+  
   body {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
@@ -312,7 +312,7 @@
 }
 
 </style>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <main class="main">
  <div class="page-header breadcrumb-wrap mb-3">
@@ -348,17 +348,17 @@
               </li>
                  <li class="nav-item">
                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false">
-                     <i class="fi-rs-shopping-cart-check mr-10"></i>Wallet Status
+                    <i class="fas fa-wallet mr-10"></i>Wallet Status
                    </a>
                  </li>
                  <li class="nav-item">
                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#wallet-history" role="tab" aria-controls="track-orders" aria-selected="false">
-                     <i class="fi-rs-shopping-cart-check mr-10"></i>Wallet History
+                    <i class="fas fa-history mr-10"></i> History
                    </a>
                  </li>
                  <li class="nav-item">
                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#referal" role="tab" aria-controls="track-orders" aria-selected="false">
-                     <i class="fi-rs-shopping-cart-check mr-10"></i>Referals
+                    <i class="fas fa-user-friends mr-10"></i> Referrals
                    </a>
                  </li>
                  <li class="nav-item">
@@ -375,6 +375,7 @@
                  <div class="card card-green">
                    <div class="card-header">
                      <h5 class="mb-0 text-center">My Profile</h5>
+                     <a href="javascript:void(0);" onclick="confirmEdit('<%= user._id %>')" style="margin-left: 600px; font-size: 12px;">Edit</a>
                    </div>
                    <div class="card-body text-center">
                      <h5 class="card-title"><%=user.fname%> <%=user.lname%></h5>
@@ -459,4 +460,24 @@
    </div>
  </section>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmEdit(userId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to edit your profile?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, go to edit!",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/edit-profile?id=${userId}`;
+            }
+        });
+    }
+</script>
 <%- include("../../views/partials/user/footer") %>

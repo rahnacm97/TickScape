@@ -18,10 +18,6 @@ const cartSchema = new Schema({
             default: 1,
             min: [1, 'Quantity must be at least 1']
         },
-        price: {
-            type: Number,
-            required: true
-        },
         totalPrice: {
             type: Number,
             required: true

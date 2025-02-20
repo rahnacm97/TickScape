@@ -1,0 +1,252 @@
+<%- include("../../views/partials/user/header") %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    
+    .container {
+        max-width: 1000px;
+        margin-bottom: 40px;
+    }
+    
+    .form-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+    
+    .page-header.breadcrumb-wrap {
+        margin-top: 10px;
+        background-color: #ede9ec;
+        padding: 20px 0;
+    }
+
+    .breadcrumb-wrap {
+        padding: 20px 0;
+        background-color: #1e918b;
+        color: #fff;
+    }
+
+    .breadcrumb a {
+        margin-left: 20px;
+        color: #088178;
+        text-decoration: none;
+    }
+
+    .breadcrumb span {
+        margin: 0 5px;
+        color: rgb(125, 124, 124);
+    }
+
+    a, button {
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #ccc;
+    }
+
+    .btn-primary {
+        background-color: #046963;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        width: 30%;
+        transition: 0.3s;
+        margin-left: 35%;
+    }
+
+    .btn-primary:hover {
+        background-color: #034f4a;
+    }
+
+    h3 {
+        text-align: center;
+        color: #046963;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    input {
+        color: rgb(113, 112, 112);
+    }
+</style>
+
+<body>
+    <div class="page-header breadcrumb-wrap mb-3">
+        <div class="container1">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow">Home</a>
+                <span></span><a href="/userProfile" rel="nofollow">Profile</a>
+                <span></span><a href="/viewOrder/<%= order._id %>" rel="nofollow">Order</a>
+                <span></span> Shipping Address
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <h3 class="mt-10 mb-15" style="color: #046963; margin-bottom:70px">Change Shipping Address</h3>
+        <div class="form-card"> 
+            <form id="addressForm" method="POST" action="/update-address?orderid=<%= order._id %>" class="border-0 p-3">
+                <div class="row mb-3">
+                    <div class="form-group col-md-6">
+                        <label for="addressType">Address Type:</label>
+                        <input type="text" class="form-control border-3" value="<%= address.addressType %>" id="addressType" name="addressType">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control border-3" value="<%= address.name %>" id="name" name="name">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="form-group col-md-6">
+                        <label for="city">City:</label>
+                        <input type="text" class="form-control border-3" id="city" value="<%= address.city %>" name="city">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="landMark">Landmark:</label>
+                        <input type="text" class="form-control border-3" value="<%= address.landMark %>" id="landMark" name="landMark">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="form-group col-md-6">
+                        <label for="state">State:</label>
+                        <input type="text" class="form-control border-3" value="<%= address.state %>" id="state" name="state">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="pincode">Pincode:</label>
+                        <input type="number" class="form-control border-3" value="<%= address.pincode %>" id="pincode" name="pincode">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="form-group col-md-6">
+                        <label for="phone">Phone:</label>
+                        <input type="number" class="form-control border-3" id="phone" value="<%= address.phone %>" name="phone">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="altPhone">Alternate Phone:</label>
+                        <input type="number" class="form-control border-3" id="altPhone" value="<%= address.altPhone %>" name="altPhone">
+                    </div>
+                   
+                </div>
+                <button type="submit" id="submitButton" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+   $(document).ready(function () {
+       $('#submitButton').click(function (event) {
+           if (!validateForm()) {
+               event.preventDefault();
+           }
+       });
+
+       function validateForm() {
+           let isValid = true;
+           const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
+
+           $(".text-danger").remove();
+
+           requiredFields.forEach(function (field) {
+               const input = $("#" + field);
+               if (input.val().trim() === "") {
+                   input.after('<div class="text-danger">This field is required.</div>');
+                   isValid = false;
+               }
+           });
+
+           const namePattern = /^[A-Za-z\s]+$/;
+           const pincodePattern = /^\d{6}$/;
+           const phonePattern = /^\d{10}$/;
+
+           if (!namePattern.test($("#name").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Name should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!namePattern.test($("#city").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'City should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!namePattern.test($("#landMark").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Landmark should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!namePattern.test($("#state").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'State should contain alphabets only.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!pincodePattern.test($("#pincode").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Pincode should be a 6-digit number.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!phonePattern.test($("#phone").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Phone number should be a 10-digit number.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if (!phonePattern.test($("#altPhone").val())) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Alternate phone number should be a 10-digit number.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           if ($("#phone").val() === $("#altPhone").val()) {
+               Swal.fire({
+                   title: 'Error',
+                   text: 'Phone number and alternate phone number should be different.',
+                   icon: 'error'
+               });
+               isValid = false;
+           }
+
+           return isValid;
+       }
+   });
+</script>
+
+<%- include("../../views/partials/user/footer") %>

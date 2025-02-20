@@ -4,11 +4,12 @@ const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
 const Cart = require("../../models/cartSchema");
 const Order = require("../../models/orderSchema");
+const CustomError = require('../../utils/customError');
 const env = require("dotenv").config();
 const session = require("express-session");
 const { default: mongoose } = require("mongoose");
 
-const getCartPage = async (req, res) => {
+const getCartPage = async (req, res,next) => {
   try {
    
     if (!req.session.user) {
@@ -50,23 +51,26 @@ const getCartPage = async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching cart:', error);
-    res.status(500).send('An error occurred while loading the cart page.');
+    //res.status(500).send('An error occurred while loading the cart page.');
+    next(new CustomError(500, "An error occurred while loading the cart page."))
   }
 };
 
 
-const addToCart = async (req, res) => {
+const addToCart = async (req, res,next) => {
   try {
     const { productId } = req.body;
     const userId = req.session?.user?._id; 
 
     if (!userId) {
-      return res.status(401).json({ error: "Please log in to add a product" });
+      //return res.status(401).json({ error: "Please log in to add a product" });
+      return next(new CustomError(401, "Please log in to add a product"))
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      //return res.status(404).json({ error: "Product not found" });
+      return next(new CustomError(404, "Product not found"))
     }
 
     if (product.quantity === 0) {
@@ -128,7 +132,6 @@ const changeQuantity = async (req, res) => {
     const { productId, quantity } = req.body;
     const parsedQuantity = parseInt(quantity);
 
-    // Validate inputs
     if (!productId || isNaN(parsedQuantity) || parsedQuantity <= 0) {
       return res.status(400).json({ error: "Valid Product ID and quantity greater than 0 are required" });
     }
@@ -152,19 +155,15 @@ const changeQuantity = async (req, res) => {
       return res.status(404).json({ error: "Product not found in inventory" });
     }
 
-    // Use the salePrice or regularPrice
     const price = product.salePrice || product.regularPrice;
 
-    // Validate product price
     if (isNaN(price) || price <= 0) {
       return res.status(400).json({ error: "Invalid product price" });
     }
 
-    // Update item and calculate totalPrice
     item.quantity = parsedQuantity;
     item.totalPrice = parsedQuantity * price;
 
-    // Validate totalPrice
     if (isNaN(item.totalPrice) || item.totalPrice <= 0) {
       return res.status(400).json({ error: "Invalid total price for the item" });
     }
@@ -184,57 +183,6 @@ const changeQuantity = async (req, res) => {
     res.status(500).json({ error: "Failed to update cart", details: error.message });
   }
 };
-
-
-
-// const deleteProduct = async (req, res) => {
-//   try {
-
-//     const user = req.session.user;
-//     // console.log("User",user)
-//     if (!user) {
-//       return res.status(401).json({ error: 'User not logged in' });
-//     }
-
-//     console.log("req",req.query);
-//     const productId  = req.query.id;
-//     if (!req.query.id) {
-//       return res.status(400).json({ error: "ID is required" });
-//     }
-//     console.log("productId",productId)
-//     let cart = await Cart.findOne({ userId: req.session.user._id });
-//     console.log("cart",cart)
-//     if (!cart) {
-//       return res.status(404).json({ error: 'Cart not found' });
-//     }
-
-//     const itemIndex = cart.items.findIndex((item) => item.productId.toString() === productId);
-//     console.log("Itemindex",itemIndex)
-//     if (itemIndex === -1) {
-//       return res.status(404).json({ error: 'Product not found in cart' });
-//     }
-
-//     const product = await Product.findById(productId);
-//     console.log("product",product)
-//     if (!product) {
-//       return res.status(404).json({ error: 'Product not found in inventory' });
-//     }
-
-//     const removedItem = cart.items[itemIndex];
-
-//     cart.items.splice(itemIndex, 1);
-
-//     await cart.save();
-//     await product.save();
-//     cart = await Cart.findOne({ userId:req.session.user._id })
-//     let cartitemcount = cart.items.length
-//     return res.redirect('/cart');
-//     res.status(200).json({ message: 'Product removed from cart',cartitemcount:cartitemcount });
-//   } catch (error) {
-//     console.error('Error removing product from cart:', error);
-//     res.status(500).json({ error: 'Failed to remove product from cart' });
-//   }
-// };
 
 const deleteProduct = async (req, res) => {
   try {

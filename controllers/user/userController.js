@@ -3,9 +3,11 @@ const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const Banner = require('../../models/bannerSchema');
 const Brand = require('../../models/brandSchema');
+const CustomError = require('../../utils/customError');
 const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const CryptoJS = require("crypto-js");
 
 const pageNotFound = async(req,res) => {
     try{
@@ -19,7 +21,7 @@ const pageNotFound = async(req,res) => {
         }
 }
 
-const loadHomePage = async(req,res) => {
+const loadHomePage = async(req,res,next) => {
     try{
         const today = new Date().toISOString();
         const findBanner = await Banner.find({
@@ -46,11 +48,12 @@ const loadHomePage = async(req,res) => {
        
     }catch(err){
         console.log("Home Page Not Found");
-        res.status(500).send("Server Error");
+        //res.status(500).send("Server Error");
+        next(new CustomError(500, "Internal Server Error"))
     }
 }
 
-const loadLoginPage = async(req,res) => {
+const loadLoginPage = async(req,res,next) => {
     try{
         return res.render('login',{
             user: req.session.user || null
@@ -60,9 +63,14 @@ const loadLoginPage = async(req,res) => {
     }
 }
 
-const login = async(req,res) => {
+const login = async(req,res,next) => {
     try{
+
+        // const bytes = CryptoJS.AES.decrypt(password, "your-secret-key");
+        // const decryptedPassword = bytes.toString(CryptoJS.enc.Utf8);
+        
         const {email,password} = req.body;
+        //console.log("password",password);
         const findUser = await User.findOne({isAdmin: 0,email:email});
         if(!findUser){
             return res.render("login",{message:"User Not Found"});
@@ -70,10 +78,14 @@ const login = async(req,res) => {
         if(findUser.isBlocked){
             return res.render("login",{message:"User is Blocked by Admin"});
         }
-        const passwordMatch = await bcrypt.compare(password,findUser.password);
+
+       const passwordMatch = await bcrypt.compare(password,findUser.password);
+
+        console.log("Password Match:", passwordMatch);
         if(!passwordMatch){
             return res.render("login",{message:"Incorrect Password"});
         }
+
         req.session.user = findUser;
         // Pass user to all views using res.locals
         res.locals.user = req.session.user;
@@ -150,6 +162,17 @@ const signup = async(req,res) => {
         req.session.userOtp = otp;
         req.session.userData = {fname,lname,phone,email,password};
 
+        setTimeout(()=>{
+            delete req.session.userOtp
+            req.session.save((err)=>{
+                if(err){
+                    console.log('Error deleting session');
+                }
+            })
+            console.log('otp expired');
+          },60000)
+          //console.log('4');
+        
         res.render("verify-otp");
         console.log("OTP Sent ",otp);
 
@@ -187,6 +210,7 @@ const verifyOtp = async (req,res) => {
             })
             await saveUserData.save();
             req.session.user = saveUserData._id;
+
             res.json({success:true,redirectUrl:"/login"});
         }else{
             res.status(400).json({success:false, message:"Invalid OTP, Please try again"});
@@ -334,7 +358,7 @@ const logout = async (req,res) => {
 
 
 
-const loadShoppingPage = async (req, res) => {
+const loadShoppingPage = async (req, res, next) => {
     try {
         const user = req.session.user;
         const { category, brand, gt, lt, sort, page, search } = req.query;
@@ -367,7 +391,7 @@ const loadShoppingPage = async (req, res) => {
         }
 
         if (searchQuery) {
-            //console.log("Search Query Received:", searchQuery); // Debugging
+            //console.log("Search Query Received:", searchQuery); 
             const matchingCategories = await Category.find({
                 name: { $regex: searchQuery, $options: "i" },
                 isListed: true,

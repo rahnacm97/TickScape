@@ -69,27 +69,27 @@
    display: block;
 }
 .header-area {
-    background-color: #ffffff; /* Set your desired color here */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better visibility */
+    background-color: #ffffff; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
-    z-index: 1000; /* Ensures it stays above other content */
-    transition: background-color 0.3s ease; /* Smooth transition for hover or other interactions */
+    z-index: 1000; 
+    transition: background-color 0.3s ease; 
 }
 
 .header-right ul li a,
 .main-menu nav ul li a {
-    color: #333333; /* Set text/link color to match your design */
+    color: #333333;
 }
 
 .main-header.header-sticky {
-    background-color: inherit; /* Ensure sticky header keeps the set color */
+    background-color: inherit; 
 }
 
 .nav-search span,
 .flaticon-user,
 .flaticon-shopping-cart {
-    color: #333333; /* Adjust icon colors */
+    color: #333333;
 }
 
 
@@ -188,4 +188,11 @@
             </div>
         </div>
         <!-- Header End -->
+         <script>
+            window.addEventListener("load", function () {
+    setTimeout(function () {
+        document.getElementById("preloader-active").style.display = "none";
+    }, 300); // Reduce the delay (e.g., 500ms)
+});
+         </script>
     </header>

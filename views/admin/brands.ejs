@@ -158,7 +158,7 @@
               <button class="btn" type="submit">Search</button>
             </div>
           </form>
-        <a href="/admin/addBrand" class="btn btn-primary btn-add-category">Add Brand</a>
+        <a href="/admin/addBrand" class="btn btn-primary btn-add-category" data-section="brand">Add Brand</a>
       </div>
     </header>
   </div>
@@ -228,7 +228,7 @@
                   </td>                  
                   <td>
                     <button class="btn btn-success" style="width: 90px">
-                      <a href="/admin/editBrand?id=<%= brand._id %>" class="text-white">Edit</a>
+                      <a href="/admin/editBrand?id=<%= brand._id %>" class="text-white" data-section="brand">Edit</a>
                     </button>
                   </td>
                   <td>

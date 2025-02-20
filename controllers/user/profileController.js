@@ -1,6 +1,7 @@
 const User = require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
 const Order = require('../../models/orderSchema');
+const CustomError = require('../../utils/customError');
 const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
@@ -86,6 +87,18 @@ const forgotEmailValid = async(req,res) => {
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.email = email;
+
+                setTimeout(()=>{
+                    delete req.session.userOtp
+                    req.session.save((err)=>{
+                        if(err){
+                            console.log('Error deleting session');
+                        }
+                    })
+                    console.log('otp expired');
+                  },60000)
+                  console.log('5');
+
                 res.render('forgotPass-otp');
                 console.log("OTP:",otp);
             }else{
@@ -202,6 +215,18 @@ const changeEmailValid = async(req,res) => {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
+
+                setTimeout(()=>{
+                    delete req.session.userOtp
+                    req.session.save((err)=>{
+                        if(err){
+                            console.log('Error deleting session');
+                        }
+                    })
+                    console.log('otp expired');
+                  },60000)
+                  //console.log('5');
+
                 res.render("change-email-otp");
                 console.log("Email Sent:",email);
                 console.log("OTP:",otp);
@@ -267,6 +292,18 @@ const changePasswordValid = async(req,res) => {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
+
+                setTimeout(()=>{
+                    delete req.session.userOtp
+                    req.session.save((err)=>{
+                        if(err){
+                            console.log('Error deleting session');
+                        }
+                    })
+                    console.log('otp expired');
+                  },60000)
+                  console.log('5');
+
                 res.render("change-password-otp");
                 console.log("Email Sent:",email);
                 console.log("OTP:",otp);
@@ -285,7 +322,7 @@ const changePasswordValid = async(req,res) => {
     }
 }
 
-const verifyChangePassOtp = async(req,res) => {
+const verifyChangePassOtp = async(req,res,next) => {
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
@@ -295,7 +332,8 @@ const verifyChangePassOtp = async(req,res) => {
             res.json({success:false,message:"OTP does not match"});
         }
     } catch (error) {
-        res.status(500).json({success:false,message:"An error occured. Please try again later."});
+        next(new CustomError(500, "An error occured. Please try again later."))
+        //res.status(500).json({success:false,message:"An error occured. Please try again later."});
     }
 }
 
@@ -451,7 +489,7 @@ const userEditAddress = async(req,res) =>{
     }
 }
 
-const deleteAddress = async (req, res) => {
+const deleteAddress = async (req, res, next) => {
     try {
         const addressId = req.query.id;
         const redirectTo = req.query.redirectTo || "address";
@@ -469,9 +507,47 @@ const deleteAddress = async (req, res) => {
         return res.json({ success: true, redirectTo, message: "Address deleted successfully" });
     } catch (error) {
         console.error("Error in deleting address", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        //res.status(500).json({ success: false, message: "Internal Server Error" });
+        next(new CustomError(500, "Internal Server Error"))
     }
 };
+
+const geteditProfile = async (req, res,next) => {
+    try {
+        const userId = req.query.id;
+        if (!userId) {
+            //return res.status(400).send('User ID is required');
+            return next(new CustomError(400, "User ID is required"))
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+            //return res.status(404).send('User not found');
+            return next(new CustomError(400, "User not found"))
+        }
+
+        res.render('editProfile', { user });
+    } catch (error) {
+        console.error(error);
+        //res.status(500).send('Internal Server Error');
+        next(new CustomError(500, "Internal Server Error"))
+    }
+};
+
+const editProfile = async(req,res) => {
+    try {
+        const { newFname, newLname, newPhone } = req.body;
+        console.log("req", req.body);
+        const userId = req.session.user;
+        await User.findByIdAndUpdate(userId, {
+            fname: newFname,
+            lname: newLname,
+            phone: newPhone,
+        });
+        res.redirect('/userProfile');
+    } catch (error) {
+        res.redirect('/pageNotFound');
+    }
+}
 
 module.exports = {
     getForgotPassword,
@@ -494,5 +570,6 @@ module.exports = {
     editAddress,
     userEditAddress,
     deleteAddress,
-
+    geteditProfile,
+    editProfile
 }

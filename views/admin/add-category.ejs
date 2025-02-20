@@ -101,76 +101,84 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script>
     function handleFormSubmit(event) {
-      event.preventDefault();
+    event.preventDefault();
 
-      if (!validateForm()) {
+    if (!validateForm()) {
         return;
-      }
+    }
 
-      const name = document.getElementById("name").value.trim();
-      const description = document.getElementById("descriptionId").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
 
-      fetch('/admin/addCategory', {
+    fetch('/admin/addCategory', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name, description }),
-      })
-        .then((response) => {
-          if (!response.ok) {
+    })
+    .then((response) => {
+        if (!response.ok) {
             return response.json().then((err) => {
-              throw new Error(err.error);
+                throw new Error(err.error);
             });
-          }
-          return response.json();
-        })
-        .then(() => {
-          window.location.href = "/admin/category";
-        })
-        .catch((error) => {
-          Swal.fire({
+        }
+        return response.json();
+    })
+    .then(() => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Category Added!',
+            text: 'The category has been successfully added.',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = "/admin/category";
+        });
+    })
+    .catch((error) => {
+        Swal.fire({
             icon: 'error',
             title: 'Oops',
             text: error.message || 'An error occurred while adding the category',
-          });
         });
-    }
+    });
+}
 
-    function validateForm() {
-      clearErrorMessages();
-      const name = document.getElementById("name").value.trim();
-      const description = document.getElementById("descriptionId").value.trim();
-      let isValid = true;
+function validateForm() {
+    clearErrorMessages();
+    const name = document.getElementById("name").value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
+    let isValid = true;
 
-      if (name === "") {
+    if (name === "") {
         displayErrorMessage("name-error", "Please enter a name");
         isValid = false;
-      } else if (!/^[a-zA-Z\s']+$/i.test(name)) {
+    } else if (!/^[a-zA-Z\s']+$/i.test(name)) {
         displayErrorMessage("name-error", "Category name should only contain alphabetic characters");
         isValid = false;
-      }
+    }
 
-      if (description === "") {
+    if (description === "") {
         displayErrorMessage("description-error", "Please enter a description");
         isValid = false;
-      }
-
-      return isValid;
     }
 
-    function displayErrorMessage(elementId, message) {
-      const errorElement = document.getElementById(elementId);
-      errorElement.innerText = message;
-      errorElement.style.display = "block";
-    }
+    return isValid;
+}
 
-    function clearErrorMessages() {
-      const errorElements = document.getElementsByClassName("error-message");
-      Array.from(errorElements).forEach((element) => {
+function displayErrorMessage(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+}
+
+function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName("error-message");
+    Array.from(errorElements).forEach((element) => {
         element.innerText = "";
         element.style.display = "none";
-      });
-    }
+    });
+}
+
   </script>
 </body>

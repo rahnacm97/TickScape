@@ -320,31 +320,30 @@
      </div>
  </div> -->
  
- <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
  <script>
-     let croppers = {};  // Object to store the cropper instances
-      let croppedImages = [];  // Array to store the cropped image blobs
+     let croppers = {};  
+      let croppedImages = [];  
 
       const handleImage = (e) => {
-      const files = e.target.files;  // Get the selected files
+      const files = e.target.files;  
       console.log("Selected Files: ", files);
 
-      // Clear any existing cropper containers
+
       const cropperContainers = document.getElementById("cropperContainers");
       cropperContainers.innerHTML = "";
 
-      // Iterate through the selected files
       for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const reader = new FileReader();
 
-          // Create a new cropper container dynamically
           const cropperContainer = document.createElement('div');
           cropperContainer.id = `cropperContainer${i}`;
-          cropperContainer.style.marginBottom = "20px";  // Styling for separation
+          cropperContainer.style.marginBottom = "20px";  
           cropperContainers.appendChild(cropperContainer);
 
-          // Create an image element for previewing the selected image
           const img = document.createElement('img');
           img.id = `cropImage${i}`;
           img.style.width = '300px';
@@ -357,82 +356,75 @@
           saveButton.setAttribute("type", "button");
           cropperContainer.appendChild(saveButton);
 
-          // Read the file as data URL
           reader.onload = function () {
               img.src = reader.result;
 
-              // Initialize the cropper for this image
               if (croppers[i]) {
-                  croppers[i].destroy();  // Destroy any existing cropper before initializing a new one
+                  croppers[i].destroy();  
               }
 
               croppers[i] = new Cropper(img, {
-                  aspectRatio: 1,  // Maintain a square aspect ratio
+                  aspectRatio: 1,  
                   viewMode: 1,
                   autoCropArea: 1,
               });
 
-              // Handle the "Save Cropped Image" button click event
+            
               saveButton.onclick = function () {
                   const croppedCanvas = croppers[i].getCroppedCanvas({
                       width: 600,  
                       height: 600
                   });
 
-                  // Get the file extension from the uploaded image
-                  const fileExtension = file.name.split('.').pop();  // Extract file extension (e.g., jpg, png, etc.)
+           
+                  const fileExtension = file.name.split('.').pop(); 
 
-                  // Compress and convert the cropped image to a Blob
                   croppedCanvas.toBlob(function (blob) {
                       const url = URL.createObjectURL(blob);
 
-                      // If the image is already cropped, replace the preview with the new cropped image
-                      img.src = url;  // Replace the preview with the new cropped image
+                      
+                      img.src = url;  
 
-                      img.dataset.blob = blob;  // Store the Blob for future submission (e.g., sending to the backend)
+                      img.dataset.blob = blob;  
 
-                      // Push the cropped image Blob to the array
+                  
                       croppedImages.push(blob);
                       console.log("Cropped Images Array: ", croppedImages);
 
-                      // Display the cropped image
+                     
                       const croppedImagePreview = document.createElement('img');
                       croppedImagePreview.src = url;
                       croppedImagePreview.style.width = '200px';
                       croppedImagePreview.style.height = '200px';
                       cropperContainer.appendChild(croppedImagePreview);
 
-                      // Hide the cropper container (or remove it)
-                      cropperContainer.innerHTML = '';  // Clear the cropper UI
-                      cropperContainer.appendChild(croppedImagePreview);  // Only show the cropped image
+                      cropperContainer.innerHTML = '';  
+                      cropperContainer.appendChild(croppedImagePreview); 
 
-                      // Add a button to allow re-cropping the cropped image
                       const reCropButton = document.createElement('button');
                       reCropButton.textContent = 'Re-Crop This Image';
                       reCropButton.setAttribute("type", "button");
                       cropperContainer.appendChild(reCropButton);
 
-                      // Handle re-cropping the cropped image
                       reCropButton.onclick = function () {
-                          // Replace the cropped image with the cropper again
-                          img.src = url;  // Use the cropped image as the source for re-cropping
+                        
+                          img.src = url; 
 
-                          // Destroy the previous cropper instance
+                         
                           croppers[i].destroy();
 
-                          // Re-initialize the cropper with the cropped image
+                          
                           croppers[i] = new Cropper(img, {
-                              aspectRatio: 1,  // Maintain a square aspect ratio
+                              aspectRatio: 1, 
                               viewMode: 1,
                               autoCropArea: 1,
                           });
 
-                          // Clear the cropped image preview and display the cropper again
-                          cropperContainer.innerHTML = '';  // Clear the cropped image preview
-                          cropperContainer.appendChild(img);  // Add the image back for cropping
-                          cropperContainer.appendChild(saveButton);  // Add the save button
+                          cropperContainer.innerHTML = '';  
+                          cropperContainer.appendChild(img);  
+                          cropperContainer.appendChild(saveButton); 
                       };
-                  }, `image/${fileExtension}`, 0.7);  // Use the dynamic file extension for the cropped image
+                  }, `image/${fileExtension}`, 0.7);  
               };
           };
 
@@ -448,11 +440,10 @@
     }
     }
  
-     // Validate the form
     function validateForm() {
     console.log("valid");
     clearErrorMessages();
-    console.log('error message clearde')
+    console.log('error message cleared')
     const name = document.getElementById('productName').value;
     console.log(1);
     const brand = document.getElementsByName('brand')[0].value;
@@ -540,4 +531,42 @@ function clearErrorMessages() {
         element.innerText = '';
     });
 }
+
+fetch('/admin/products', {
+    method: "POST",
+    body: formData
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: data.message,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then(() => {
+            window.location.href = data.redirectUrl;  // Redirect after user clicks "OK"
+        });
+    } else {
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: data.message,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK"
+        });
+    }
+})
+.catch(error => {
+    console.error("Error:", error);
+    Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Something went wrong. Please try again.",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "OK"
+    });
+});
+
  </script>

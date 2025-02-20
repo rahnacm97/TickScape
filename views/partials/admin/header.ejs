@@ -49,16 +49,16 @@ body {
 }
 
 .menu-item.active {
-    background-color: #363838; /* Highlight color (Blue) */
+    background-color: #363838; 
     border-radius: 5px;
 }
 
 .menu-item.active .menu-link {
-    color: #fff; /* Text color change */
+    color: #fff; 
 }
 
 .menu-item.active .icon {
-    color: #fff; /* Icon color change */
+    color: #fff; 
 }
 
 </style>
@@ -76,8 +76,8 @@ body {
         </div>
         <nav>
             <ul class="menu-aside">
-                <li class="menu-item">
-                    <a class="menu-link" href="/admin/dashboard" > <i class="icon material-icons md-home"></i>
+                <li class="menu-item" data-section="dashboard">
+                    <a class="menu-link" href="/admin/dashboard" > <i class="icon material-icons md-dashboard"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
@@ -87,13 +87,13 @@ body {
                     </a>
 
                 </li>
-                <li class="menu-item">
-                    <a class="menu-link" href="/admin/category"> <i class="icon material-icons md-person"></i>
+                <li class="menu-item" data-section="category">
+                    <a class="menu-link" href="/admin/category"> <i class="icon material-icons md-category"></i>
                         <span class="text">Category</span>
                     </a>
 
                 </li>
-                <li class="menu-item">
+                <li class="menu-item" data-section="brand">
                     <a class="menu-link" href="/admin/brands"> <i class="icon material-icons md-stars"></i>
                         <span class="text">Brands</span> </a>
                 </li>
@@ -102,8 +102,8 @@ body {
                         <span class="text">Add product</span>
                     </a>
                 </li> -->
-                <li class="menu-item">
-                    <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                <li class="menu-item" data-section="products">
+                    <a class="menu-link"  href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Products</span>
                     </a>
                 </li>
@@ -117,7 +117,7 @@ body {
                         <span class="text">Banner</span> </a>
                 </li>
 
-                <li class="menu-item">
+                <li class="menu-item" data-section="order">
                     <a class="menu-link" href="/admin/orderList"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
@@ -142,15 +142,48 @@ body {
                 </ul>
             </div>
         </header>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+<!-- <script>
+   document.addEventListener("DOMContentLoaded", function () {
     let menuItems = document.querySelectorAll(".menu-item a");
     let currentPath = window.location.pathname;
 
     menuItems.forEach(item => {
-        if (item.getAttribute("href") === currentPath) {
+        let itemPath = item.getAttribute("href");
+
+        // Check if the menu item is a parent (matches or is a subpath)
+        if (currentPath.startsWith(itemPath) && itemPath !== "/") {
             item.parentElement.classList.add("active");
+        } else {
+            item.parentElement.classList.remove("active");
         }
     });
 });
+
+</script> -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let menuItems = document.querySelectorAll(".menu-item a");
+    let currentPath = window.location.pathname;
+
+    // Retrieve stored active menu item from sessionStorage
+    let activeMenu = sessionStorage.getItem("activeMenu");
+
+    menuItems.forEach(item => {
+        let itemPath = item.getAttribute("href");
+
+        // Check if current path matches or was previously stored
+        if (currentPath === itemPath || (activeMenu && activeMenu === itemPath)) {
+            item.parentElement.classList.add("active");
+            sessionStorage.setItem("activeMenu", itemPath); // Store active menu
+        } else {
+            item.parentElement.classList.remove("active");
+        }
+
+        // Add event listener to each menu item for setting active state on click
+        item.addEventListener("click", function () {
+            sessionStorage.setItem("activeMenu", itemPath);
+        });
+    });
+});
+
 </script>

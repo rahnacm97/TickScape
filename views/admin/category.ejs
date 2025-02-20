@@ -197,7 +197,7 @@
           </div>
         </form>
       </div>
-      <a href="/admin/addCategory" class="btn btn-primary btn-add-category">Add Category</a>
+      <a href="/admin/addCategory" class="btn btn-primary btn-add-category" data-section="category">Add Category</a>
     </header>
 
     <div class="table-responsive">
@@ -243,7 +243,7 @@
               <% } %>
             </td>
             <td class="text-center">
-              <a href="/admin/editCategory?id=<%= category._id %>" class="btn btn-info">Edit</a>
+              <a href="/admin/editCategory?id=<%= category._id %>" class="btn btn-info" data-section="category">Edit</a>
             </td>
           </tr>
           <% }) %>

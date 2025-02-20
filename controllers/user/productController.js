@@ -18,7 +18,12 @@ const productDetails = async(req,res) => {
         const relatedProducts = await Product.find({
             category: findCategory._id,
             _id: { $ne: productId } 
-        }).limit(3);
+        });
+
+        const totalRatings = reviews.length;
+        const averageRating = totalRatings > 0
+            ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalRatings
+            : 0;
 
         //console.log("rel",relatedProducts);
 
@@ -29,7 +34,9 @@ const productDetails = async(req,res) => {
             totalOffer: totalOffer,
             category: findCategory,
             relatedProducts: relatedProducts,
-            reviews
+            reviews: reviews,
+            averageRating: averageRating.toFixed(1),
+            reviewCount: totalRatings
         });
         //console.log("rel1",relatedProducts);
     } catch (error) {

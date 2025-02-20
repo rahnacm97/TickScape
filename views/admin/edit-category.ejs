@@ -103,7 +103,88 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script>
-    
-  </script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            const categoryName = document.querySelector("input[name='categoryName']").value.trim();
+            const description = document.querySelector("textarea[name='description']").value.trim();
+            const actionUrl = `/admin/editCategory/<%= category._id %>`; 
+
+            fetch(actionUrl, {
+                method: 'PUT',  
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ categoryName, description }),
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated Successfully!',
+                    text: 'The category has been updated successfully.',
+                    showConfirmButton: true,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href = data.redirectUrl; 
+                });
+            } else {
+                throw new Error(data.error);
+            }
+        })
+            .catch((error) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops',
+                    text: error.message || 'An error occurred while updating the category',
+                });
+            });
+        });
+    });
+
+    function validateForm() {
+        clearErrorMessages();
+        const categoryName = document.querySelector("input[name='categoryName']").value.trim();
+        const description = document.querySelector("textarea[name='description']").value.trim();
+        let isValid = true;
+
+        if (categoryName === "") {
+            displayErrorMessage("categoryName-error", "Please enter a name");
+            isValid = false;
+        } else if (!/^[a-zA-Z\s']+$/i.test(categoryName)) {
+            displayErrorMessage("categoryName-error", "Category name should only contain alphabetic characters");
+            isValid = false;
+        }
+
+        if (description === "") {
+            displayErrorMessage("description-error", "Please enter a description");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.innerText = message;
+        errorElement.style.display = "block";
+    }
+
+    function clearErrorMessages() {
+        const errorElements = document.getElementsByClassName("error-message");
+        Array.from(errorElements).forEach((element) => {
+            element.innerText = "";
+            element.style.display = "none";
+        });
+    }
+</script>
+
 </body>
 <%- include("../../views/partials/admin/footer") %>

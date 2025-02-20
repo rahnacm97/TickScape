@@ -3,10 +3,10 @@ const {Schema} = mongoose;
 const {v4:uuidv4} = require('uuid');
 
 const orderSchema = new Schema({
-    parentOrderId: {
-        type: String,
-        required: true
-    },
+    // parentOrderId: {
+    //     type: String,
+    //     required: true
+    // },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
@@ -17,7 +17,8 @@ const orderSchema = new Schema({
         default: () => uuidv4(),
         unique: true
     },
-    productId: {
+    orderedItems:[{
+        productId: {
             type: Schema.Types.ObjectId,
             ref: "Product",
             required: true
@@ -30,6 +31,13 @@ const orderSchema = new Schema({
             type: Number,
             default: 0
     },
+    orderStatus: {
+        type: String,
+        required: true,
+        default: 'Order Placed',
+        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned'],      
+    }
+    }],
     totalPrice: {
         type: Number,
         required: true

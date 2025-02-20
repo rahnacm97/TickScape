@@ -1,0 +1,149 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+    .page-header.breadcrumb-wrap {
+    margin-top: 10px;
+    background-color: #ede9ec;
+    padding: 10px 0;
+}
+
+.breadcrumb-wrap {
+    padding: 15px 0;
+    background-color: #1e918b;
+    color: #fff;
+}
+
+.breadcrumb a {
+    color: #088178;
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    margin: 0 5px;
+    color: rgb(125, 124, 124);
+}
+</style>
+<div class="page-header breadcrumb-wrap mb-3">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span><a href="/userProfile" rel="nofollow">Profile </a>
+        <span></span>Edit User Profile
+      </div>
+    </div>
+  </div>
+
+<section class="content-main mt-80 mb-80">
+   <div class="card mx-auto card-login col-4">
+       <div class="card-body">
+           <h4 class="card-title mb-4">Edit Details</h4>
+           <form id="editform" class="row contact_form" action="/edit-profile" method="post" novalidate="novalidate">
+            <div class="col-md-12 form-group p_star">
+                <label for="fname">First Name</label>
+                <input type="text" class="form-control" id="fname" name="newFname" value="<%= user.fname%>"
+                    placeholder="">
+                <div id="err1" class="error-message"></div>
+            </div>
+            
+            <div class="col-md-12 form-group p_star">
+                <label for="lname">Last Name</label>
+                <input type="text" class="form-control" id="lname" name="newLname" value="<%= user.lname%>"
+                    placeholder="">
+                <div id="err2" class="error-message"></div>
+            </div>
+            
+            <div class="col-md-12 form-group p_star">
+                <label for="phone">Phone Number</label>
+                <input type="text" class="form-control" id="phone" name="newPhone" value="<%= user.phone%>"
+                    placeholder="">
+                <div id="err3" class="error-message"></div>
+            </div>
+               <div class="mb-4">
+                   <button type="submit" class="btn btn-primary w-100">Submit</button>
+               </div>
+           </form>
+       </div>
+   </div>
+</section>
+
+<script>
+
+    const fnameid = document.getElementById('fname');
+    const lnameid = document.getElementById('lname');
+    const phoneid = document.getElementById('phone');
+    const err1id = document.getElementById('err1');
+	const err2id = document.getElementById('err2');
+	const err3id = document.getElementById('err3');
+    const editformid = document.getElementById('editform');
+
+    function fnameValidate(e){
+			const fnameval = fnameid.value;
+			const fnamepattern = /^[A-Za-z\s]+$/;
+
+			if(fnameval.trim() === ""){
+				err1id.style.display = "block";
+				err1id.innerHTML = "Please Enter a valid Name";
+			}else if(!fnamepattern.test(fnameval)){
+				err1id.style.display = "block";
+				err1id.innerHTML = "Name can only contain Alphabets and Spaces";
+			}else{
+				err1id.style.display = "none";
+				err1id.innerHTML = "";
+			}
+		}
+
+		function lnameValidate(e){
+			const lnameval = lnameid.value;
+			const lnamepattern = /^[A-Za-z\s]+$/;
+
+			if(lnameval.trim() === ""){
+				err2id.style.display = "block";
+				err2id.innerHTML = "Please Enter a valid last name";
+			}else if(!lnamepattern.test(lnameval)){
+				err2id.style.display = "block";
+				err2id.innerHTML = "Name can only contain Alphabets and Spaces";
+			}else{
+				err2id.style.display = "none";
+				err2id.innerHTML = "";
+			}
+		}
+
+		function phoneValidate(e){
+			const phoneval = phoneid.value;
+			const phonepattern = /^[A-Za-z\s]+$/;
+
+			if(phoneval.trim() === ""){
+				err3id.style.display = "block";
+				err3id.innerHTML = "Enter Valid Phone Number";
+			}else if(phoneval.length<10 || phoneval.length>10){
+				err3id.style.display = "block";
+				err3id.innerHTML = "Enter 10 digit Number";
+			}else{
+				err3id.style.display = "none";
+				err3id.innerHTML = "";
+			}
+
+		}
+
+        document.addEventListener("DOMContentLoaded",() => {
+			editformid.addEventListener("submit",function(e){
+				fnameValidate();
+				lnameValidate();
+				phoneValidate();
+
+				if(!fnameid || !lnameid || !phoneid || !err1id || !err2id || !err3id || !editformid)
+			
+					{
+						console.error("One or more fields are empty");
+					}
+				if(err1.innerHTML || err2.innerHTML || err3.innerHTML ){
+					e.preventDefault();
+				}
+		    })
+		})
+
+
+</script>
+<%- include("../../views/partials/user/footer") %>
+
+
+

@@ -7,6 +7,9 @@ const session = require('express-session');
 const db = require('./config/db');
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
+const CustomError = require("./utils/customError");
+const MongoStore = require("connect-mongo");
+
 db();
 
 app.use(express.json());
@@ -16,13 +19,18 @@ app.use((req, res, next) => {
     next();
   });
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET, // Store in .env for security
     resave: false,
     saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI, // MongoDB connection string
+        collectionName: "sessions", // Name of the collection in MongoDB
+        ttl: 72 * 60 * 60, // Session expiration time in seconds (72 hours)
+    }),
     cookie: {
-        secure: false,
+        secure: false, // Set to true in production with HTTPS
         httpOnly: true,
-        maxAge: 72*60*60*1000
+        maxAge: 72 * 60 * 60 * 1000 // 72 hours
     }
 }))
 
@@ -42,6 +50,16 @@ app.use('/viewOrder/user-assets', express.static(path.join(__dirname, 'public/us
 
 app.use('/',userRouter);
 app.use('/admin',adminRouter);
+
+
+// Global Error Handling Middleware
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Something went wrong! Please try again later.";
+    res.status(statusCode).json({ error: message });
+});
+
+
 
 const port = process.env.PORT;
 app.listen(port, () => {

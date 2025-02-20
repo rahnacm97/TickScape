@@ -104,7 +104,6 @@
   <p>No address available for this order.</p>
 <% } %>
 
-
               <hr>
 
               <!-- Product Details -->
@@ -125,37 +124,40 @@
                           </tr>
                       </thead>
                       <tbody>
-                          <tr>
-                              <td><%= order.productId.productName %></td>
-                              <td><img class="img-fluid" src="http://localhost:3000/<%= order.productId.productImage[0] %>" alt="Product Image"></td>
-                              <td><%= order.productId.category.name %></td>
-                              <td><%= order.productId.description %> %></td>
-                              <td><%= order.productId.brand.brandName %></td>
-                              <td> <%= order.quantity %></td>
-                              <td><%= order.price %></td>
-                              <td>$<%= order.totalPrice %></td>
-                              <td>
-                                <select class="order-status-dropdown" data-order-id="<%= order._id %>" data-current-status="<%= order.status %>">
-                                    <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"]; %>
-                                    <% let currentIndex = statuses.indexOf(order.status); %>
-                            
-                                    <% statuses.forEach((status, index) => { %>
-                                        <option value="<%= status %>" 
-                                            <%= order.status === status ? 'selected' : '' %>
-                                            <%= index < currentIndex ? 'disabled' : '' %>> 
-                                            <%= status %>
-                                        </option>
-                                    <% }); %>
-                                </select>
-                            </td>
-                          </tr>
-                      </tbody>
+                        <% order.orderedItems.forEach(item => { %>
+                            <tr>
+                                <td><%= item.productId.productName %></td>
+                                <td><img class="img-fluid" src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
+                                <td><%= item.productId.category.name %></td>
+                                <td><%= item.productId.description %></td>
+                                <td><%= item.productId.brand.brandName %></td>
+                                <td><%= item.quantity %></td>
+                                <td><%= item.price %></td>
+                                <td>$<%= item.price * item.quantity %></td>
+                                <% if (order.orderedItems.indexOf(item) === 0) { %>
+                                    <td rowspan="<%= order.orderedItems.length %>">
+                                        <select class="order-status-dropdown" data-order-id="<%= order._id %>" data-current-status="<%= order.status %>">
+                                            <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"]; %>
+                                            <% let currentIndex = statuses.indexOf(order.status); %>
+                                            
+                                            <% statuses.forEach((status, index) => { %>
+                                                <option value="<%= status %>" 
+                                                    <%= order.status === status ? 'selected' : '' %>
+                                                    <%= index < currentIndex ? 'disabled' : '' %>> 
+                                                    <%= status %>
+                                                </option>
+                                            <% }); %>
+                                        </select>
+                                    </td>
+                                <% } %>
+                            </tr>
+                        <% }); %>
+                    </tbody>
                   </table>
               </div>
 
               <hr>
 
-              <!-- Payment Details -->
               <div class="order-summary mb-4">
                   <h5>Payment Details</h5>
                   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
@@ -202,56 +204,110 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".order-status-dropdown").forEach(dropdown => {
-                dropdown.addEventListener("change", function () {
-                    const orderId = this.getAttribute("data-order-id");
-                    const currentStatus = this.getAttribute("data-current-status"); // Get the current status
-                    const newStatus = this.value;
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     document.querySelectorAll(".order-status-dropdown").forEach(dropdown => {
+        //         dropdown.addEventListener("change", function () {
+        //             const orderId = this.getAttribute("data-order-id");
+        //             const currentStatus = this.getAttribute("data-current-status"); 
+        //             const newStatus = this.value;
         
-                    // Prevent changing from Delivered or Cancelled
-                    if (currentStatus === "Delivered" || currentStatus === "Cancelled") {
-                        Swal.fire({
-                            title: "Action Not Allowed",
-                            text: "You cannot change the status of a Delivered or Cancelled order.",
-                            icon: "error"
-                        });
-                        this.value = currentStatus; // Reset dropdown to previous value
-                        return;
-                    }
+        //             if (currentStatus === "Delivered" || currentStatus === "Cancelled") {
+        //                 Swal.fire({
+        //                     title: "Action Not Allowed",
+        //                     text: "You cannot change the status of a Delivered or Cancelled order.",
+        //                     icon: "error"
+        //                 });
+        //                 this.value = currentStatus; // Reset dropdown to previous value
+        //                 return;
+        //             }
         
-                    // Show confirmation SweetAlert
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: `Do you want to change the order status to ${newStatus}?`,
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes, change it!",
-                        cancelButtonText: "No, cancel!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Send a request to update the order status
-                            fetch("/admin/update-order-status", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ orderId, status: newStatus })
-                            }).then(response => response.json()).then(data => {
-                                if (data.success) {
-                                    Swal.fire("Updated!", "Order status has been changed.", "success")
-                                        .then(() => window.location.reload()); // Reload the page after success
-                                } else {
-                                    Swal.fire("Error", "Failed to update order status.", "error");
-                                    this.value = currentStatus; // Reset dropdown to previous value
-                                }
-                            });
-                        } else {
-                            this.value = currentStatus; // Reset dropdown to previous value
-                        }
-                    });
-                });
-            });
-        });   
+        //             // Show confirmation SweetAlert
+        //             Swal.fire({
+        //                 title: "Are you sure?",
+        //                 text: `Do you want to change the order status to ${newStatus}?`,
+        //                 icon: "warning",
+        //                 showCancelButton: true,
+        //                 confirmButtonText: "Yes, change it!",
+        //                 cancelButtonText: "No, cancel!"
+        //             }).then((result) => {
+        //                 if (result.isConfirmed) {
+                           
+        //                     fetch("/admin/update-order-status", {
+        //                         method: "POST",
+        //                         headers: { "Content-Type": "application/json" },
+        //                         body: JSON.stringify({ orderId, status: newStatus })
+        //                     }).then(response => response.json()).then(data => {
+        //                         if (data.success) {
+        //                             Swal.fire("Updated!", "Order status has been changed.", "success")
+        //                                 .then(() => window.location.reload()); 
+        //                         } else {
+        //                             Swal.fire("Error", "Failed to update order status.", "error");
+        //                             this.value = currentStatus; 
+        //                         }
+        //                     });
+        //                 } else {
+        //                     this.value = currentStatus; 
+        //                 }
+        //             });
+        //         });
+        //     });
+        // });   
     </script> 
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".order-status-dropdown").forEach(dropdown => {
+        dropdown.addEventListener("change", function () {
+            const orderId = this.getAttribute("data-order-id");
+            let currentStatus = this.getAttribute("data-current-status"); 
+            const newStatus = this.value;
+
+            if (currentStatus === "Delivered" || currentStatus === "Cancelled") {
+                Swal.fire({
+                    title: "Action Not Allowed",
+                    text: "You cannot change the status of a Delivered or Cancelled order.",
+                    icon: "error"
+                });
+                this.value = currentStatus;
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: `Do you want to change the order status to ${newStatus}?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, change it!",
+                cancelButtonText: "No, cancel!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("/admin/update-order-status", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ orderId, status: newStatus })
+                    }).then(response => response.json()).then(data => {
+                        if (data.success) {
+                            Swal.fire("Updated!", "Order status has been changed.", "success")
+                                .then(() => {
+                                    this.setAttribute("data-current-status", newStatus);
+                                    window.location.reload();
+                                });
+                        } else {
+                            Swal.fire("Error", data.message || "Failed to update order status.", "error");
+                            this.value = currentStatus;
+                        }
+                    }).catch(() => {
+                        Swal.fire("Error", "Network error occurred.", "error");
+                        this.value = currentStatus;
+                    });
+                } else {
+                    this.value = currentStatus;
+                }
+            });
+        });
+    });
+});
+</script>
 
 </body>
 

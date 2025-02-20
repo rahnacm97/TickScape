@@ -429,7 +429,7 @@ strike{
      </aside>
 
      <main class="product-grid">
-      <% if (Array.isArray(products)) { %>
+      <% if (Array.isArray(products) && products.length > 0) { %>
         <% for(let i = 0; i < products.length; i++) { %>
          <div class="product-card" style="height: 400px;">
            <span class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">❤️</span>

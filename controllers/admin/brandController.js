@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Brand = require('../../models/brandSchema');
 const Product = require('../../models/productSchema');
+const CustomError = require('../../utils/customError');
 
 const getBrandsPage = async (req, res) => {
     try {
@@ -127,17 +128,19 @@ const getEditBrand = async (req, res) => {
     }
 };
 
-const editBrand = async (req, res) => {
+const editBrand = async (req, res, next) => {
     try {
         const id = req.params.id.trim(); 
 
         if (!id) {
-            return res.status(400).send("Invalid brand ID");
+            next(new CustomError(400, "Invalid brand ID"))
+            //return res.status(400).send("Invalid brand ID");
         }
 
         const brand = await Brand.findOne({ _id: id });
         if (!brand) {
-            return res.status(404).send("Brand not found");
+            next(new CustomError(404, "Brand not found"))
+            //return res.status(404).send("Brand not found");
         }
 
         const existingBrand = await Brand.findOne({
@@ -146,9 +149,10 @@ const editBrand = async (req, res) => {
         });
 
         if (existingBrand) {
-            return res.status(400).json({
-                error: "Brand with this name already exists. Please try with another name.",
-            });
+            next(new CustomError(400, "Brand with this name already exists. Please try with another name."))
+            //return res.status(400).json({
+                //error: "Brand with this name already exists. Please try with another name.",
+           // });
         }
 
         const image = [];
@@ -161,7 +165,6 @@ const editBrand = async (req, res) => {
         };
 
         if (image.length > 0) {
-            // Replace the existing images
             updateFields.brandImage = image;
         }
 

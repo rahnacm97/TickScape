@@ -189,7 +189,7 @@ body {
               </span>
               <div class="text">
                 <h6 class="mb-1">Customer</h6>
-                <p><%= orders.address.name %></p>
+                <p><%= address.name %></p>
                 <!-- <p><%= orders.address.phone %>, <%= orders.address.altPhone %></p> -->
               </div>
             </article>
@@ -222,14 +222,14 @@ body {
                 <h4 class="mb-1">Deliver to</h4>
                 <p class="mb-1">
                   <div>
-                    <p><strong><%= orders.address.addressType %></strong></p>
-                    <p><%= orders.address.name %>, <%= orders.address.city %>, <%= orders.address.state %>, 
-                       <%= orders.address.landMark %> Pincode: <%= orders.address.pincode %> <br />
-                    Phone: <%= orders.address.phone %>, <%= orders.address.altPhone %>
+                    <p><strong><%= address.addressType %></strong></p>
+                    <p><%= address.name %>, <%= address.city %>, <%= address.state %>, 
+                       <%= address.landMark %> Pincode: <%= address.pincode %> <br />
+                    Phone: <%= address.phone %>, <%= address.altPhone %>
                     </p>
                   </div>
                 </p>
-                <a href="/downloadInvoice/" class="btn1 btn-sm">Download Invoice</a>
+                <!-- <a href="" class="btn1 btn-sm">Download Invoice</a> -->
               </div>
             </article>
           </div>
@@ -252,17 +252,17 @@ body {
                   </tr>
                 </thead>
                 <tbody>
-                  <% if (orders.previewOrder && orders.previewOrder.length > 0) { %>
-                    <% orders.previewOrder.forEach((order, index) => { %>
+                  <% if (orders && orders.orderedItems && orders.orderedItems.length > 0){ %>
+                    <% orders.orderedItems.forEach((item, index) => {  %>
                       <tr>
                         <td><%= index + 1 %></td>
-                        <td><%= order.product.productName %></td>
+                        <td><%= item.productId.productName %></td>
                         <td>
-                          <img src="<%= order.product.productImage[0] %>" style="height: 7rem; width: 7rem" class="img-xs" />
+                          <img src="<%= item.productId.productImage[0] %>" style="height: 7rem; width: 7rem" class="img-xs" />
                         </td>
-                        <td>$<%= order.price %></td>
-                        <td><%= order.quantity %></td>
-                        <td>$<%= order.totalPrice %></td>
+                        <td>$<%= item.price %></td>
+                        <td><%= item.quantity %></td>
+                        <td>$<%= orders.totalPrice %></td>
                         <!-- <td>
                           <a href="#" class="btn btn-sm" onclick="return confirmCancel(this)">
                             <i class="fi-rs-trash"></i> <i class="fa fa-times-circle"></i>Cancel Order

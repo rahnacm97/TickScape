@@ -249,8 +249,16 @@ hr {
     margin: 0 5px;
     color: rgb(125, 124, 124);
   }
-  /* Tracking Information Section */
-/* Tracking Information Section */
+
+
+/* Status-specific colors */
+.order-placed { color: blue; }
+.processing { color: orange; }
+.cancelled { color: red; }
+.shipped { color: purple; }
+.out-for-delivery { color: darkgreen; }
+.delivered { color: green; }
+
 .tracking-progress {
   display: flex;
   justify-content: space-between;
@@ -263,20 +271,11 @@ hr {
   font-size: 12px;
 }
 
-/* Status-specific colors */
-.order-placed { color: blue; }
-.processing { color: orange; }
-.cancelled { color: red; }
-.shipped { color: purple; }
-.out-for-delivery { color: darkgreen; }
-.delivered { color: green; }
-
-/* Completed steps */
 .completed {
     font-weight: bold;
 }
 
-.completed-circle {
+.completed .circle {
     background-color: green !important;
     color: white !important;
 }
@@ -315,16 +314,23 @@ hr {
   position: absolute;
   width: 100%;
   height: 4px;
-  background-color: #ccc;
+  background-color: #ccc; /* Default gray */
   top: 50%;
   left: -50%;
   z-index: 1;
   margin-bottom: 20px;
 }
 
+/* Hide line for first step */
 .tracking-step:first-child::before {
   display: none;
 }
+
+/* Change line color when step is completed */
+.tracking-step.completed::before {
+  background-color: green !important; /* Same as the completed circle */
+}
+
 .tracking-step small {
     display: block;
     position: absolute;
@@ -337,8 +343,67 @@ hr {
     font-weight: bold;
 }
 
+/* Modal Background */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow-y: auto; /* Enable vertical scrolling */
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 50%;
+  max-width: 500px; /* Limit max width */
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Close Button */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: black;
+}
+
+.close:hover {
+  color: red;
+}
+
+/* Make form fields more readable */
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Responsive - Fullscreen modal on small screens */
+@media screen and (max-width: 600px) {
+  .modal-content {
+    width: 90%;
+  }
+}
+
 
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <main class="main">
     <section class="pt-10 pb-10">
         <div class="page-header breadcrumb-wrap" style="background-color: #ede9ec;">
@@ -353,37 +418,114 @@ hr {
           </div>
         </div>
         <div class="order-header" style="margin-left: 20px;margin-top: 20px;">Order Details</div>
-    <div class="main-container">
-        <div class="order-item">         
-          <div class="container1">
-            <div class="image container">
-              <a href="/productDetails?id=<%= order.productId._id %>">
-              <img src="http://localhost:3000/<%= order.productId.productImage[0] %>" alt="Image">
-              </a>
+       <div class="main-container">
+      <div class="tracking-info">
+        <h3 style="margin-left: 20px; margin-top: 20px;">Track Your Order</h3>
+        <div class="container2">
+            <div>
+                <p><strong class="status">Current Status:</strong> <span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
             </div>
+            <div class="tracking-progress">
+              <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"]; %>
+            
+              <% let latestStatus = trackingHistory.length > 0 ? trackingHistory[trackingHistory.length - 1].status : order.status; %>
+              <% let currentIndex = statuses.indexOf(latestStatus); %>
+              <% if (currentIndex === -1) { currentIndex = 0; } %>
+            
+              <% const isCancelled = order.status === "Cancelled"; %>
+            
+              <% if (isCancelled) { %>
+                <div class="tracking-step completed cancelled">
+                  <div class="circle cancelled">X</div>
+                  <p>Cancelled</p>
+                </div>
+              <% } else { %>
+                <% statuses.forEach((step, index) => { 
+                    let trackingEntry = trackingHistory.find(entry => entry.status === step);
+                    let isCompleted = index <= currentIndex;
+                %>
+                <% console.log("Step:", step, "Index:", index, "CurrentIndex:", currentIndex, "isCompleted:", isCompleted); %>
+                  <div class="tracking-step <%= isCompleted ? 'completed' : '' %> <%= step.toLowerCase().replace(/\s+/g, '-') %>">
+                    <div class="circle <%= isCompleted ? 'completed-circle' : '' %>">
+                      <%- isCompleted ? '<i class="fas fa-check"></i>' : index + 1 %>
+                    </div>
+                    <p><%= step %></p>
+                    <% if (trackingEntry) { %>
+                      <small><%= new Date(trackingEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></small>
+                    <% } %>
+                  </div>
+                <% }); %>
+              <% } %>
+            </div>
+                        
+                                 
+        <% let deliveredEntry = trackingHistory.find(entry => entry.status === "Delivered"); %>
+        
+        <% if (deliveredEntry) { %>
+          <div class="expected-delivery">
+              <p><strong>Delivered On:</strong> <%= new Date(deliveredEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+          </div>
+      <% } else if (expectedDeliveryDate) { %>
+          <div class="expected-delivery">
+              <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+          </div>
+      <% } %>
+        
+      
+          <div class="order-status">
+          <% if (order.status === 'Order Placed') { %>
+            <p style="color: rgb(0, 42, 255);">Your order has been placed.</p>
+            <% } else if (order.status === 'Processing') { %>
+              <p style="color: orange;">Your order is still being processed. Please check back later for updates.</p>
+          <% } else if (order.status === 'Shipped') { %>
+            <p style="color: rgb(109, 6, 213);">Your order has been shipped. You can expect delivery soon.</p>
+            <% } else if (order.status === 'Out for Delivery') { %>
+              <p style="color: green;">Your order has been out for delivery!</p>
+          <% } else if (order.status === 'Delivered') { %>
+            <p style="color: rgb(6, 168, 6);">Your order has been delivered. Thank you for shopping with us!</p>
+            <% } else if (order.status === 'Cancelled') { %>
+              <p style="color: rgb(241, 8, 8);">Your order has been Cancelled!</p>
+          <% } %>
+        </div>
+        </div>
+        
+    </div>        
+</div> 
+      <div class="order-item">         
+          <div class="container1">              
             <div class="order-info">          
-              <div class="order-detail"><span>Order ID:</span> <%= order._id || order.parentOrderId %></div>
-              <div class="order-detail"><span>Product Name: <%= order.productId.productName %></span></div>
-              <div class="order-detail"><span>Brand:</span>  <%= order.productId?.brand?.brandName || 'No Brand' %></div>
-              <div class="order-detail"><span>Category:</span> <%= order.productId?.category?.name || 'No Category' %></div>
-              <div class="order-detail"><span>Quantity:</span> <%= order.quantity %></div>
-              <div class="order-detail"><span>Price per Unit:</span> $<%= order.productId.salePrice %></div>
+              <div class="order-detail"><span>Order ID:</span> <%= order._id %></div>
+              <div class="order-detail"><span>Total Items: <%= order.orderedItems.length %></span></div>
               <div class="order-detail"><span>Total Price:</span> $<%= order.totalPrice %></div>
+              <div class="order-detail"><span>Discount:</span> $<%= order.discount %></div>
+              <div class="order-detail"><span>Shipping:</span> $<%= order.shipping %></div>
+              <div class="order-detail"><span>Final Amount:</span> $<%= order.finalAmount %></div>
               <div class="order-detail">
                 <span>Invoice Date:</span> 
                 <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %>
               </div>
-              <div class="order-detail"><span>Final Amount:</span> $<%= order.finalAmount %></div>
+              
               <div class="order-detail">
                 <span>Order Status:</span> 
-                <span class="<%= order.status === 'Cancelled' ? 'text-red1' : 'text-black' %>">
-                     <%= order.status %>
-                </span>
-            </div>
-              <div class="order-detail">
-                <% if (address) { %>
+                <% if (order.status === 'Order Placed') { %>
+                  <span style="color: rgb(0, 42, 255);"><%= order.status %></span>
+                  <% } else if (order.status === 'Processing') { %>
+                    <span style="color: orange;"><%= order.status %></span>
+                <% } else if (order.status === 'Shipped') { %>
+                  <span style="color: rgb(109, 6, 213);"><%= order.status %></span>
+                  <% } else if (order.status === 'Out for Delivery') { %>
+                    <span style="color: green;"><%= order.status %></span>
+                <% } else if (order.status === 'Delivered') { %>
+                  <span style="color: rgb(6, 168, 6);"><%= order.status %></span>
+                  <% } else if (order.status === 'Cancelled') { %>
+                    <span style="color: rgb(241, 8, 8);"><%= order.status %></span>
+                <% } %>
+              </div>              
+            
+              <div class="order-detail">          
                     <span>Deliver To: <%= address.name %></span>           
                     <div style="margin-top: 20px;">
+                      <% if (address) { %>
                         <p class="address"><strong><%= address.addressType || 'Address Type Not Provided' %></strong></p>
                         <p class="address">
                             <%= address.city || 'City Not Available' %>, <%= address.state || 'State Not Available' %>,<br>
@@ -394,136 +536,71 @@ hr {
                 <% } else { %>
                     <p class="no-address">No address available for this order.</p>
                 <% } %>
-            </div>  
+                <!-- <div class="btn1-container" style="margin-left: 550px;height:60px;margin-top: 25px;"> 
+                  <a href="#" class="btn" id="changeAddressBtn" 
+                     data-url="/update-address?orderid=<%= order._id %>"
+                      data-status="<%= order.status %>">
+                      Change Address
+                  </a>
+                </div> -->
+            </div> 
 
-  <div class="product-section">
-    <% if (order.productId.userReview) { %>
-        <div class="my-review">
-            <h3>My Review</h3>
-            <p><strong>Rating:</strong> <%= order.productId.userReview.rating %> ⭐</p>
-            <p><strong>Comment:</strong> <%= order.productId.userReview.comment %></p>
-            <p><strong>Date:</strong> <%= new Date(order.productId.userReview.createdAt).toLocaleDateString() %></p>
-        </div>
-    <% } else if (order.status === 'Delivered') { %>
-        <div class="review-section">
-            <a href="/writeReview?productId=<%= order.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
-        </div>
-    <% } %>
-  </div>
-            
-            </div>
-          </div>  
-          <div class="btn1-container">
-            <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= order._id %>')">
-              <i class="fa fa-times-circle"></i>Cancel This Item
-            </a>
-          </div>
-
-          <div class="tracking-info">
-            <h3 style="margin-left: 20px; margin-top: 20px;">Track Your Order</h3>
-            <div class="container2">
-                <div>
-                    <p><strong class="status">Current Status:</strong> <span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
-                </div>
-              <div class="tracking-progress">
-                <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"]; %>
-                
-                <% let latestStatusEntry = trackingHistory[trackingHistory.length - 1]; %>
-                <% let currentIndex = statuses.indexOf(latestStatusEntry?.status || order.status); %>
-                <% const isCancelled = order.status === "Cancelled"; %>
-            
-                <% if (isCancelled) { %>
-                    <div class="tracking-step completed cancelled">
-                        <div class="circle" style="background-color: red; color: white;">X</div>
-                        <p>Cancelled</p>
-                    </div>
-                <% } else { %>
-                    <% statuses.forEach((step, index) => { 
-                        let trackingEntry = trackingHistory.find(entry => entry.status === step);
-                    %>
-                        <div class="tracking-step <%= index <= currentIndex ? 'completed' : '' %> <%= step.toLowerCase().replace(/\s+/g, '-') %>">
-                            <div class="circle <%= index <= currentIndex ? 'completed-circle' : '' %>">
-                                <%= index + 1 %>
-                            </div>
-                            <p><%= step %></p>
-                            <% if (trackingEntry) { %>
-                                <small><%= new Date(trackingEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></small>
-                            <% } %>
-                        </div>
-                    <% }); %>
-                <% } %>
-            </div>
-
-            <% let deliveredEntry = trackingHistory.find(entry => entry.status === "Delivered"); %>
-            
-            <% if (deliveredEntry) { %>
-              <div class="expected-delivery">
-                  <p><strong>Delivered On:</strong> <%= new Date(deliveredEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
-              </div>
-          <% } else if (expectedDeliveryDate) { %>
-              <div class="expected-delivery">
-                  <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
-              </div>
-          <% } %>
-            
-          
-              <div class="order-status">
-              <% if (order.status === 'Order Placed') { %>
-                <p style="color: rgb(0, 42, 255);">Your order has been placed.</p>
-                <% } else if (order.status === 'Processing') { %>
-                  <p style="color: orange;">Your order is still being processed. Please check back later for updates.</p>
-              <% } else if (order.status === 'Shipped') { %>
-                <p style="color: rgb(109, 6, 213);">Your order has been shipped. You can expect delivery soon.</p>
-                <% } else if (order.status === 'Out for Delivery') { %>
-                  <p style="color: green;">Your order has been out for delivery!</p>
-              <% } else if (order.status === 'Delivered') { %>
-                <p style="color: rgb(6, 168, 6);">Your order has been delivered. Thank you for shopping with us!</p>
-                <% } else if (order.status === 'Cancelled') { %>
-                  <p style="color: rgb(241, 8, 8);">Your order has been Cancelled!</p>
-              <% } %>
-            </div>
-            </div>
-            
-        </div>        
-  
-</div>        
-<h3 style="margin-left: 20px;margin-top: 20px;">Other Products in this Order:</h3>
-<div class="otherItem">
-  <% if (orderItems.length > 0) { %>
-    <ul class="list">
-        <% orderItems.forEach(item => { %>
-            <li >
+    <h3 style="margin-left: 20px;margin-top: 20px;">Products in this Order:</h3>
+    <div class="otherItem">
+      <% if (orderItems.length > 0) { %>
+        <ul class="list">
+          <% orderItems.forEach(item => { %>
+            <li>
               <p>
-                <a href="/viewOrder/<%= item._id %>">
-                    <img src="http://localhost:3000/<%= item.productDetail.productImage[0] %>" alt="<%= item.productDetail.productName %>">
-                </a>
-            </p>
-                <p><strong>Product Name:</strong> <%= item.productDetail.productName %></p>
-                <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                <p><strong>Price:</strong> $<%= item.price %></p>
-                <p><strong>Total Price:</strong> $<%= item.finalAmount %></p>
-                <p>
-                  <strong>Status:</strong> 
-                  <span class="<%= item.status === 'Cancelled' ? 'text-danger' : 'text-default' %>">
-                      <%= item.status %>
-                  </span>
+                <% if (item.productId && item.productId._id) { %>
+                  <a href="/viewOrder/<%= order._id %>?productId=<%= item.productId._id %>">
+                    <img src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>">
+                  </a>
+                <% } %>
               </p>
-                <p><strong>Payment Method:</strong> <%= item.paymentMethod %></p>
-                <hr>
+              <p><strong>Product Name:</strong> <%= item.productId.productName %></p>
+              <p><strong>Quantity:</strong> <%= item.quantity %></p>
+              <p><strong>Price:</strong> $<%= item.price %></p>
+              <p>
+                <strong>Status:</strong> 
+                <span class="<%= (item.orderStatus || order.status) === 'Cancelled' ? 'text-danger' : 'text-default' %>">
+                  <%= item.orderStatus %>
+                </span>
+              </p>
+              <% if (item.orderStatus !== 'Cancelled') { %>
+                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+              <% } %>
+              <hr>
+    
+              <% if (item.orderStatus === 'Delivered') { %>
+                <div class="review-section">
+                  <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
+                </div>
+              <% } else if (item.orderStatus !== 'Cancelled') { %> 
+                <div class="btn1-container">
+                  <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= item.productId._id %>')">
+                    <i class="fa fa-times-circle"></i> Cancel Item
+                  </a>
+                </div>
+              <% } %>              
+    
             </li>
-        <% }) %>
-    </ul>
-<% } else { %>
-    <p>No other products in this order.</p>
-<% } %>
-</div>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No other products in this order.</p>
+      <% } %>
+    </div>    
 
-<div class="btn1-container"> 
-  <a href="/orders" class="btn">Back to Orders</a>
-  <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order.parentOrderId %>')">
-    <i class="fa fa-ban"></i> Cancel Order
-  </a>
-</div>
+    <div class="btn1-container"> 
+      <a href="/orders" class="btn">Back to Orders</a>
+    
+      <% if (order.status !== "Cancelled" && order.status !== "Delivered") { %>
+        <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
+          <i class="fa fa-ban"></i> Cancel Order
+        </a>
+      <% } %>
+    </div>
 
 
 </div>
@@ -531,8 +608,65 @@ hr {
   </main>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    function confirmCancel(element, orderId) { 
-    console.log("Order ID to cancel:", orderId);  
+
+    document.getElementById('changeAddressBtn').addEventListener('click', function () {
+    document.getElementById('addressModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+});
+
+document.querySelector('.close').addEventListener('click', function () {
+    document.getElementById('addressModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+});
+
+window.onclick = function (event) {
+    let modal = document.getElementById('addressModal');
+    if (event.target === modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+};
+
+
+
+document.getElementById('addressForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const updatedAddress = {
+        name: document.getElementById('name').value,
+        addressType: document.getElementById('addressType').value,
+        city: document.getElementById('city').value,
+        state: document.getElementById('state').value,
+        landMark: document.getElementById('landmark').value,
+        pincode: document.getElementById('pincode').value,
+        phone: document.getElementById('phone').value,
+        altPhone: document.getElementById('altPhone').value,
+    };
+
+    const orderId = "<%= order._id %>"; 
+
+    const response = await fetch(`/update-address/${orderId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedAddress)
+    });
+
+    if (response.ok) {
+        alert("Address updated successfully!");
+        document.getElementById('addressModal').style.display = 'none';
+        location.reload(); 
+    } else {
+        alert("Failed to update address.");
+    }
+});
+
+  </script>
+  <script>
+function confirmCancel(element, itemId) { 
+    console.log("Item ID to cancel:", itemId);
+
     Swal.fire({
         title: "Are you sure?",
         text: "Please select a reason for cancellation",
@@ -558,12 +692,9 @@ hr {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            
-            fetch(`/cancelOrder/${orderId}`, {  
+            fetch(`/cancelOrder/${itemId}`, {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason: result.value })
             })
             .then(response => response.json())
@@ -571,14 +702,19 @@ hr {
                 if (data.success) {
                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
                         .then(() => {
-                            element.closest(".order-item").remove(); 
+                            let itemElement = element.closest("li");
+                            if (itemElement) {
+                                itemElement.style.transition = "opacity 0.5s";
+                                itemElement.style.opacity = 0;
+                                setTimeout(() => itemElement.remove(), 500);
+                            }
                         });
                 } else {
-                  Swal.fire({
-                  title: "Error",
-                  text: "You cannot cancel shipped orders.",
-                  icon: "error"
-                  });
+                    Swal.fire({
+                        title: "Error",
+                        text: data.message || "Unable to cancel the order.",
+                        icon: "error"
+                    });
                 }
             })
             .catch(error => {
@@ -589,8 +725,9 @@ hr {
     });
 }
 
-function confirmOrderCancel(element, parentOrderId) { 
-    console.log("Order ID to cancel:", parentOrderId);  
+
+function confirmOrderCancel(element, OrderId) { 
+    console.log("Order ID to cancel:", OrderId);  
     Swal.fire({
         title: "Are you sure?",
         text: "Please select a reason for cancellation",
@@ -616,8 +753,7 @@ function confirmOrderCancel(element, parentOrderId) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            
-            fetch(`/cancelParentOrder/${parentOrderId}`, {  
+            fetch(`/cancelParentOrder/${OrderId}`, {  
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -629,7 +765,7 @@ function confirmOrderCancel(element, parentOrderId) {
                 if (data.success) {
                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
                         .then(() => {
-                          const mainContainer = document.querySelector(".main-container");
+                            const mainContainer = document.querySelector(".main-container");
                             if (mainContainer) {
                                 mainContainer.innerHTML = `
                                     <p style="color: red; font-weight: bold; text-align: center;">
@@ -640,11 +776,11 @@ function confirmOrderCancel(element, parentOrderId) {
                             element.closest(".order-item").remove();
                         });
                 } else {
-                  Swal.fire({
-                  title: "Error",
-                  text: "You cannot cancel shipped orders.",
-                  icon: "error"
-                  });
+                    Swal.fire({
+                        title: "Error",
+                        text: data.message || "Something went wrong.",
+                        icon: "error"
+                    });
                 }
             })
             .catch(error => {
@@ -654,5 +790,39 @@ function confirmOrderCancel(element, parentOrderId) {
         }
     });
 }
+
+
+document.getElementById("changeAddressBtn").addEventListener("click", function(event) {
+    event.preventDefault(); 
+
+    const updateUrl = this.getAttribute("data-url"); 
+    const orderStatus = this.getAttribute("data-status"); 
+    const restrictedStatuses = ["Shipped", "Out for Delivery", "Delivered", "Cancelled"];
+
+    if (restrictedStatuses.includes(orderStatus)) {
+        Swal.fire({
+            title: "Address Change Not Allowed!",
+            text: `You cannot change the shipping address once the order is <%= order.status %>`,
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: "Do you want to change the shipping address?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Change it!",
+        cancelButtonText: "No, Stay Here"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = updateUrl; 
+        }
+    });
+});
 </script>
 <%- include("../../views/partials/user/footer") %>

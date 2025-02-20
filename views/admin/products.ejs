@@ -158,7 +158,7 @@
               <button class="btn" type="submit">Search</button>
             </div>
           </form>
-          <a href="/admin/addProducts" class="btn btn-primary btn-add-category">Add Product</a>
+          <a href="/admin/addProducts" class="btn btn-primary btn-add-category" data-section="products">Add Product</a>
         </div>
       </header>
       <div class="table-responsive">
@@ -212,7 +212,7 @@
               </td>
 
               <td class="text-center">
-                <a href="/admin/editProduct/<%= product._id %>" class="btn btn-info">Edit</a>
+                <a href="/admin/editProduct/<%= product._id %>" class="btn btn-info" data-section="products">Edit</a>
               </td>
             </tr>
             <% }); %>

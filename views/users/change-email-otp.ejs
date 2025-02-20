@@ -78,11 +78,24 @@
    text-align: center;
    margin-top: 20px;
  }
+
+ .resend-btn {
+   margin-top: 10px;
+   background-color: #007bff;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+ }
+
 </style>
 
 
 <div class="otp-wrapper">
-   <div class="otp-container">
+   <div class="otp-container" style="margin-bottom: 40px;">
        <h3>Email Verification</h3>
        <form action="/verify-email-otp" method="post">
            <div class="form-group">
@@ -93,7 +106,10 @@
            <div class="otp-timer">
                <span id="otpTimer">OTP Expires in: 1:00</span>
            </div>
-           <button type="button" onclick="resendOTP()" class="resend-btn">Resend OTP</button>
+           <div>
+            <button type="button" onclick="resendOTP()" class="resend-btn">Resend OTP</button>
+           </div>
+           
            <% if (locals.message && message.length > 0) { %>
                <div class="alert alert-danger mt-3">
                    <%= message %>

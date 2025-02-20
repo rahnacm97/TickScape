@@ -454,10 +454,10 @@ function placeOrder() {
 
         if (productId) {
             orderedItems.push({
-                product: productId,  // ✅ Match Schema Field
+                product: productId,  
                 quantity: parseInt(quantity),
                 price: parseFloat(price),
-                totalPrice: parseFloat(productTotal) // ✅ Ensure total price is sent
+                totalPrice: parseFloat(productTotal) 
             });
         }
     });
@@ -526,10 +526,11 @@ function placeOrder() {
                 title: 'Order Placed!',
                 text: 'Your order has been successfully placed.',
             }).then(() => {
-                const orders = JSON.parse(localStorage.getItem('orders'));
-                if (orders) {
-                const encodedOrders = encodeURIComponent(JSON.stringify(orders));
-                window.location.href = `/orderDetails?orders=${encodedOrders}`;
+                // const orderId = response.order.orderId;
+                const orderId = response.order._id;
+                if (orderId) {
+                     //const encodedOrderId = encodeURIComponent(orderId);
+                     window.location.href = `/orderDetails?orderId=${orderId}`;
                 }
             });
         } else {

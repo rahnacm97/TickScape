@@ -1,5 +1,6 @@
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
+const CustomError = require('../../utils/customError');
 
 const categoryInfo = async (req,res) => {
     try{
@@ -32,22 +33,21 @@ const categoryInfo = async (req,res) => {
 
 const getAddCategory = async (req,res) => {
     try {
-        //const { name, description } = req.body;
-        //const existingCategory = await Category.findOne({name:name});
+        
         res.render('add-category');
     } catch (error) {
         res.redirect('/pageerror');
     }
 }
 
-const addCategory = async (req, res) => {
+const addCategory = async (req, res,next) => {
     try {
         const { name, description } = req.body;
         const trimmedName = name.trim().toUpperCase();
         
         const existingCategory = await Category.findOne({ name: trimmedName });
         if (existingCategory) {
-            return res.status(400).json({ error: "Category already exists" });
+            next(new CustomError(400, "Category already exists"))
         }
 
         const newCategory = new Category({
@@ -58,20 +58,20 @@ const addCategory = async (req, res) => {
         await newCategory.save();
 
         return res.json({ message: "Category added successfully" });
-    } catch (error) {
-        console.error("Error in addCategory:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+    } catch (err) {
+        next(new CustomError(err.statusCode, err.message))
     }
 };
 
 
-const addCategoryOffer = async(req,res) => {
+const addCategoryOffer = async(req,res,next) => {
     try {
         const percentage = parseInt(req.body.percentage);
         const categoryId = req.body.categoryId;
         const category = await Category.findById(categoryId);
         if(!category){
-            return res.status(404).json({status:false, message:"Category Not Found"});
+            next(new CustomError(404, "Category Not Found"))
+            //return res.status(404).json({status:false, message:"Category Not Found"});
         }
         const products = await Product.find({category:category._id});
         const hasProductOffer = products.some((product) => product.productOffer > percentage);
@@ -87,17 +87,19 @@ const addCategoryOffer = async(req,res) => {
         }
         res.json({status:true});
     } catch (error) {
-        res.status(500).json({status:false, message:"Internal Server Error"})
+        next(new CustomError(500, "Internal Server Error"))
+        //res.status(500).json({status:false, message:"Internal Server Error"})
     }
 };
 
-const removeCategoryOffer = async (req,res) => {
+const removeCategoryOffer = async (req,res,next) => {
     try {
        const categoryId = req.body.categoryId;
        const category = await Category.findById(categoryId);
        
        if(!category){
-        return res.status(404).json({status:false , message:"Category Not Found"});
+        next(new CustomError(404, "Category Not Found"))
+        //return res.status(404).json({status:false , message:"Category Not Found"});
        }
 
        const percentage = category.categoryOffer;
@@ -114,11 +116,12 @@ const removeCategoryOffer = async (req,res) => {
        await category.save();
        res.json({status:true});
     } catch (error) {
-        res.status(500).json({status:false, message:"Internal Server Error"});
+        next(new CustomError(500, "Internal Server Error"))
+        //res.status(500).json({status:false, message:"Internal Server Error"});
     }
 }
 
-const getListCategory = async(req,res) => {
+const getListCategory = async(req,res,next) => {
     try {
         let id = req.query.id;
         await Category.updateOne({_id:id},{$set:{isListed:false}});
@@ -128,7 +131,7 @@ const getListCategory = async(req,res) => {
     }
 }
 
-const getUnlistCategory = async(req,res) => {
+const getUnlistCategory = async(req,res,next) => {
     try {
         let id = req.query.id;
         await Category.updateOne({_id:id},{$set:{isListed:true}});
@@ -138,7 +141,7 @@ const getUnlistCategory = async(req,res) => {
     }
 }
 
-const getEditCategory = async (req,res) => {
+const getEditCategory = async (req,res,next) => {
     try {
         const id = req.query.id;
         const category = await Category.findOne({_id:id});
@@ -148,31 +151,35 @@ const getEditCategory = async (req,res) => {
     }
 }
 
-const editCategory = async(req,res) => {
+const editCategory = async (req, res,next) => {
     try {
         const id = req.params.id;
-        const {categoryName,description} = req.body;
-        const existingCategory = await Category.findOne({name:categoryName});
-        
-        if(existingCategory){
-            return res.status(400).json({error:"Category exists, Choose another name"});
+        const { categoryName, description } = req.body;
+        const existingCategory = await Category.findOne({ name: { $regex: new RegExp("^" + categoryName + "$", "i") },
+        _id: { $ne: id } });
+
+        if (existingCategory && existingCategory._id.toString() !== id) {
+            next(new CustomError(400, "Category exists, choose another name"))
+            //return res.status(400).json({ error: "Category exists, choose another name" });
         }
 
-        const updateCategory = await Category.findByIdAndUpdate(id,{
-            name:categoryName,
-            description:description
-        },{new:true});
+        const updateCategory = await Category.findByIdAndUpdate(
+            id,
+            { name: categoryName, description: description },
+            { new: true }
+        );
 
-        if(updateCategory){
-            res.redirect('/admin/category');
-        }else{
-            res.status(404).json({error:"Category Not Found"});
+        if (updateCategory) {
+            return res.json({ success: true, redirectUrl: "/admin/category" });
+        } else {
+            next(new CustomError(404, "Category Not Found"))
+            //res.status(404).json({ error: "Category Not Found" });
         }
     } catch (error) {
-        res.status(500).json({error:"Internal Server Error"});
+        next(new CustomError(500, "Internal Server Error"))
+        //res.status(500).json({ error: "Internal Server Error" });
     }
-}
-
+};
 
 
 module.exports = {

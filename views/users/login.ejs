@@ -121,7 +121,7 @@
 								Please Sign In</h3>
 							<form id="login-form" class="row contact_form" action="#" method="post" novalidate="novalidate" autocomplete="off">
 								<div class="col-md-12 form-group p_star">
-									<input type="text" class="form-control" id="name" name="email" value="rahnacm97@gmail.com"
+									<input type="text" class="form-control" id="name" name="email" value=""
 										placeholder="Email">
 									<div id="error1" class="error-message"></div>
 								</div>
@@ -167,15 +167,42 @@
 	<!--================login_part end =================-->
 </main>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const email = document.getElementById('name').value;
+        const password = document.getElementById('password').value;
+
+        // Encrypt the password before sending it (so it's not plain text in network requests)
+        const encryptedPassword = CryptoJS.AES.encrypt(password, "your-secret-key").toString();
+
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: encryptedPassword }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            window.location.href = '/';
+        } else {
+            alert(result.message);
+        }
+    });
+</script> -->
+
 <script>
 	    window.history.pushState(null, null, window.location.href);
         window.onpopstate = function() {
             window.history.go(1);  // Prevent going back
         };
 
-        // Optional: Disabling the forward arrow by preventing navigation on this page
         window.onbeforeunload = function() {
-            window.history.pushState(null, null, window.location.href);  // Push to prevent forward navigation
+            window.history.pushState(null, null, window.location.href); 
         };
 	function togglePassword() {
             var passwordField = document.getElementById("password");

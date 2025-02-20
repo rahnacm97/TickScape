@@ -68,6 +68,8 @@ router.post('/update-email',userAuth,profileController.updateEmail);
 router.get('/change-password',userAuth,profileController.changePassword);
 router.post('/change-password',userAuth,profileController.changePasswordValid);
 router.post('/verify-changepassword-otp',userAuth,profileController.verifyChangePassOtp);
+router.get('/edit-profile',userAuth,profileController.geteditProfile);
+router.post('/edit-profile',userAuth,profileController.editProfile);
 
 // Address Management
 router.get('/address',userAuth,profileController.getAddress); 
@@ -97,12 +99,13 @@ router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 //Order Mangement
 router.get('/orders',userAuth,orderController.getOrders);
 router.get("/orderDetails",userAuth,orderController.getConfirmation);
-router.get('/viewOrder/:orderId',userAuth,orderController.viewOrder);
-router.delete('/cancelOrder/:orderId', userAuth,orderController.cancelOrder);
-router.delete('/cancelParentOrder/:parentOrderId',userAuth,orderController.cancelParentOrder);
+router.get('/viewOrder/:orderid',userAuth,orderController.viewOrder);
+router.delete('/cancelOrder/:itemId', userAuth,orderController.cancelOrder);
+router.delete('/cancelParentOrder/:OrderId',userAuth,orderController.cancelParentOrder);
 router.get('/writeReview',userAuth,orderController.getWriteReview);
 router.post('/submitReview',userAuth,orderController.submitReview);
-
+router.get('/update-address',userAuth,orderController.getUpdateAddress);
+router.post('/update-address',userAuth,orderController.updateAddress);
 
 //Wishlist Management
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);

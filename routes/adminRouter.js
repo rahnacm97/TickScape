@@ -24,7 +24,6 @@ const storage = multer.diskStorage({
 }); 
 const uploads = multer({ storage: storage });
 
-router.get('/pageerror',adminController.pageerror);
 
 //admin 
 router.get('/login',adminController.adminLoadLogin);
@@ -45,7 +44,7 @@ router.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOf
 router.get('/listCategory',adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory',adminAuth,categoryController.getUnlistCategory);
 router.get('/editCategory',adminAuth,categoryController.getEditCategory);
-router.post('/editCategory/:id',adminAuth,categoryController.editCategory);
+router.put('/editCategory/:id',adminAuth,categoryController.editCategory);
 
 // Brand Management
 router.get('/brands',adminAuth,brandController.getBrandsPage);
@@ -92,5 +91,7 @@ router.post('/updateCoupon',adminAuth,couponController.updateCoupon);
 router.get('/deleteCoupon',adminAuth,couponController.deleteCoupon);
 
 router.get('/logout',adminAuth,adminController.logout);
+
+router.get('/pageerror',adminController.pageerror);
 
 module.exports = router;

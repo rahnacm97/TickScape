@@ -52,6 +52,7 @@ const logout = async (req,res) => {
                 console.log("Error dectroying session",err);
                 return res.redirect('/pageerror')
             }
+            res.clearCookie("connect.sid"); 
             res.redirect('/admin/login');
         })
     } catch (error) {
