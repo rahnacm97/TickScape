@@ -1,23 +1,13 @@
 const Coupon = require('../../models/couponSchema');
 const mongoose = require('mongoose');
 
-// const loadCoupon = async(req,res) => {
-//     try {
-//         const findCoupons = await Coupon.find({});
-//         console.log("Find",findCoupons);
-//         return res.render('coupon', {coupons: findCoupons});
-//     } catch (error) {
-//         console.log(error);
-//         return res.redirect('/pageerror');
-//     }
-// }
 
 const loadCoupon = async (req, res) => {
     try {
       const currentPage = parseInt(req.query.page) || 1;
       const searchQuery = req.query.search || '';  
 
-      const itemsPerPage = 3;
+      const itemsPerPage = 4;
   
       const skip = (currentPage - 1) * itemsPerPage;
 
@@ -40,6 +30,7 @@ const loadCoupon = async (req, res) => {
         searchQuery: searchQuery,
         limit: itemsPerPage 
       });
+
     } catch (error) {
       console.log(error);
       return res.redirect('/pageerror');

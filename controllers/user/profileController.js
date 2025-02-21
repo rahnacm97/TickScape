@@ -323,6 +323,7 @@ const changePasswordValid = async(req,res) => {
 }
 
 const verifyChangePassOtp = async(req,res,next) => {
+    
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){

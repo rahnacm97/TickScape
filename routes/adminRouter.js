@@ -10,6 +10,7 @@ const orderController = require("../controllers/admin/orderController");
 const bannerController = require('../controllers/admin/bannerController');
 const brandController = require('../controllers/admin/brandController');
 const couponController = require('../controllers/admin/couponController');
+const offerController = require('../controllers/admin/offerController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
@@ -90,8 +91,19 @@ router.get('/editCoupon',adminAuth,couponController.editCoupon);
 router.post('/updateCoupon',adminAuth,couponController.updateCoupon);
 router.get('/deleteCoupon',adminAuth,couponController.deleteCoupon);
 
+//Offer Management
+router.get('/offers',adminAuth,offerController.loadOffer);
+router.get('/addOffers',adminAuth,offerController.offerAdd);
+router.post('/offerAdd',adminAuth,offerController.addOffer);
+router.get('/offerList/:id',adminAuth,offerController.offerList);
+router.get('/offerUnList/:id',adminAuth,offerController.offerUnList);
+router.get('/editOffer/:id',adminAuth,offerController.editOffer);
+router.post('/offerEdit/:id',adminAuth,offerController.offerEdit);
+
+//Logout
 router.get('/logout',adminAuth,adminController.logout);
 
+//Page Error
 router.get('/pageerror',adminController.pageerror);
 
 module.exports = router;

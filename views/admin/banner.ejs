@@ -1,148 +1,186 @@
 <%- include("../../views/partials/admin/header") %>
-
 <style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
 
-body {
-  font-family: 'Roboto', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f5f7;
-}
+  .content-main {
+    padding: 40px;
+  }
 
-.content-main {
-  padding: 20px;
-}
+  .content-header {
+    margin-bottom: 30px;
+  }
 
-.content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+  .content-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+  }
 
-.content-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #333;
-}
+  .card-header {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-.card-header {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
+  .input-group {
+    width: 60%;
+  }
 
-.search-container {
-  display: flex;
-  justify-content: flex-end; /* Align button to the right */
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px 0;
-}
-.table-striped {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        width: 100%;
-      }
-  
-      .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-      }
-  
-      .table th,
-      .table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-      }
-  
-      .table th {
-        background-color: #f8f9fa;
-        font-weight: 500;
-      }
+  .form-control {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    margin-right: 10px;
+    font-size: 14px;
+  }
 
-.pagination-container {
-  text-align: center;
-  margin-top: 20px;
-}
+  .btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    border: none;
+  }
 
-.pagination a,
-.pagination .current-page {
-  padding: 8px 16px;
-  margin: 0 4px;
-  border-radius: 30px;
-  text-decoration: none;
-  background-color: #f0f0f0;
-  color: #333;
-  transition: background-color 0.3s ease;
-}
+  .btn:hover {
+    background-color: #0056b3;
+  }
 
-.pagination a:hover {
-  background-color: #007bff;
-  color: white;
-}
+  .table-responsive {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
 
-.pagination .current-page {
-  background-color: #007bff;
-  color: white;
-}
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
 
-.btn-danger {
-  background-color: #dc3545;
-  color: white;
-}
+  .table th,
+  .table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
 
-.btn-danger:hover {
-  background-color: #c82333;
-}
+  .table th {
+    background-color: #f7f7f7;
+    font-weight: 500;
+  }
 
-.btn-info {
-  background-color: #17a2b8;
-  color: white;
-}
+  .pagination-container {
+    text-align: center;
+    margin-top: 20px;
+  }
 
-.btn-info:hover {
-  background-color: #138496;
-}
-    .table th, .table td {
-  vertical-align: middle;
-}
+  .pagination a,
+  .pagination .current-page {
+    padding: 8px 16px;
+    margin: 0 4px;
+    border-radius: 30px;
+    text-decoration: none;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.3s ease;
+  }
 
-.badge {
-  font-size: 0.9rem;
-  padding: 0.5em 0.75em;
-}
+  .pagination a:hover {
+    background-color: #007bff;
+    color: white;
+  }
 
-.img-fluid {
-  border: 1px solid #ddd;
-  padding: 2px;
-  background-color: #f8f9fa;
-}
+  .pagination .current-page {
+    background-color: #007bff;
+    color: white;
+  }
 
-.table-responsive {
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-}
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
 
-.content-title {
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
+  .badge {
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 14px;
+  }
 
-.btn-success {
-  font-size: 1rem;
-  padding: 0.6rem 1.2rem;
-}
+  .badge-success {
+    background-color: #28a745;
+    color: white;
+  }
 
+  .badge-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .btn-info {
+    background-color: #17a2b8;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 30px;
+    color: white;
+  }
+
+  .btn-info:hover {
+    background-color: #138496;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 30px;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+  .btn-success {
+    background-color: #28a745;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 30px;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  .search-container {
+    width: 100%;
+    max-width: 1000px; 
+    margin: 0 auto;
+    padding: 20px 0;
+  }
+
+  .btn-add-category {
+    width: 175px; 
+    padding: 10px 10px; 
+    
+  }
 </style>
+
 <section class="content-main">
 <div class="content-header row">
     <div class="d-flex justify-content-between align-items-center">
@@ -150,14 +188,14 @@ body {
     </div>
 </div>
 
-<header class="card-header">
+<header class="card-header" style="margin-bottom: 20px;">
     <div class="search-container">
-      <a href="/admin/addBanner" class="btn btn-primary btn-add-category">Add Banner</a>
+      <a href="/admin/addBanner" class="btn btn-primary btn-add-category">Add Banner +</a>
     </div>
-  </header>
+</header>
 
-<div class="right mt-5">
-    <table class="table table-striped">
+  <div class="table-responsive">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th scope="col">Sl. No</th>

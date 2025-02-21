@@ -19,7 +19,7 @@
 }
 
 .content-title {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: #333;
 }
@@ -152,7 +152,7 @@
  </div>
  <header class="card-header">
     <div class="search-container">
-      <a href="/admin/createCoupon" class="btn btn-primary btn-add-category">Add Coupon</a>
+      <a href="/admin/createCoupon" class="btn btn-primary btn-add-category">Add Coupon +</a>
     </div>
   </header>
        <div class="col-md-12">
@@ -161,12 +161,12 @@
                  <thead>
                      <tr>
                          <th>Sl. No</th>
-                         <th>Name</th>
+                         <th>Coupon Code</th>
                          <th>Created On</th>
                          <th>Expire On</th>
                          <th>Offer Price</th>
                          <th>Minimum Price</th>
-                         <th>Status</th>
+                         <!-- <th>Status</th> -->
                          <th>Edit</th>
                          <th>Action</th>
                      </tr>
@@ -178,9 +178,9 @@
                          <td class="text-start"><%= coupons[i].name %></td>
                          <td class="text-start"><%= new Date(coupons[i].createdOn).toLocaleDateString('en-US') %></td>
                          <td class="text-start"><%= new Date(coupons[i].expireOn).toLocaleDateString('en-US') %></td>
-                         <td class="text-start"><%= coupons[i].offerPrice %></td>
-                         <td class="text-start"><%= coupons[i].minimumPrice %></td>
-                         <td class="text-start"><%= coupons[i].isList %></td>
+                         <td class="text-start">$<%= coupons[i].offerPrice %></td>
+                         <td class="text-start">$<%= coupons[i].minimumPrice %></td>
+                         <!-- <td class="text-start"><%= coupons[i].isList %></td> -->
                          <td class="text-start">
                              <a href="/admin/editCoupon?id=<%= coupons[i]._id %>" class="btn btn-primary btn-sm" style="border-radius: 50px;">Edit</a>
                          </td>

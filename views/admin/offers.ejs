@@ -1,0 +1,288 @@
+<%- include("../../views/partials/admin/header") %>
+<style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .content-main {
+      padding: 40px;
+    }
+
+    .content-header {
+      margin-bottom: 30px;
+    }
+
+    .content-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .card-header {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input-group {
+      width: 60%;
+    }
+
+    .form-control {
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 30px;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    .btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .table-responsive {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .table th,
+    .table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .table th {
+      background-color: #f7f7f7;
+      font-weight: 500;
+    }
+
+    .pagination-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .pagination a,
+    .pagination .current-page {
+      padding: 8px 16px;
+      margin: 0 4px;
+      border-radius: 30px;
+      text-decoration: none;
+      background-color: #f0f0f0;
+      color: #333;
+      transition: background-color 0.3s ease;
+    }
+
+    .pagination a:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .pagination .current-page {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 12px;
+    }
+
+    .badge {
+      padding: 5px 10px;
+      border-radius: 30px;
+      font-size: 14px;
+    }
+
+    .badge-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .badge-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-info {
+      background-color: #17a2b8;
+      border: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 30px;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background-color: #138496;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      border: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 30px;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 30px;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+    .search-container {
+      width: 100%;
+      max-width: 1000px; 
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    .btn-add-category {
+      width: 175px; 
+      padding: 10px 10px; 
+      
+    }
+  </style>
+<body>
+    <section class="content-main">
+      <div class="content-header">
+        <h2 class="content-title">Offers</h2>
+      </div>
+      <header class="card-header" style="margin-bottom: 20px;">
+        <div class="search-container">
+          <form action="/admin/offers/" method="get" class="d-inline">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search offers" name="search" value="<%=  %>"/>
+              <button class="btn" type="submit">Search</button>
+            </div>
+          </form>
+        </div>
+        <a href="/admin/addOffers" class="btn btn-primary btn-add-category" data-section="offers" style="font-weight: bold;">
+            Add Offer +
+        </a>
+      </header>
+  
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="text-center">Sl.No</th>
+              <th>Category</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Min Price</th>
+              <th>Max Price</th>
+              <th>Discount</th>
+              <th>Status</th>
+              <th>Action</th>
+              <!-- <th class="text-center">Edit</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <%offers.forEach((offer,index)=>{%>
+            <tr class="text-gray-700 dark:text-gray-400">
+              <td class="px-4 py-3"><%=index+1%></td>
+              <td class="px-4 py-3"><%=offer.category.name%></td>
+              <td class="px-4 py-3">
+                <%= new Date(offer.startDate).toLocaleString('en-US', { 
+                      month: 'long', 
+                      day: 'numeric', 
+                      hour: 'numeric', 
+                      minute: '2-digit', 
+                      hour12: true,
+                }) %>
+              </td>
+              <td class="px-4 py-3"><%= new Date(offer.endDate).toLocaleString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true,
+          }) %>
+        </td>
+              <td class="px-4 py-3"><%= offer.minPrice%></td>
+              <td class="px-4 py-3"><%= offer.maxPrice%></td>
+              <td class="px-4 py-3"><%= offer.offer%>%</td>
+              <td class="px-4 py-3">
+                <% if(offer.isActive === true) { %>
+                    <button class="btn btn-danger" style="width: 60px;padding: 8px 12px;">
+                        <a href="/admin/offerUnList/<%=offer._id %>" class="text-white" style="text-decoration: none;">Unlist</a>
+                    </button>
+                <% } else { %>
+                    <button class="btn btn-success" style="width: 60px;padding: 8px 12px;">
+                        <a href="/admin/offerList/<%=offer._id %>" class="text-white" style="text-decoration: none;">List</a>
+                    </button>
+                <% } %>
+
+              </td>          
+              <td class="px-4 py-3">
+                <div class="flex items-center space-x-4">
+                  <a href="/admin/editOffer/<%=offer._id%>" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination -->
+      <div class="pagination-container">
+        <%   %>
+        <a href="">&laquo; Previous</a>
+        <%  %>
+        <%  %>
+        <%  %>
+        <span class="current-page"><%= %></span>
+        <%  %>
+        <a href=""><%= %></a>
+        <%  %>
+        <%  %>
+        <%  %>
+        <a href="">Next &raquo;</a>
+        <%  %>
+      </div>
+
+    </section>
+</body>
+<%- include("../../views/partials/admin/footer") %>
