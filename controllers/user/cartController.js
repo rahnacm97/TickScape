@@ -75,23 +75,33 @@ const addToCart = async (req, res,next) => {
 
     if (product.quantity === 0) {
       return next(new CustomError(400, "This product is out of stock"))
-      //return res.status(400).json({ error: "This product is out of stock" });
     }
 
     let cart = await Cart.findOne({ userId });
-    console.log("cart:",cart);
-    if (!cart) {
-      cart = new Cart({
+
+    if(!cart){
+       const newCart = new Cart({
         userId,
         items: [
           {
             productId,
             quantity: 1,
-            // price: product.salePrice,
             totalPrice: product.salePrice,
           },
         ],
       });
+      await newCart.save();
+   return res.status(200).json({ status: true, message: "Product added to cart successfully!" });
+
+    }
+
+    if ( cart && cart.items.length ===0) {
+     
+      cart.items.push({
+        productId,
+              quantity: 1,
+              totalPrice: product.salePrice,
+      })
     } else {
       const existingProduct = cart.items.find(
         (item) => item.productId.toString() === productId
@@ -107,13 +117,12 @@ const addToCart = async (req, res,next) => {
         }
 
         existingProduct.quantity += 1;
-        existingProduct.totalPrice = existingProduct.quantity * existingProduct.price;
+        existingProduct.totalPrice = existingProduct.quantity *  product.salePrice;
 
       } else {
         cart.items.push({
           productId,
           quantity: 1,
-          price: product.salePrice,
           totalPrice: product.salePrice, 
         });
       }

@@ -419,10 +419,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(data => {
                         if (data.success) {
                             Swal.fire("Deleted!", "Your address has been removed.", "success");
-                            // Remove the address card from the DOM
                             button.closest(".col-lg-6").remove();
 
-                            // If redirecting to checkout, navigate after deletion
                             if (redirectTo === "checkout") {
                                 setTimeout(() => {
                                     window.location.href = "/checkout";
@@ -444,12 +442,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script>
 function placeOrder() {
-    // Extract Cart Items
     let orderedItems = [];
     document.querySelectorAll("tbody tr").forEach(row => {
-        let productId = row.querySelector("#productid")?.value; // Get product ID
-        let quantity = row.cells[4]?.textContent; // Quantity column
-        let price = row.cells[3]?.textContent.replace("$", ""); // Price column
+        let productId = row.querySelector("#productid")?.value; 
+        let quantity = row.cells[4]?.textContent; 
+        let price = row.cells[3]?.textContent.replace("$", ""); 
         let productTotal = row.cells[5]?.textContent.replace("$", "");
 
         if (productId) {
@@ -462,7 +459,6 @@ function placeOrder() {
         }
     });
 
-    // Check if there are any products in the cart
     if (orderedItems.length === 0) {
         Swal.fire({
             icon: 'error',
@@ -472,7 +468,6 @@ function placeOrder() {
         return;
     }
 
-    // Extract Address
     let selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
     if (!selectedAddress) {
         Swal.fire({
@@ -483,7 +478,6 @@ function placeOrder() {
         return;
     }
 
-    // Extract Payment Method
     let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
     if (!paymentMethod) {
         Swal.fire({
@@ -494,13 +488,11 @@ function placeOrder() {
         return;
     }
 
-    // Calculate Total Price
     let totalPrice = orderedItems.reduce((sum, item) => sum + item.totalPrice, 0);
     let shipping = 50;
     let discount = 20;
     let finalAmount = totalPrice + shipping - discount;
 
-    // Send Order Request
     fetch("/placeOrder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
