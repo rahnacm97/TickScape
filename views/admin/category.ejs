@@ -294,11 +294,11 @@
 
       const data = await response.json();
       if(response.ok && data.status === true){
-        Swal.fire(
-          "Offer added",
-          "The offer has been added",
-          "Success"
-        ).then(() => {
+        Swal.fire({
+          title: "Offer added",
+          text: "The offer has been added",
+          icon: "Success"
+       }).then(() => {
           location.reload();
         })
       }else{
@@ -333,7 +333,7 @@ async function removeOffer(categoryId){
         "Offer removed",
         "The offer has been removed",
         "Success"
-      ).then(() => {
+       ).then(() => {
         location.reload();
       });
     }else{

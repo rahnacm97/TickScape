@@ -219,8 +219,8 @@ input[type="text"] {
                                                             <img src="<%= item.productId.productImage[0] %>" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
                                                         </div>
                                                     </td>
-                                                    <td class="py-5"><%=item.productId.productName%></td>
-                                                    <td class="py-5">$<%= item.price.toFixed(2) %></td>
+                                                    <td class="py-5"><%=item.productId.productName %></td>
+                                                    <td class="py-5">$<%= item.productId.salePrice.toFixed(2) %></td>
                                                     <td class="py-5"><%= item.quantity %></td>
                                                     <td class="py-5">$<%= item.totalPrice.toFixed(2) %></td>
                                                     

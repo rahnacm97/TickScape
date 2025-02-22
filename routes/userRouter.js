@@ -99,6 +99,7 @@ router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 //Order Mangement
 router.get('/orders',userAuth,orderController.getOrders);
 router.get("/orderDetails",userAuth,orderController.getConfirmation);
+router.get("/download-invoice/:orderId",userAuth,orderController.downloadInvoice);
 router.get('/viewOrder/:orderid',userAuth,orderController.viewOrder);
 router.delete('/cancelOrder/:itemId', userAuth,orderController.cancelOrder);
 router.delete('/cancelParentOrder/:OrderId',userAuth,orderController.cancelParentOrder);

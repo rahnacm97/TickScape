@@ -14,8 +14,6 @@ const { v4: uuidv4 } = require('uuid');
 
 const getOrderListPageAdmin = async (req, res) => {
   try {
-    
-
     let searchQuery = req.query.search || "";
     let filter = {};
 
@@ -110,6 +108,7 @@ const getOrderDetailsPageAdmin = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
   try {
+    
     console.log("Received request to update order status:", req.body);
 
     const { orderId, status } = req.body;

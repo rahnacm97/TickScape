@@ -8,6 +8,9 @@ const Review = require("../../models/reviewSchema");
 const env = require("dotenv").config();
 const session = require("express-session");
 const mongoose = require('mongoose');
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
 const getConfirmation = async (req, res) => {
     try {
@@ -61,6 +64,110 @@ const getConfirmation = async (req, res) => {
         res.status(500).send("Error loading the page");
     }
 };
+
+
+const downloadInvoice = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const userId = req.session.user._id;
+
+        const order = await Order.findById(orderId)
+            .populate({
+                path: "orderedItems.productId",
+                model: "Product",
+            });
+
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        let fullAddress = null;
+        if (order.address) {
+            const addressDoc = await Address.findOne({ userId });
+
+            if (!addressDoc) {
+                return res.status(404).json({ error: "Address document not found." });
+            }
+
+            fullAddress = addressDoc.address.find(addr => addr._id.toString() === order.address.toString());
+
+            if (!fullAddress) {
+                return res.status(404).json({ error: "Address not found." });
+            }
+        }
+
+        const invoiceDir = path.join("D:", "BROTOTYPE", "TICKSCAPE", "invoices");
+        const invoicePath = path.join(invoiceDir, `invoice-${orderId}.pdf`);
+
+        if (!fs.existsSync(invoiceDir)) {
+            fs.mkdirSync(invoiceDir, { recursive: true });
+        }
+
+        const doc = new PDFDocument();
+        const writeStream = fs.createWriteStream(invoicePath);
+        doc.pipe(writeStream);
+
+        doc.fontSize(20).text("Invoice", { align: "center" });
+        doc.moveDown();
+
+        doc.fontSize(14).text(`Order ID: ${order.orderId}`);
+        doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`);
+        doc.moveDown();
+
+        doc.text(`Deliver to: ${fullAddress.name}`);
+        doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
+        doc.text(`Pincode: ${fullAddress.pincode}`);
+        doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`);
+        doc.moveDown();
+
+        doc.fontSize(14).text("Items Ordered:", { underline: true });
+        doc.moveDown();
+
+        order.orderedItems.forEach((item, index) => {
+            doc.fontSize(12).text(
+                `${index + 1}. ${item.productId.productName} - ${item.quantity} x $${item.price} = $${item.quantity * item.price}`
+            );
+        });
+
+        doc.moveDown();
+        doc.fontSize(14).text(`Total Price: $${order.totalPrice}`);
+        doc.text(`Discount: $${order.discount}`);
+        doc.text(`Shipping: $${order.shipping}`);
+        doc.text(`Final Amount: $${order.finalAmount}`, { underline: true });
+
+        doc.moveDown();
+        doc.fontSize(12).text("Thank you for shopping with us!", { align: "center" });
+
+        doc.end();
+
+        writeStream.on("finish", () => {
+            console.log("PDF successfully written. Ready for download.");
+
+            fs.access(invoicePath, fs.constants.F_OK, (err) => {
+                if (err) {
+                    console.error("File does not exist:", invoicePath);
+                    return res.status(404).json({ error: "Invoice file not found" });
+                }
+
+                console.log("File exists, proceeding to download...");
+
+                res.download(invoicePath, `invoice-${orderId}.pdf`, (err) => {
+                    if (err) {
+                        console.error("Error downloading invoice:", err);
+                        return res.status(500).json({ error: "Error downloading invoice" });
+                    } else {
+                        console.log("Invoice downloaded successfully.");
+                    }
+                });
+            });
+        });
+
+    } catch (error) {
+        console.error("Error generating invoice:", error);
+        res.status(500).json({ error: "Error generating invoice" });
+    }
+};
+
 
 const getOrders = async (req, res) => {
     try {
@@ -130,6 +237,7 @@ const getOrders = async (req, res) => {
 
 const viewOrder = async(req,res) => {
     try {
+
         const userId = req.session.user._id;
         const { orderid } = req.params;
         console.log("1",orderid,userId);
@@ -152,8 +260,7 @@ const viewOrder = async(req,res) => {
 
         const trackingHistory = order.trackingHistory ? order.trackingHistory.sort((a, b) => {
         return new Date(a.date) - new Date(b.date);
-       })
-        : [];
+        }): [];
 
         console.log("Sorted Tracking History:", trackingHistory);
 
@@ -306,7 +413,6 @@ const cancelParentOrder = async (req, res) => {
     }
 };
 
-
 const getWriteReview = async(req,res) => {
     try {
         const { productId, orderId } = req.query;
@@ -455,6 +561,7 @@ const updateAddress = async (req, res) => {
 
 module.exports = {
     getConfirmation,
+    downloadInvoice,
     getOrders,
     viewOrder,
     cancelOrder,

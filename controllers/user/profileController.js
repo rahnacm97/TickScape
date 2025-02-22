@@ -322,8 +322,7 @@ const changePasswordValid = async(req,res) => {
     }
 }
 
-const verifyChangePassOtp = async(req,res,next) => {
-    
+const verifyChangePassOtp = async(req,res,next) => {    
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
@@ -342,10 +341,9 @@ const verifyChangePassOtp = async(req,res,next) => {
 const getAddress = async (req, res) => {
     try {
         const userId = req.session.user._id;
-        const page = parseInt(req.query.page) || 1; // Get page number from query, default to 1
-        const limit = 4; // Number of addresses per page
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 4; 
 
-        // Fetch user address
         const addressData = await Address.findOne({ userId: userId });
 
         if (!addressData || !addressData.address || addressData.address.length === 0) {
@@ -359,7 +357,6 @@ const getAddress = async (req, res) => {
         const totalAddresses = addressData.address.length;
         const totalPages = Math.ceil(totalAddresses / limit);
 
-        // Paginate addresses (using slice since it's an array inside Address)
         const paginatedAddresses = addressData.address.slice((page - 1) * limit, page * limit);
 
         res.render('address', {
@@ -420,7 +417,6 @@ const userAddAddress = async(req,res) => {
 
 const editAddress = async(req,res) => {
     try {
-
         console.log("query",req.query);
         const addressId = req.query.id;
         console.log("addres",addressId);

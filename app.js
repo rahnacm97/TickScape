@@ -9,6 +9,7 @@ const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
 const CustomError = require("./utils/customError");
 const MongoStore = require("connect-mongo");
+const fs = require('fs');
 
 db();
 
@@ -19,18 +20,18 @@ app.use((req, res, next) => {
     next();
   });
 app.use(session({
-    secret: process.env.SESSION_SECRET, // Store in .env for security
+    secret: process.env.SESSION_SECRET, 
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI, // MongoDB connection string
-        collectionName: "sessions", // Name of the collection in MongoDB
-        ttl: 72 * 60 * 60, // Session expiration time in seconds (72 hours)
+        mongoUrl: process.env.MONGODB_URI, 
+        collectionName: "sessions", 
+        ttl: 72 * 60 * 60, 
     }),
     cookie: {
-        secure: false, // Set to true in production with HTTPS
+        secure: false,
         httpOnly: true,
-        maxAge: 72 * 60 * 60 * 1000 // 72 hours
+        maxAge: 72 * 60 * 60 * 1000 
     }
 }))
 

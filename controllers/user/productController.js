@@ -38,6 +38,7 @@ const productDetails = async(req,res) => {
             averageRating: averageRating.toFixed(1),
             reviewCount: totalRatings
         });
+        
         //console.log("rel1",relatedProducts);
     } catch (error) {
         console.log("Error in product view",error);

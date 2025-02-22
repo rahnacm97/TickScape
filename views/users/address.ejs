@@ -265,7 +265,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(data => {
                         if (data.success) {
                             Swal.fire("Deleted!", "Your address has been removed.", "success");
-                            // Remove the address card from DOM
                             button.closest(".col-lg-6").remove();
                         } else {
                             Swal.fire("Error!", "Something went wrong.", "error");

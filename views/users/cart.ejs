@@ -350,7 +350,6 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
 
     const newQuantity = currentQuantity + count;
 
-    // Prevent quantity going below 1 or above stock limit
     if (newQuantity < 1) {
     Swal.fire({
         title: 'Invalid Quantity!',
@@ -370,7 +369,6 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
         return;
     }
 
-    // Check for stock
     if (newQuantity > productQuantity) {
         Swal.fire({
             title: 'Out of Stock!',
@@ -381,13 +379,11 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
         return;
     }
 
-    // Update the subtotal for this item
     const newSubTotal = newQuantity * productPrice;
     subtotalElement.innerHTML = newSubTotal;
     const updatedTotal = currentTotal + (newSubTotal - currentSubTotal);
     totalElement.innerHTML = updatedTotal;
 
-    // Send the updated quantity to the server via AJAX
     $.ajax({
         url: '/changeQuantity',
         method: 'POST',
@@ -406,66 +402,6 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
         }
     });
 }
-
-//     function confirmRemove(productId) {
-//     Swal.fire({
-//         title: 'Are you sure?',
-//         text: "You won't be able to revert this!",
-//         icon: 'warning',
-//         showCancelButton: true,
-//         confirmButtonColor: '#3085d6',
-//         cancelButtonColor: '#d33',
-//         confirmButtonText: 'Yes, remove it!'
-//     }).then((result) => {
-//         if (result.isConfirmed) {
-//             fetch(`/deleteProduct?id=${productId}`, {
-//                 method: 'DELETE',
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 }
-//             })
-//             .then(response => {
-//                 // If the response is not JSON, handle the error
-//                 if (!response.ok) {
-//                     throw new Error(`HTTP error! Status: ${response.status}`);
-//                 }
-//                 return response.json();
-//             })
-//             .then(data => {
-//                 if (data.error) {
-//                     Swal.fire('Error', data.error, 'error');
-//                 } else {
-//                     // Remove item from UI
-//                     const cartItem = document.getElementById(`cart-item-${productId}`);
-//                     if (cartItem) {
-//                         cartItem.remove();
-//                     }
-//                     // Update cart item count
-//                     const cartCount = document.getElementById("cartItemCount");
-//                     if (cartCount) {
-//                         cartCount.textContent = data.cartItemCount;
-//                     }
-
-//                     const cartTableBody = document.querySelector("tbody");
-//                     if (!cartTableBody.querySelector("tr[id^='cart-item-']")) {
-//                         cartTableBody.innerHTML = `
-//                             <tr>
-//                                 <td colspan="5" class="text-center">
-//                                     <p class="lead mb-4">No item found in the Cart</p>
-//                                 </td>
-//                             </tr>`;
-//                     }
-                    
-//                     Swal.fire('Deleted!', 'Product removed from cart.', 'success');
-//                 }
-//             })
-//             .catch(error => {
-//                 console.error('Error:', error);
-//                 Swal.fire('Error', 'Failed to remove product.', 'error');
-//             });
-//         }
-//     });
-// }
 
 function confirmRemove(productId) {
     Swal.fire({
@@ -494,31 +430,29 @@ function confirmRemove(productId) {
                 if (data.error) {
                     Swal.fire('Error', data.error, 'error');
                 } else {
-                    // Remove the item from UI
+                    
                     const cartItem = document.getElementById(`cart-item-${productId}`);
                     if (cartItem) {
-                        // Get the price of the item being removed
+                        
                         const itemPrice = parseFloat(cartItem.querySelector('[id^="subTotal"]').textContent);
                         
-                        // Remove the row from the cart table
+                   
                         cartItem.remove();
 
-                        // Update the total price
+                    
                         const totalElement = document.getElementById("total");
                         if (totalElement) {
                             let currentTotal = parseFloat(totalElement.textContent);
                             let newTotal = currentTotal - itemPrice;
-                            totalElement.textContent = newTotal.toFixed(2); // Ensure 2 decimal places
+                            totalElement.textContent = newTotal.toFixed(2); 
                         }
                     }
 
-                    // Update cart item count
                     const cartCount = document.getElementById("cartItemCount");
                     if (cartCount) {
                         cartCount.textContent = data.cartItemCount;
                     }
 
-                    // Check if cart is empty, show "No item found in Cart"
                     const cartTableBody = document.querySelector("tbody");
                     if (!cartTableBody.querySelector("tr[id^='cart-item-']")) {
                         cartTableBody.innerHTML = `
@@ -542,6 +476,5 @@ function confirmRemove(productId) {
 
 
 </script>
-
 <%- include("../../views/partials/user/footer") %>
 

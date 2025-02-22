@@ -74,7 +74,8 @@ const addToCart = async (req, res,next) => {
     }
 
     if (product.quantity === 0) {
-      return res.status(400).json({ error: "This product is out of stock" });
+      return next(new CustomError(400, "This product is out of stock"))
+      //return res.status(400).json({ error: "This product is out of stock" });
     }
 
     let cart = await Cart.findOne({ userId });
@@ -86,7 +87,7 @@ const addToCart = async (req, res,next) => {
           {
             productId,
             quantity: 1,
-            price: product.salePrice,
+            // price: product.salePrice,
             totalPrice: product.salePrice,
           },
         ],
@@ -170,7 +171,6 @@ const changeQuantity = async (req, res) => {
 
     await cart.save();
 
-    // Calculate the grand total
     const grandTotal = cart.items.reduce((total, item) => total + item.totalPrice, 0);
 
     return res.status(200).json({
@@ -205,8 +205,7 @@ const deleteProduct = async (req, res) => {
       if (itemIndex === -1) {
           return res.status(404).json({ error: 'Product not found in cart' });
       }
-
-      // Remove the item from the cart
+      
       cart.items.splice(itemIndex, 1);
       await cart.save();
 
