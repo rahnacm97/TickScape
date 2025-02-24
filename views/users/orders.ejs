@@ -207,7 +207,7 @@ body {
                   Status: <%= orders.status %><br />
                   Shipping Charge: $<%= orders.shipping %><br />
                   Discount: $<%= orders.discount %><br />
-                  Grand Total: $<%= orders.grandTotal %>
+                  Grand Total: $<%= orders.finalAmount %>
                 </p>
               </div>
             </article>
@@ -247,7 +247,7 @@ body {
                     <th>Product Image</th>
                     <th>Unit Price</th>
                     <th>Quantity</th>
-                    <th>Total</th>
+                    <!-- <th>Total</th> -->
                     <!-- <th>Action</th> -->
                   </tr>
                 </thead>
@@ -262,7 +262,7 @@ body {
                         </td>
                         <td>$<%= item.price %></td>
                         <td><%= item.quantity %></td>
-                        <td>$<%= orders.totalPrice %></td>
+                        <!-- <td>$<%= orders.finalAmount %></td> -->
                         <!-- <td>
                           <a href="#" class="btn btn-sm" onclick="return confirmCancel(this)">
                             <i class="fi-rs-trash"></i> <i class="fa fa-times-circle"></i>Cancel Order

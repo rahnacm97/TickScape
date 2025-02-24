@@ -378,12 +378,12 @@
                      <a href="javascript:void(0);" onclick="confirmEdit('<%= user._id %>')" style="margin-left: 600px; font-size: 12px;">Edit</a>
                    </div>
                    <div class="card-body text-center">
-                     <h5 class="card-title"><%=user.fname%> <%=user.lname%></h5>
+                     <h5 class="card-title"><%= user.fname %> <%= user.lname %></h5>
                      <p class="card-text">
-                       <strong>Phone: </strong><%=user.phone%>
+                       <strong>Phone: </strong><%= user.phone %>
                      </p>
                      <p class="card-text">
-                       <strong>Email: </strong><%=user.email%>
+                       <strong>Email: </strong><%= user.email %>
                      </p>
                      <a href="/change-email" class="btn btn-sm btn-success ml-2">Change Email</a>
                      <a href="/change-password" class="btn btn-sm btn-success">Change Password</a>

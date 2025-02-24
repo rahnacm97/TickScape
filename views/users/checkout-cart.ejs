@@ -120,7 +120,7 @@ input[type="text"], .form-check-label {
 .btn-primary {
     background-color: #066e2c;
     border-color: #076338;
-    width: 150px; /* Adjust width as needed */
+    width: 150px; 
    
 }
 
@@ -190,103 +190,218 @@ input[type="text"] {
         </div>
         <div class="container">
             <div class="row">
-                <div class="row">
-                    <div class="col-md-12 products">
-                        <div class="mb-20">
-                            <h3>Products</h3>
+                <div class="col-md-12 products">
+                    <div class="mb-20">
+                        <h3>Products</h3>
+                    </div>
+                    <div class="card">
+                        <div class="table-responsive order_table text-center">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Image</th>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Product Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (carts && carts.items && carts.items.length > 0) { %>
+                                    <% carts.items.forEach((item,index) => { %>
+                                    <tr class="cart-item" data-product-id="<%= item.productId._id %>">
+                                        <td><%= index + 1 %></td>
+                                        <td scope="row">
+                                            <div class="d-flex align-items-center mt-2">
+                                                <img src="<%= item.productId.productImage[0] %>" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                            </div>
+                                        </td>
+                                        <td class="py-5"><%=item.productId.productName %></td>
+                                        <td class="py-5">$<%= item.productId.salePrice.toFixed(2) %></td>
+                                        <td class="py-5"><%= item.quantity %></td>
+                                        <td class="py-5">$<%= item.totalPrice.toFixed(2) %></td>
+                                        <td><input type="hidden" id="productid" value="<%=item.productId._id%>"></td>
+                                    </tr>
+                                    <% }); %>
+                                    <% } else { %>
+                                    <tr>
+                                        <td colspan="6">No products found</td>
+                                    </tr>
+                                    <% } %>
+                                    <tr>
+                                        <td colspan="5" class="py-1">
+                                            <p class="mb-0 text-dark py-1">Total</p>
+                                        </td>
+                                        <td class="py-1">
+                                            <p class="mb-0 text-dark">$<%= total %></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="py-1">
+                                            <p class="mb-0 text-dark py-1">Shipping Charge</p>
+                                        </td>
+                                        <td class="py-1">
+                                            <p class="mb-0 text-dark py-1">$50</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="py-1">
+                                            <p class="mb-0 text-dark py-1">Discount</p>
+                                        </td>
+                                        <td class="py-1" id="discount">
+                                            <p class="mb-0 text-dark py-1">$<%= discount %></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="py-1">
+                                            <p class="mb-0 text-dark text-uppercase py-1">Sub Total</p>
+                                        </td>
+                                        <td class="py-1 border-bottom border-top">
+                                            <p class="mb-0 text-dark">$<%= total + 50 -  discount %></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="card">
-                            <div class="table-responsive order_table text-center">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Sl. No</th>
-                                            <th>Image</th>
-                                            <th>Product</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Product Total</th>
-                                            <!-- <th>Delete</th> -->
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% if (carts && carts.items && carts.items.length > 0) { %>
-                                            <% carts.items.forEach((item,index) => { %>
-                                                <tr>
-                                                    <td><%= index + 1 %></td>
-                                                    <td scope="row">
-                                                        <div class="d-flex align-items-center mt-2">
-                                                            <img src="<%= item.productId.productImage[0] %>" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
-                                                        </div>
-                                                    </td>
-                                                    <td class="py-5"><%=item.productId.productName %></td>
-                                                    <td class="py-5">$<%= item.productId.salePrice.toFixed(2) %></td>
-                                                    <td class="py-5"><%= item.quantity %></td>
-                                                    <td class="py-5">$<%= item.totalPrice.toFixed(2) %></td>
-                                                    
-                                                    <!-- <td class="action" data-title="Remove" onclick="return confirm('Are you sure you want remove this product from cart?')">
-                                                        <a class="btn btn-sm"
-                                                            href="">
-                                                            <i class="fi-rs-trash"></i>
-                                                        </a>
-
-                                                    </td> -->
-                                                    <td><input type="hidden" id="productid" value="<%=item.productId._id%>"></td>
-                                                    
-                                                </tr>
-                                                
-                                                <% }); %>
-                                                <% } else { %>
-                                                        <tr>
-                                                            <td colspan="4">No products found</td>
-                                                        </tr>
-                                                <% } %>  
-                                                <tr>
-                                                    
-                                                    <td colspan="5" class="py-1">
-                                                        <p class="mb-0 text-dark py-1">Total</p>
-                                                    </td>
-                                                    <td class="py-1">
-                                                        
-                                                            <p class="mb-0 text-dark"> $<%= total %></p>
-                                                    
-                                                    </td>
-                                                </tr>   
-                                                <tr>
-                                                    
-                                                    <td class="py-1 w-100 " colspan = "5" >
-                                                        <p class="mb-0 text-dark py-1">Shipping Charge </p>
-                                                    </td>
-                                                    <td colspan=""><p class="mb-0 text-dark py-1">$50</p></td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-1" colspan="5">
-                                                        <p class="mb-0 text-dark py-1">Discount</p>
-                                                    </td>
-                                                    <td colspan="" id="discount">
-                                                        <p class="mb-0 text-dark py-1">$20</p>
-                                                    </td>
-                                                    
-                                                 </tr>
-                                                <tr>
-                                                    
-                                                    <td class="py-1" colspan="5">
-                                                        <p class="mb-0 text-dark text-uppercase py-1">Sub Total</p>
-                                                    </td>
-                                                    <td colspan="">
-                                                        <div class="py-1 border-bottom border-top">
-                                                        <p class="mb-0 text-dark">$<%= total + 50 - 20 %></p>
-                                                        </div>
-                                                    </td>
-                                                        
-                                                    </td>
-                                                </tr>
-                                </table>
+                    </div>
+                    <div class="coupon-card p-3 border rounded mt-4 bg-light">
+                        <div class="text-center mb-3">
+                            <p class="coupon-name font-weight-bold text-dark">Have a coupon?</p>
+                            <button type="button" class="btn btn-primary btn-sm mr-3" data-toggle="modal" data-target="#couponPopup">
+                                Show Coupons
+                            </button>
+                        </div>
+                    
+                        <% if (coupons && coupons.length > 0) { %>
+                            <div class="d-flex justify-content-center align-items-center">
+                                
+                                <input type="text" id="couponCode" class="form-control w-200 p-3" placeholder="Enter Coupon Code" style="height: 50px; padding: 4px 8px;" />
+                                
+                                <button id="applyCoupon" class="btn btn-success btn-sm ml-3" style="width: 150px; height: 35px; display: flex; justify-content: center; align-items: center;">
+                                    Apply Coupon
+                                </button>
+                            </div>
+                        <% } %>
+                    
+                    </div>
+                    
+                    <div id="couponPopup" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Available Coupons</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <% if (coupons.length > 0) { %>
+                                    <table class="table table-bordered text-center">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Coupon Code</th>
+                                                <th>Discount</th>
+                                                <th>Min Purchase</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% coupons.forEach(coupon => { %>
+                                            <tr>
+                                                <td><strong class="coupon-code"><%= coupon.name %></strong></td>
+                                                <td>$<%= coupon.offerPrice %></td>
+                                                <td>$<%= coupon.minimumPrice %></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary copy-btn" data-code="<%= coupon.name %>">
+                                                        Copy Code
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                    <% } else { %>
+                                    <p class="text-center">No coupons available.</p>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".copy-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let couponCode = this.getAttribute("data-code");
 
+            // Store applied coupon in session storage
+            sessionStorage.setItem("appliedCoupon", couponCode);
+
+            navigator.clipboard.writeText(couponCode).then(() => {
+                let modal = document.getElementById("couponPopup");
+                let bootstrapModal = bootstrap.Modal.getInstance(modal);
+                if (bootstrapModal) {
+                    bootstrapModal.hide();
+                } else {
+                    $("#couponPopup").modal("hide"); // Fallback for Bootstrap 4
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Coupon Copied!',
+                    text: `Your coupon code "${couponCode}" has been copied.`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                // Remove applied coupon from the list
+                let appliedCouponRow = document.querySelector(`[data-code="${couponCode}"]`).closest("tr");
+                if (appliedCouponRow) {
+                    appliedCouponRow.remove();
+                }
+            }).catch(err => {
+                console.error("Failed to copy coupon code:", err);
+            });
+        });
+    });
+});
+
+                    </script>        -->
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            document.querySelectorAll(".copy-btn").forEach(button => {
+                                button.addEventListener("click", function () {
+                                    let couponCode = this.getAttribute("data-code");
+                    
+                                    // Copy the coupon code to clipboard
+                                    navigator.clipboard.writeText(couponCode).then(() => {
+                                        // Hide the modal
+                                        let modal = document.getElementById("couponPopup");
+                                        let bootstrapModal = bootstrap.Modal.getInstance(modal);
+                                        if (bootstrapModal) {
+                                            bootstrapModal.hide();
+                                        } else {
+                                            $("#couponPopup").modal("hide"); // Fallback for Bootstrap 4
+                                        }
+                    
+                                        // Show SweetAlert
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Coupon Copied!',
+                                            text: `Your coupon code "${couponCode}" has been copied.`,
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        });
+                                    }).catch(err => {
+                                        console.error("Failed to copy coupon code:", err);
+                                    });
+                                });
+                            });
+                        });
+                    </script>             
+                    
+                           
                     <div class="col-12 justify-content-center container address">
                         <div class="mb-20">
                             <h3>Addresses</h3>
@@ -355,6 +470,7 @@ input[type="text"] {
 
                         </div>
                     </div>
+
                     <div class="payments">
                         <div class="mb-20">
                             <h3>Payment Methods</h3>
@@ -392,6 +508,8 @@ input[type="text"] {
                 </div>
             </div>
     </section>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -438,6 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
 </script>
 
 <script>
@@ -458,6 +577,8 @@ function placeOrder() {
             });
         }
     });
+
+    console.log("Ordered Items:", orderedItems);
 
     if (orderedItems.length === 0) {
         Swal.fire({
@@ -490,7 +611,8 @@ function placeOrder() {
 
     let totalPrice = orderedItems.reduce((sum, item) => sum + item.totalPrice, 0);
     let shipping = 50;
-    let discount = 20;
+    let discountElement = document.querySelector("#discount p");
+    let discount = discountElement ? parseFloat(discountElement.textContent.replace("$", "").trim()) : 0;
     let finalAmount = totalPrice + shipping - discount;
 
     fetch("/placeOrder", {
@@ -518,10 +640,10 @@ function placeOrder() {
                 title: 'Order Placed!',
                 text: 'Your order has been successfully placed.',
             }).then(() => {
-                // const orderId = response.order.orderId;
+                
                 const orderId = response.order._id;
                 if (orderId) {
-                     //const encodedOrderId = encodeURIComponent(orderId);
+                     
                      window.location.href = `/orderDetails?orderId=${orderId}`;
                 }
             });
@@ -541,6 +663,173 @@ function placeOrder() {
         });
     });
 }
+
+
+$(document).on('click', '#applyCoupon', function() {
+    let couponCode = $('#couponCode').val().trim();
+    let carts = [];
+
+    $('.cart-item').each(function() { 
+        let productId = $(this).data('product-id'); 
+        let quantityText = $(this).find('td:nth-child(5)').text().trim(); 
+        let priceText = $(this).find('td:nth-child(4)').text().trim();
+
+        let quantity = parseInt(quantityText.replace(/\D/g, ''), 10);
+        let price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+
+        if (productId && quantity && price) {
+            carts.push({ productId, quantity, price });
+        }
+    });
+
+    if (!couponCode) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: 'Please enter a coupon code!'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to apply this coupon?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, apply it!',
+        cancelButtonText: 'No, go back'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/apply-coupon',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ couponCode, carts }), 
+                success: function(response) {
+                    if (response.success) {
+                        $('#discount p').text(`$${response.couponDiscount}`);
+                        let shippingCharge = 50; 
+                        let finalAmount = response.subTotal + shippingCharge - response.couponDiscount;
+                        $('.border-bottom.border-top p').text(`$${finalAmount}`);
+
+                        $('#couponMessage').text(response.message).css('color', 'green');
+
+                        $('.applied-coupon').remove();
+                        $('.coupon-card').append(`
+                            <div class="applied-coupon mt-3 text-center">
+                                <p class="text-success">
+                                    Coupon applied ${response.appliedCoupon.name}: 
+                                    <span class="text-success font-weight-bold">-$${response.couponDiscount}</span>
+                                </p>
+                                <button id="removeCoupon" class="btn btn-danger btn-sm">
+                                    Remove Coupon
+                                </button>
+                            </div>
+                        `);
+
+                        $('#applyCoupon').hide();
+                        $('#couponCode').hide();
+
+                        $(`#couponPopup tbody tr:has(td strong.coupon-code:contains('${couponCode}'))`).remove();
+
+                        // **If no coupons are left, show a message**
+                        if ($('#couponPopup tbody tr').length === 0) {
+                            $('#couponPopup .modal-body').html('<p class="text-center">No coupons available.</p>');
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Applied!',
+                            text: response.message,
+                            timer: 2000, 
+                            showConfirmButton: false
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Coupon Failed!',
+                            text: response.message
+                        });
+                        $('#couponMessage').text(response.message).css('color', 'red');
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong. Please try again!'
+                    });
+                }
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            $('#couponCode').val('');
+        }
+    });
+});
+
+$(document).on('click', '#removeCoupon', function() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to remove this coupon?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'No, go back'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            
+            $.ajax({
+                url: '/remove-coupon',
+                type: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        let shippingCharge = 50; 
+                        let subTotal = parseFloat(response.subTotal) || 0;
+                        let finalAmount = subTotal + shippingCharge; 
+
+                        $('#couponMessage').text(response.message).css('color', 'green');
+                        $('#discount').text('$0');  
+                        $('.border-bottom.border-top p').text(`$${finalAmount}`); 
+                        // $('#subTotal').text(`$${response.subTotal}`); 
+
+                        $('.applied-coupon').remove(); 
+                        $('#couponCode').val('');
+                        $('#couponCode').attr('placeholder', 'Enter your coupon code'); 
+
+                        
+                        $('#applyCoupon').show();
+                        $('#couponCode').show(); 
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Removed!',
+                            text: response.message,
+                            timer: 2000, 
+                            showConfirmButton: false
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Coupon Not Removed!',
+                            text: response.message
+                        });
+                        $('#couponMessage').text(response.message).css('color', 'red');
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong. Please try again!'
+                    });
+                }
+            });
+        }
+    });
+});
+
 
 </script>
 

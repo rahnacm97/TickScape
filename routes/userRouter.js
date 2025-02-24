@@ -95,6 +95,9 @@ router.delete("/deleteProduct", userAuth, cartController.deleteProduct);
 // CheckOut Management
 router.get("/checkout",userAuth,checkoutController.getCheckout);
 router.post('/placeOrder',userAuth,checkoutController.placeOrder);
+//router.get("/get-coupon",userAuth,checkoutController.getCoupon);
+router.post("/apply-coupon",userAuth,checkoutController.applyCoupon);
+router.post("/remove-coupon",userAuth,checkoutController.removeCoupon );
 
 //Order Mangement
 router.get('/orders',userAuth,orderController.getOrders);

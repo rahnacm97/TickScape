@@ -170,7 +170,7 @@
               <th>Brand</th>
               <th>Category</th>
               <th>Sale Price</th>
-              <th>Offer Price</th>
+              <th>Offer $</th>
               <th>Offer</th>
               <th>Quantity</th>
               <th>Status</th>
@@ -187,7 +187,7 @@
               <td><%= product.brand ? product.brand.brandName : "No Brand" %></td>
               <td><%= product.category.name %></td>
               <td><%= product.salePrice %></td>
-              <td><%= product.productOffer ? product.productOffer + "%" : "0%" %></td>
+              <td><%= product.productOffer ? product.productOffer + "" : "0" %></td>
               <td>
                 <% if (product.productOffer) { %>
                   <button class="btn btn-info" onclick="removeOffer('<%= product._id %>')">Remove Offer</button>
@@ -244,37 +244,37 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-    async function addOffer(productId){
-        const {value:percentage} = await Swal.fire({
-            title:'Offer in Percentage',
-            input:'number',
-            inputLabel:'percentage',
-            inputPlaceholder:'%'
-        })
-        if (percentage) {
-            $.ajax({
-            url:"/admin/addProductOffer",
-            method:'post',
-            data:{
-                percentage:percentage,
-                productId:productId
-            },
-            success:(response)=>{
-                if(response.status===true){
-                    location.reload()
-                    Swal.fire('Offer Added',"The Offer has been removed",'Success');
-                }else{
-                    alert("Failed");
-                }
-            }
-        })
-    console.log('Amount entered:', amount);
-  } else {
-    console.log('No value entered or the modal was closed');
-  }
-        console.log(amount,"This is the amount");
+  //   async function addOffer(productId){
+  //       const {value:percentage} = await Swal.fire({
+  //           title:'Offer in Percentage',
+  //           input:'number',
+  //           inputLabel:'percentage',
+  //           inputPlaceholder:'%'
+  //       })
+  //       if (percentage) {
+  //           $.ajax({
+  //           url:"/admin/addProductOffer",
+  //           method:'post',
+  //           data:{
+  //               percentage:percentage,
+  //               productId:productId
+  //           },
+  //           success:(response)=>{
+  //               if(response.status===true){
+  //                   location.reload()
+  //                   Swal.fire('Offer Added',"The Offer has been removed",'Success');
+  //               }else{
+  //                   alert("Failed");
+  //               }
+  //           }
+  //       })
+  //   console.log('Amount entered:', amount);
+  // } else {
+  //   console.log('No value entered or the modal was closed');
+  // }
+  //       console.log(amount,"This is the amount");
       
-    }
+  //   }
 
     function removeOffer(productId){
         try {
@@ -312,6 +312,49 @@
             console.error(error);
         }
     }
+
+  async function addOffer(productId) {
+    const { value: offerAmount } = await Swal.fire({
+        title: 'Offer Amount',
+        input: 'number',
+        inputLabel: 'Enter discount amount',
+        inputPlaceholder: 'Amount'
+    });
+
+    if (offerAmount) {
+        const amount = parseFloat(offerAmount);
+
+        if (isNaN(amount) || amount <= 0) {
+            Swal.fire('Invalid Input', 'Please enter a valid positive number for the discount amount.', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: "/admin/addProductOffer",
+            method: 'post',
+            data: {
+                offerAmount: amount, // Now sending amount instead of percentage
+                productId: productId
+            },
+            success: (response) => {
+                if (response.status === true) {
+                    Swal.fire('Offer Added', "The Offer has been applied successfully.", 'success');
+                    location.reload();
+                } else {
+                    Swal.fire('Failed', response.message || "Something went wrong.", 'error');
+                }
+            },
+            error: () => {
+                Swal.fire('Error', 'Could not connect to the server.', 'error');
+            }
+        });
+
+        console.log('Amount entered:', amount);
+    } else {
+        console.log('No value entered or the modal was closed');
+    }
+}
+
     function confirmDelete(){
         return confirm("Are you sure, you want to delete this product?");
     }
