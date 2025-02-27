@@ -10,7 +10,6 @@ const session = require("express-session");
 const { default: mongoose } = require("mongoose");
 
 
-
 // const getCartPage = async (req, res, next) => {
 //   try {
 //     if (!req.session.user) {

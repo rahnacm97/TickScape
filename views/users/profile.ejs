@@ -353,7 +353,7 @@
                  </li>
                  <li class="nav-item">
                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#wallet-history" role="tab" aria-controls="track-orders" aria-selected="false">
-                    <i class="fas fa-history mr-10"></i> History
+                    <i class="fas fa-history mr-10"></i> Wallet History
                    </a>
                  </li>
                  <li class="nav-item">
@@ -417,12 +417,12 @@
 
 
                <div class="tab-pane fade" id="wallet-history" role="tabpanel" aria-labelledby="orders-tab">
-                 <div class="card">
-                   <div class="card-header">
-                     <h5 class="mb-0">Wallet History</h5>
-                   </div>
-                   <div class="card-body">
-                     <div class="table-responsive">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Wallet History</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
                       <table class="table">
                         <thead>
                           <tr>
@@ -435,16 +435,28 @@
                           <% user.wallet.forEach(entry => { %>
                             <tr>
                               <td><%= new Date(entry.date).toDateString() %></td>
-                              <td>Active</td>
-                              <td>₹<%= entry.amount %></td>
+                              <td>
+                                <% if (entry.amount > 0) { %>
+                                  <span style="color: green; font-weight: bold;">Credit</span>
+                                <% } else { %>
+                                  <span style="color: red; font-weight: bold;">Debit</span>
+                                <% } %>
+                              </td>
+                              <td class="<%= entry.amount > 0 ? 'credit' : 'debit' %>">
+                                <%= entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount) %>
+                              </td>
+                              <style>
+                                .credit { color: green; font-weight: bold; }
+                                .debit { color: red; font-weight: bold; }
+                              </style>
                             </tr>
                           <% }) %>
                         </tbody>
-                      </table>                      
-                     </div>
-                   </div>
-                 </div>
-               </div>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>              
 
 
                <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">

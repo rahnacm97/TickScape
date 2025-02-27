@@ -591,48 +591,106 @@ const placeOrder = async (req, res) => {
   }
 };
 
-const walletPayment = async (userId, amount) => {
+const getUserWalletBalance = async (req, res) => {
+  console.log("1")
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return { success: false, message: "User not found." };
-    }
+    const userId = req.session.user._id;
+    let user = await User.findById(userId);
+    //console.log("user",user);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    let walletBalance = user.wallet.reduce((sum, entry) => sum + entry.amount, 0);
+    let walletTransactions = user.wallet || [];
+    console.log("walletTransactions",walletTransactions);
+    
+    // Calculate total wallet balance
+    let walletBalance = walletTransactions.reduce((acc, transaction) => acc + transaction.amount, 0);
+    console.log("walletBalance",walletBalance);
 
-    if (walletBalance < amount) {
-      return { success: false, message: "Insufficient wallet balance." };
-    }
-
-    let remainingAmount = amount;
-    let updatedWallet = [];
-
-    for (let entry of user.wallet) {
-      if (remainingAmount <= 0) {
-        updatedWallet.push(entry);
-        continue;
-      }
-
-      if (entry.amount > remainingAmount) {
-        updatedWallet.push({ ...entry, amount: entry.amount - remainingAmount });
-        remainingAmount = 0;
-      } else {
-        remainingAmount -= entry.amount;
-      }
-    }
-
-    // Remove wallet entries with zero balance
-    user.wallet = updatedWallet.filter(entry => entry.amount > 0);
-    await user.save();
-
-    console.log(`Wallet Payment Successful. Deducted: ${amount}`);
-    return { success: true };
-
+    res.json({ wallet: walletBalance });
   } catch (error) {
-    console.error("Wallet Payment Error:", error);
-    return { success: false, message: "Wallet payment failed." };
+    console.error("Error fetching wallet balance:", error);
+    res.status(500).json({ message: "Error fetching wallet balance" });
   }
 };
+
+const deductWalletBalance = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    let user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Ensure wallet array exists
+    let walletTransactions = user.wallet || [];
+    console.log("walletTransactions1",walletTransactions);
+    
+    // Calculate wallet balance
+    let walletBalance = walletTransactions.reduce((acc, transaction) => acc + transaction.amount, 0);
+    console.log("walletBalance1",walletBalance);
+
+    // Check if balance is sufficient
+    if (walletBalance < req.body.amount) {
+      return res.status(400).json({ success: false, message: "Insufficient funds" });
+    }
+
+    // Deduct amount by adding a negative transaction
+    user.wallet.push({ amount: -req.body.amount, date: new Date() });
+
+    // Save updated user data
+    await user.save();
+    console.log(user,"after save")
+
+    res.json({ success: true, message: "Amount deducted successfully" });
+  } catch (error) {
+    console.error("Error deducting wallet balance:", error);
+    res.status(500).json({ message: "Error deducting wallet balance" });
+  }
+};
+
+
+// const walletPayment = async (userId, amount) => {
+//   try {
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return { success: false, message: "User not found." };
+//     }
+
+//     let walletBalance = user.wallet.reduce((sum, entry) => sum + entry.amount, 0);
+
+//     if (walletBalance < amount) {
+//       return { success: false, message: "Insufficient wallet balance." };
+//     }
+
+//     let remainingAmount = amount;
+//     let updatedWallet = [];
+
+//     for (let entry of user.wallet) {
+//       if (remainingAmount <= 0) {
+//         updatedWallet.push(entry);
+//         continue;
+//       }
+
+//       if (entry.amount > remainingAmount) {
+//         updatedWallet.push({ ...entry, amount: entry.amount - remainingAmount });
+//         remainingAmount = 0;
+//       } else {
+//         remainingAmount -= entry.amount;
+//       }
+//     }
+
+//     // Remove wallet entries with zero balance
+//     user.wallet = updatedWallet.filter(entry => entry.amount > 0);
+//     await user.save();
+
+//     console.log(`Wallet Payment Successful. Deducted: ${amount}`);
+//     return { success: true };
+
+//   } catch (error) {
+//     console.error("Wallet Payment Error:", error);
+//     return { success: false, message: "Wallet payment failed." };
+//   }
+// };
+
 
 
 module.exports = {
@@ -642,7 +700,9 @@ module.exports = {
     removeCoupon,
     razorpayPayment,
     verifyRazorpay,
-    walletPayment,
+    getUserWalletBalance,
+    deductWalletBalance,
+    //walletPayment,
     //codPayment,
     paymentFailure,
     placeOrder,

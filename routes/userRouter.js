@@ -109,7 +109,8 @@ router.post("/remove-coupon",userAuth,checkoutController.removeCoupon );
 //payment management
 router.post('/razorpay-payment',userAuth,checkoutController.razorpayPayment);
 router.post('/razorpay-verify',userAuth,checkoutController.verifyRazorpay);
-router.post('/walletPayment',userAuth,checkoutController.walletPayment);
+router.get('/getUserWalletBalance',userAuth,checkoutController.getUserWalletBalance);
+router.post('/deductWalletBalance',userAuth,checkoutController.deductWalletBalance);
 router.get('/payment-failure',userAuth,checkoutController.paymentFailure);
 //router.post('/cod-payment',userAuth,checkoutController.codPayment);
 

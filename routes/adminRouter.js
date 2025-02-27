@@ -11,6 +11,7 @@ const bannerController = require('../controllers/admin/bannerController');
 const brandController = require('../controllers/admin/brandController');
 const couponController = require('../controllers/admin/couponController');
 const offerController = require('../controllers/admin/offerController');
+const dashboardController = require('../controllers/admin/dashboardController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
@@ -30,7 +31,11 @@ const uploads = multer({ storage: storage });
 //admin 
 router.get('/login',adminController.adminLoadLogin);
 router.post('/login',adminController.adminLogin);
-router.get('/dashboard', adminAuth,adminController.loadDashboard);
+//Logout
+router.get('/logout',adminAuth,adminController.logout);
+
+//Dashboard Management
+router.get('/dashboard',adminAuth,dashboardController.loadDashboard);
 
 //Customer Management
 router.get('/users',adminAuth,customerController.customerInfo);
@@ -100,9 +105,6 @@ router.get('/offerList/:id',adminAuth,offerController.offerList);
 router.get('/offerUnList/:id',adminAuth,offerController.offerUnList);
 router.get('/editOffer/:id',adminAuth,offerController.editOffer);
 router.post('/offerEdit/:id',adminAuth,offerController.offerEdit);
-
-//Logout
-router.get('/logout',adminAuth,adminController.logout);
 
 //Page Error
 router.get('/pageerror',adminController.pageerror);
