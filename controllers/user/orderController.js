@@ -9,8 +9,11 @@ const env = require("dotenv").config();
 const session = require("express-session");
 const mongoose = require('mongoose');
 const PDFDocument = require("pdfkit");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const PDFTable = require("pdfkit-table");
 
 const getConfirmation = async (req, res) => {
     try {
@@ -65,7 +68,6 @@ const getConfirmation = async (req, res) => {
     }
 };
 
-
 const downloadInvoice = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -103,40 +105,76 @@ const downloadInvoice = async (req, res) => {
             fs.mkdirSync(invoiceDir, { recursive: true });
         }
 
-        const doc = new PDFDocument();
+        const doc = new PDFDocument({ margin: 30 });
         const writeStream = fs.createWriteStream(invoicePath);
         doc.pipe(writeStream);
 
-        doc.fontSize(20).text("Invoice", { align: "center" });
-        doc.moveDown();
+        
+        doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
 
         doc.fontSize(14).text(`Order ID: ${order.orderId}`);
-        doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`);
-        doc.moveDown();
+        doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
 
-        doc.text(`Deliver to: ${fullAddress.name}`);
+        doc.fontSize(14).text("Deliver to:", { underline: true });
+        doc.text(`${fullAddress.name}`);
         doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
         doc.text(`Pincode: ${fullAddress.pincode}`);
-        doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`);
+        doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
+
+        let y = doc.y;
+        doc.fontSize(12).text("#", 50, y);
+        doc.text("Product Name", 80, y);
+        doc.text("Quantity", 280, y);
+        doc.text("Price", 350, y);
+        doc.text("Total", 420, y);
         doc.moveDown();
 
-        doc.fontSize(14).text("Items Ordered:", { underline: true });
-        doc.moveDown();
+        doc.moveTo(50, y + 15).lineTo(550, y + 15).stroke();
+
+        doc.moveTo(75, y - 2).lineTo(75, y + 15).stroke();  
+        doc.moveTo(270, y - 2).lineTo(270, y + 15).stroke(); 
+        doc.moveTo(340, y - 2).lineTo(340, y + 15).stroke(); 
+        doc.moveTo(410, y - 2).lineTo(410, y + 15).stroke(); 
+        doc.moveTo(480, y - 2).lineTo(480, y + 15).stroke();
 
         order.orderedItems.forEach((item, index) => {
-            doc.fontSize(12).text(
-                `${index + 1}. ${item.productId.productName} - ${item.quantity} x $${item.price} = $${item.quantity * item.price}`
-            );
-        });
+        y = doc.y + 5;
+        doc.text(index + 1, 50, y);
+        doc.text(item.productId.productName, 80, y);
+        doc.text(item.quantity.toString(), 280, y);
+        doc.text(`₹${item.price}`, 350, y);
+        doc.text(`₹${item.quantity * item.price}`, 420, y);
+
+        doc.moveTo(75, y - 2).lineTo(75, doc.y + 5).stroke();
+        doc.moveTo(270, y - 2).lineTo(270, doc.y + 5).stroke();
+        doc.moveTo(340, y - 2).lineTo(340, doc.y + 5).stroke();
+        doc.moveTo(410, y - 2).lineTo(410, doc.y + 5).stroke();
+        doc.moveTo(480, y - 2).lineTo(480, doc.y + 5).stroke();
 
         doc.moveDown();
-        doc.fontSize(14).text(`Total Price: $${order.totalPrice}`);
-        doc.text(`Discount: $${order.discount}`);
-        doc.text(`Shipping: $${order.shipping}`);
-        doc.text(`Final Amount: $${order.finalAmount}`, { underline: true });
+    });
 
-        doc.moveDown();
-        doc.fontSize(12).text("Thank you for shopping with us!", { align: "center" });
+
+    doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+    doc.moveDown();
+
+    const cgst = (order.totalPrice * 0.09).toFixed(2);
+    const sgst = (order.totalPrice * 0.09).toFixed(2);
+
+    doc.fontSize(14);
+    doc.text(`Total Price: ₹${order.totalPrice}`, 50, doc.y + 10);
+    doc.text(`CGST (9%): ₹${cgst}`, 50, doc.y + 10);
+    doc.text(`SGST (9%): ₹${sgst}`, 50, doc.y + 10);
+    doc.text(`Total GST (18%): ₹${order.gstAmount}`, 50, doc.y + 10);
+    doc.text(`Shipping: ₹${order.shipping}`, 50, doc.y + 10);
+    doc.text(`Discount: ₹${order.discount}`, 50, doc.y + 10);
+    doc.fontSize(14).text(`Final Amount: ₹${order.finalAmount}`, 50, doc.y + 10, { underline: true });
+
+    doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+    doc.moveDown();
+
+    doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
+
 
         doc.end();
 
@@ -196,6 +234,7 @@ const getOrders = async (req, res) => {
             orderid: order._id,
             totalPrice: order.totalPrice,
             discount: order.discount,
+            gstAmount: order.gstAmount,
             finalAmount: order.finalAmount,
             address: order.address,
             status: order.status,
@@ -556,7 +595,6 @@ const updateAddress = async (req, res) => {
         res.status(500).json({ error: "Failed to update address." });
     }
 };
-
 
 
 module.exports = {

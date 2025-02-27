@@ -403,7 +403,9 @@
                          <form>
                            <div class="form-group">
                              <label for="walletAmount" class="h4">Amount</label>
-                             <div class="h3"></div>
+                             <div class="h3">
+                              ₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0) %>
+                             </div>
                            </div>
                            <button type="button" class="btn btn-success" onclick="">Add Money</button>
                          </form>
@@ -421,22 +423,24 @@
                    </div>
                    <div class="card-body">
                      <div class="table-responsive">
-                       <table class="table">
-                         <thead>
-                           <tr>
-                             <th>Date</th>
-                             <th>Status</th>
-                             <th>Amount</th>
-                           </tr>
-                         </thead>
-                         <tbody>
-                           <tr>
-                             <td></td>
-                             <td></td>
-                             <td></td>
-                           </tr>
-                         </tbody>
-                       </table>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% user.wallet.forEach(entry => { %>
+                            <tr>
+                              <td><%= new Date(entry.date).toDateString() %></td>
+                              <td>Active</td>
+                              <td>₹<%= entry.amount %></td>
+                            </tr>
+                          <% }) %>
+                        </tbody>
+                      </table>                      
                      </div>
                    </div>
                  </div>
@@ -444,17 +448,47 @@
 
 
                <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
-                 <div class="card">
-                   <div class="card-header">
-                     <h5 class="mb-0">Referal</h5>
-                   </div>
-                   <div class="card-body">
-                     <h6 class="mb-3">Refer your friends and earn money!</h6>
-                     <p>Share this link: <strong>></strong></p>
-                     <p>Earned: $</p>
-                   </div>
-                 </div>
-               </div>
+                <div class="card shadow-sm border-0 rounded-lg">
+                  <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 font-weight-bold">Referal</h5>
+                  </div>
+                  <div class="card-body p-4">
+                    <h6 class="mb-3 text-secondary font-weight-bold">Refer your friends and earn money!</h6>
+                    
+                    <div class="referral-code-container p-3 my-4 bg-light rounded border">
+                      <p class="mb-2">Share this link:</p>
+                      <div class="input-group">
+                        <input type="text" class="form-control" value="<%= user.referalCode %>" readonly>
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('<%= user.referalCode %>')">
+                            <i class="fas fa-copy"></i> Copy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="earnings-container p-3 bg-success text-white rounded">
+                      <p class="mb-0">Earned: <span class="h4 font-weight-bold">₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0) %></span></p>
+                    </div>
+                    
+                    <!-- <div class="mt-4 text-center">
+                      <button class="btn btn-primary">
+                        <i class="fas fa-share-alt mr-2"></i> Share on Social Media
+                      </button>
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+              
+              <script>
+              function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(function() {
+                  alert('Referral code copied to clipboard!');
+                }, function() {
+                  alert('Failed to copy referral code');
+                });
+              }
+              </script>
        </div>
      </div>
    </div>

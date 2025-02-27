@@ -16,7 +16,9 @@ const categorySchema = mongoose.Schema({
     },
     categoryOffer: {
         type: Number,
-        default: 0
+        default: 0,
+        min: 0,
+        max: 100
     },
     createdAt: {
         type: Date,

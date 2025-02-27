@@ -205,9 +205,10 @@ body {
                 <p class="mb-1">
                   Pay method: <%= orders.paymentMethod %><br />
                   Status: <%= orders.status %><br />
-                  Shipping Charge: $<%= orders.shipping %><br />
-                  Discount: $<%= orders.discount %><br />
-                  Grand Total: $<%= orders.finalAmount %>
+                  GST: ₹<%= orders.gstAmount %> <br />
+                  Shipping Charge: ₹<%= orders.shipping %><br />
+                  Discount: ₹<%= orders.discount %><br />
+                  Grand Total: ₹<%= orders.finalAmount %>
                 </p>
               </div>
             </article>
@@ -260,7 +261,7 @@ body {
                         <td>
                           <img src="<%= item.productId.productImage[0] %>" style="height: 7rem; width: 7rem" class="img-xs" />
                         </td>
-                        <td>$<%= item.price %></td>
+                        <td>₹<%= item.price %></td>
                         <td><%= item.quantity %></td>
                         <!-- <td>$<%= orders.finalAmount %></td> -->
                         <!-- <td>

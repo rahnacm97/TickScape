@@ -170,7 +170,7 @@
               <th>Brand</th>
               <th>Category</th>
               <th>Sale Price</th>
-              <th>Offer $</th>
+              <th>Offer ₹</th>
               <th>Offer</th>
               <th>Quantity</th>
               <th>Status</th>
@@ -186,7 +186,7 @@
               <td><%= product.productName %></td>
               <td><%= product.brand ? product.brand.brandName : "No Brand" %></td>
               <td><%= product.category.name %></td>
-              <td><%= product.salePrice %></td>
+              <td>₹<%= product.salePrice %></td>
               <td><%= product.productOffer ? product.productOffer + "" : "0" %></td>
               <td>
                 <% if (product.productOffer) { %>

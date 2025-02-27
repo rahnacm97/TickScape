@@ -460,17 +460,24 @@ h2{
                       </div>
                       <div class="clearfix product-price-cover">
                         <div class="product-price primary-color float-left">
-                          <ins><span class="text-brand">$<%= product.salePrice %></span></ins>
-                          <ins><span class="old-price font-md ml-15">$<%= product.regularPrice %></span></ins>
-                          <span class="save-price font-md color3 ml-15">
-                            <% if(!totalOffer) { %>
-                            No Offers
+                            <ins>
+                                <span class="text-brand">₹<%= product.regularPrice - highestOffer %></span>
+                            </ins>
+                            <ins>
+                                <span class="old-price font-md ml-15">₹<%= product.regularPrice %></span>
+                            </ins>
+                            <span class="save-price font-md color3 ml-15">
+                              <% if (!highestOffer) { %>
+                                No Offers
+                            <% } else if (categoryOffer > productOffer) { %>
+                                <%= categoryOffer %>% Off
                             <% } else { %>
-                            <%= totalOffer %>% Offer
+                              ₹<%= productOffer %> Off
                             <% } %>
-                          </span>
+                            </span>
                         </div>
-                      </div>
+                    </div>
+                    
                       <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                       <div class="short-desc mb-30">
                         <p style="text-align: justify;"><%= product.description %></p>
@@ -492,6 +499,7 @@ h2{
                       </div>
                       <ul class="product-meta font-xs color-grey mt-50">
                         <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
+                        <li class="mb-5">GST: <a href="#"><%= product.gstRate %>%</a></li>
                         <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"><%= category.name %></a> </li>
                         <li>
                           Stock Status: 
@@ -584,9 +592,9 @@ h2{
                         </h5>
                         <div class="mt-auto text-center">
                           <div class="price">
-                            <span class="text-success fw-bold">$<%= relatedProducts[i].salePrice %></span>
+                            <span class="text-success fw-bold">₹<%= relatedProducts[i].salePrice %></span>
                             <% if (relatedProducts[i].regularPrice) { %>
-                              <span class="text-muted text-decoration-line-through">$<%= relatedProducts[i].regularPrice %></span>
+                              <span class="text-muted text-decoration-line-through">₹<%= relatedProducts[i].regularPrice %></span>
                             <% } %>
                           </div>
                         </div>

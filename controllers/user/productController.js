@@ -2,49 +2,60 @@ const User = require('../../models/userSchema');
 const Product = require('../../models/productSchema');
 const Category = require('../../models/categorySchema');
 const Review = require('../../models/reviewSchema');
+const Offer = require('../../models/offerSchema');
 
-const productDetails = async(req,res) => {
+const productDetails = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const productId = req.query.id;
-        const product = await Product.findById(productId).populate('category').populate('brand');
-        const reviews = await Review.find({productId}).populate('user').lean();
+        const product = await Product.findById(productId)
+            .populate('category')
+            .populate('brand');
+        const reviews = await Review.find({ productId }).populate('user').lean();
+
+        if (!product) {
+            return res.redirect('/pageNotFound');
+        }
+
         const findCategory = product.category;
-        const categoryOffer = findCategory ?.categoryOffer || 0;
+        const offer = await Offer.findOne({ isActive: true });
+
+        const categoryOffer = findCategory?.categoryOffer || 0;
         const productOffer = product.productOffer || 0;
-        const totalOffer = categoryOffer + productOffer;
+        const highestOffer = Math.max(categoryOffer, productOffer); 
 
         const relatedProducts = await Product.find({
             category: findCategory._id,
-            _id: { $ne: productId } 
+            _id: { $ne: productId }
         });
 
         const totalRatings = reviews.length;
-        const averageRating = totalRatings > 0
-            ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalRatings
-            : 0;
+        const averageRating =
+            totalRatings > 0
+                ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalRatings
+                : 0;
 
-        //console.log("rel",relatedProducts);
-
-        res.render('product-details',{
+        res.render('product-details', {
             user: userData,
             product: product,
             quantity: product.quantity,
-            totalOffer: totalOffer,
+            highestOffer: highestOffer, 
             category: findCategory,
             relatedProducts: relatedProducts,
             reviews: reviews,
             averageRating: averageRating.toFixed(1),
-            reviewCount: totalRatings
+            reviewCount: totalRatings,
+            categoryOffer,
+            productOffer
         });
-        
-        //console.log("rel1",relatedProducts);
+
+        console.log("Product details fetched successfully:", product);
     } catch (error) {
-        console.log("Error in product view",error);
+        console.log("Error in product view:", error);
         res.redirect('/pageNotFound');
     }
-}
+};
 
 module.exports = {
     productDetails,

@@ -161,13 +161,13 @@
               <td><%= order.userId.fname %> <%= order.userId.lname %></td>
               <td><%= order._id %></td>
               <td>
-                $<%= order.totalPrice.toFixed(2) %>
+                ₹<%= order.totalPrice.toFixed(2) %>
               </td>
               <td>
                 <%= order.orderedItems.length %>
               </td>
               <td><strong><%= order.status %></strong></td>
-              <!-- <td>$<%= order.totalPrice.toFixed(2) %></td> -->
+              <!-- <td>₹<%= order.totalPrice.toFixed(2) %></td> -->
               <td>
                 <a href="/admin/orderDetailsAdmin/<%= order._id %>" data-section="order">
                     <button class="btn btn-primary delete-order mb-2" 

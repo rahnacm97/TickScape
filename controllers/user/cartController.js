@@ -9,17 +9,72 @@ const env = require("dotenv").config();
 const session = require("express-session");
 const { default: mongoose } = require("mongoose");
 
-const getCartPage = async (req, res,next) => {
+
+
+// const getCartPage = async (req, res, next) => {
+//   try {
+//     if (!req.session.user) {
+//       return res.redirect('/login');
+//     }
+
+//     const userId = req.session.user._id;
+//     const currentPage = parseInt(req.query.page) || 1;
+//     const limit = 4;
+//     const skip = (currentPage - 1) * limit;
+
+//     const carts = await Cart.findOne({ userId }).populate({
+//       path: "items.productId",
+//       populate: [{ path: "category", select: "name" }, { path: "brand", select: "brandName" }]
+//     });
+
+//     if (!carts || carts.items.length === 0) {
+//       return res.render('cart', { 
+//         carts: [], total: 0, cart: null, user: req.session.user, data: [], 
+//         currentPage: 1, totalPages: 1 
+//       });
+//     }
+
+//     // Update totalPrice for each item based on the latest salePrice from the Product model
+//     let totalamount = 0;
+//     for (let item of carts.items) {
+//       if (item.productId) {
+//         const latestPrice = item.productId.salePrice; // Get the latest salePrice
+//         item.totalPrice = item.quantity * latestPrice; // Update totalPrice
+//         totalamount += item.totalPrice;
+//       }
+//     }
+
+//     // Save the updated cart back to the database
+//     await carts.save();
+
+//     let total = Math.round(totalamount); 
+//     const totalPages = Math.ceil(carts.items.length / limit);
+
+//     res.render('cart', {
+//       user: req.session.user,
+//       data: carts.items.slice(skip, skip + limit),
+//       total: total,
+//       cart: carts,
+//       currentPage: currentPage,
+//       totalPages: totalPages
+//     });
+
+//   } catch (error) {
+//     console.error('Error fetching cart:', error);
+//     next(new CustomError(500, "An error occurred while loading the cart page."));
+//   }
+// };
+
+
+const getCartPage = async (req, res, next) => {
   try {
-   
     if (!req.session.user) {
       return res.redirect('/login');
     }
 
     const userId = req.session.user._id;
-
-    const currentPage = parseInt(req.query.page) || 1; 
-    const limit = 4; 
+    const currentPage = parseInt(req.query.page) || 1;
+    const limit = 4;
     const skip = (currentPage - 1) * limit;
 
     const carts = await Cart.findOne({ userId }).populate({
@@ -28,33 +83,53 @@ const getCartPage = async (req, res,next) => {
     });
 
     if (!carts || carts.items.length === 0) {
-      return res.render('cart', { carts: [], total: 0, cart: carts , user: req.session.user, data: [], cart: null, 
-        currentPage: 1, 
-        totalPages: 1});
+      return res.render('cart', { 
+        carts: [], itemTotal: 0, gstAmount: 0, total: 0, 
+        cart: null, user: req.session.user, data: [], 
+        currentPage: 1, totalPages: 1 
+      });
     }
 
-    const paginatedItems = carts.items.slice(skip, skip + limit);
+    let itemTotal = 0;
+    let gstAmount = 0;
+    let totalAmount = 0;
 
-    let totalamount = carts.items.reduce((sum, item) => sum + item.totalPrice, 0).toFixed(0);
-    let total = Math.round(totalamount);
+    for (let item of carts.items) {
+      if (item.productId) {
+        const latestPrice = item.productId.salePrice;
+        const gstRate = item.productId.gstRate / 100;
 
-    const totalPages = Math.ceil(carts.items.length / limit);
+        item.totalPrice = item.quantity * latestPrice;
+
+        const gstForItem = item.totalPrice * gstRate;
+
+        item.totalPriceWithGST = item.totalPrice + gstForItem;
+
+        itemTotal += item.totalPrice;
+        gstAmount += gstForItem;
+        totalAmount += item.totalPriceWithGST;
+      }
+    }
+
+    await carts.save();
 
     res.render('cart', {
       user: req.session.user,
-      data: paginatedItems,
-      total: total,
+      data: carts.items.slice(skip, skip + limit),
+      itemTotal: Math.round(itemTotal),
+      gstAmount: parseFloat(gstAmount).toFixed(2),
+      total: Math.round(totalAmount),
       cart: carts,
       currentPage: currentPage,
-      totalPages: totalPages
+      totalPages: Math.ceil(carts.items.length / limit),
     });
 
   } catch (error) {
     console.error('Error fetching cart:', error);
-    //res.status(500).send('An error occurred while loading the cart page.');
-    next(new CustomError(500, "An error occurred while loading the cart page."))
+    next(new CustomError(500, "An error occurred while loading the cart page."));
   }
 };
+
 
 
 const addToCart = async (req, res,next) => {
@@ -95,7 +170,7 @@ const addToCart = async (req, res,next) => {
 
     }
 
-    if ( cart && cart.items.length ===0) {
+    if ( cart && cart.items.length === 0) {
      
       cart.items.push({
         productId,

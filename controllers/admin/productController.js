@@ -141,39 +141,6 @@ const getAllProducts = async (req, res, next) => {
 };
 
 
-// const addProductOffer = async (req, res, next) => {
-//     try {
-//         const { productId, percentage } = req.body;
-        
-//         console.log(percentage);
-
-//         const offerPercentage = parseFloat(percentage);
-//         if (isNaN(offerPercentage)) {
-//             return res.status(400).json({ status: false, message: "Invalid input: percentage must be a number." });
-//         }
-
-//         const findProduct = await Product.findOne({ _id: productId });
-//         const findCategory = await Category.findOne({ _id: findProduct.category });
-
-//         if (findCategory.categoryOffer > offerPercentage) {
-//             return res.json({ status: false, message: "This product category already has a higher category offer." });
-//         }
-
-//         findProduct.salePrice = findProduct.salePrice - Math.floor(findProduct.regularPrice * (offerPercentage / 100));
-//         findProduct.productOffer = offerPercentage;
-
-//         await findProduct.save();
-
-//         findCategory.categoryOffer = 0;
-//         await findCategory.save();
-
-//         res.json({ status: true });
-//     } catch (error) {
-//         console.error("Error applying product offer:", error);
-//         return res.status(500).json({ status: false, message: "Internal Server Error" });
-//     }
-// };
-
 const addProductOffer = async (req, res, next) => {
     try {
         const { productId, offerAmount } = req.body;
@@ -208,21 +175,6 @@ const addProductOffer = async (req, res, next) => {
 };
 
 
-// const removeProductOffer = async(req,res,next) => {
-//     try {
-//         const {productId} = req.body;
-//         const findProduct = await Product.findOne({_id:productId});
-//         const percentage = findProduct.productOffer;
-//         findProduct.salePrice = findProduct.salePrice + Math.floor(findProduct.regularPrice*(percentage/100));
-//         findProduct.productOffer = 0;
-//         await findProduct.save();
-//         res.json({status:true});
-
-//     } catch (error) {
-//         res.redirect("/pageerror");
-//     }
-// }
-
 const removeProductOffer = async (req, res, next) => {
     try {
         const { productId } = req.body;
@@ -234,7 +186,6 @@ const removeProductOffer = async (req, res, next) => {
 
         const offerAmount = findProduct.productOffer; 
 
-        // Ensure the productOffer exists before modifying
         if (offerAmount > 0) {
             findProduct.salePrice += offerAmount; 
             findProduct.productOffer = 0; 

@@ -134,7 +134,7 @@
                                 <td><%= item.productId.brand.brandName %></td>
                                 <td><%= item.quantity %></td>
                                 <td><%= item.price %></td>
-                                <td>$<%= item.price * item.quantity %></td>
+                                <td>₹<%= item.price * item.quantity %></td>
                                 <% if (order.orderedItems.indexOf(item) === 0) { %>
                                     <td rowspan="<%= order.orderedItems.length %>">
                                         <select class="order-status-dropdown" data-order-id="<%= order._id %>" data-current-status="<%= order.status %>">

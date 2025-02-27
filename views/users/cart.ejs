@@ -238,12 +238,17 @@ body {
                                                     <%= item.productId.brand ? item.productId.brand.brandName : "No Brand" %>
                                                 </p>
                                             </td>
-                                            <td class="price py-5" data-title="Price" style="border: 1px solid #e6e1e1;">$<span id="subTotal<%= item.productId._id %>">
+                                            <td class="price py-5" data-title="Price" style="border: 1px solid #e6e1e1;">₹<span id="subTotal<%= item.productId._id %>">
                                                 <%= item.productId.salePrice * item.quantity %>
-                                            </span><br>
-                                                <small class="text-muted text-nowrap">$<span id="price">
-                                                    <%= item.productId.salePrice %>
+                                            </span>
+                                            + <small class="text-muted text-nowrap"><span id="gst">
+                                                <%= item.productId.gstRate %> % 
+                                            </span>GST</small>
+                                            <br>
+                                                <small class="text-muted text-nowrap">₹<span id="price">
+                                                    <%= item.productId.salePrice %> 
                                                 </span>/ per item</small>
+                                                
                                             </td>
                                 
                                             <% x += item.productId.salePrice * item.quantity %>
@@ -291,14 +296,30 @@ body {
 
                                     <tr>
                                         <td class="cart_total_label">Shipping</td>
-                                        <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping
+                                        <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Charge Included
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="cart_total_label">Total</td>
-                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">$
+                                        <td class="cart_total_label">Item Total</td>
+                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
+                                                <text id="itemTotal">
+                                                    <%= itemTotal %>
+                                                </text>
+                                            </span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">GST</td>
+                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
+                                                <text id="gstAmount">
+                                                    <%= parseFloat(gstAmount).toFixed(2) %>
+                                                </text>
+                                            </span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">Total Amount</td>
+                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
                                                 <text id="total">
-                                                    <%= total %>
+                                                    <%= total || 0  %>
                                                 </text>
                                             </span></td>
                                     </tr>
@@ -339,26 +360,45 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
-function changeQuantity(productId, cartQuantity, count, productPrice, i, productQuantity) {
+function changeQuantity(productId, cartQuantity, count, productPrice, i, productQuantity, gstRate) {
     const cartProductQuantityElement = document.querySelector(`#cartProductQuantity${i}`);
     const subtotalElement = document.querySelector(`#subTotal${i}`);
     const totalElement = document.getElementById('total');
+    const gstElement = document.getElementById('gstAmount');
+    const itemTotalElement = document.getElementById('itemTotal');
+
+    if (!cartProductQuantityElement || !subtotalElement || !totalElement || !gstElement || !itemTotalElement) {
+        console.error("One or more elements not found!");
+        return;
+    }
 
     let currentQuantity = parseInt(cartProductQuantityElement.value);
-    let currentSubTotal = parseInt(subtotalElement.innerHTML);
-    const currentTotal = parseInt(totalElement.innerHTML);
+    let currentSubTotal = parseFloat(subtotalElement.innerHTML) || 0;
+    let currentItemTotal = parseFloat(itemTotalElement.innerHTML) || 0;
+    let currentGstAmount = parseFloat(gstElement.innerHTML) || 0;
+    let currentTotal = parseFloat(totalElement.innerHTML) || 0;
+    let validGstRate = gstRate ? parseFloat(gstRate) : 18;
+
+    console.log("Before update:");
+    console.log("Quantity:", currentQuantity);
+    console.log("Subtotal:", currentSubTotal);
+    console.log("Item Total:", currentItemTotal);
+    console.log("GST Amount:", currentGstAmount);
+    console.log("Total:", currentTotal);
+    console.log("GST Rate:", validGstRate);  
 
     const newQuantity = currentQuantity + count;
 
     if (newQuantity < 1) {
-    Swal.fire({
-        title: 'Invalid Quantity!',
-        text: 'You must add at least 1 item to your cart.',
-        icon: 'error',
-        timer: 5000
-    });
-    return;
-}
+        Swal.fire({
+            title: 'Invalid Quantity!',
+            text: 'You must add at least 1 item to your cart.',
+            icon: 'error',
+            timer: 5000
+        });
+        return;
+    }
+
     if (newQuantity > 3) {
         Swal.fire({
             title: 'Limit Exceeded!',
@@ -381,7 +421,20 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
 
     const newSubTotal = newQuantity * productPrice;
     subtotalElement.innerHTML = newSubTotal;
-    const updatedTotal = currentTotal + (newSubTotal - currentSubTotal);
+
+    const updatedItemTotal = currentItemTotal + (newSubTotal - currentSubTotal);
+    const updatedGstAmount = (updatedItemTotal * validGstRate) / 100;
+    const updatedTotal = updatedItemTotal + updatedGstAmount;
+
+    console.log("After update:");
+    console.log("New Subtotal:", newSubTotal);
+    console.log("Updated Item Total:", updatedItemTotal);
+    console.log("Updated GST Amount:", updatedGstAmount);
+    console.log("Updated Total:", updatedTotal);
+
+    
+    itemTotalElement.innerHTML = updatedItemTotal;
+    gstElement.innerHTML = updatedGstAmount;
     totalElement.innerHTML = updatedTotal;
 
     $.ajax({
@@ -393,9 +446,6 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
         },
         success: (response) => {
             cartProductQuantityElement.value = newQuantity;
-            document.getElementById(`subTotal${i}`).innerHTML = newSubTotal;
-
-            totalElement.innerHTML = updatedTotal;
         },
         error: (error) => {
             console.error("Error updating cart:", error);
@@ -403,7 +453,7 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
     });
 }
 
-function confirmRemove(productId) {
+function confirmRemove(productId, productPrice, quantity, gstRate) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -420,39 +470,47 @@ function confirmRemove(productId) {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.error) {
                     Swal.fire('Error', data.error, 'error');
                 } else {
-                    
                     const cartItem = document.getElementById(`cart-item-${productId}`);
                     if (cartItem) {
-                        
-                        const itemPrice = parseFloat(cartItem.querySelector('[id^="subTotal"]').textContent);
-                        
-                   
+                        const itemPrice = parseFloat(cartItem.querySelector('[id^="subTotal"]').textContent) || 0;
                         cartItem.remove();
 
-                    
+                      
                         const totalElement = document.getElementById("total");
-                        if (totalElement) {
-                            let currentTotal = parseFloat(totalElement.textContent);
-                            let newTotal = currentTotal - itemPrice;
-                            totalElement.textContent = newTotal.toFixed(2); 
-                        }
+                        const itemTotalElement = document.getElementById("itemTotal");
+                        const gstElement = document.getElementById("gstAmount");
+
+                        let currentItemTotal = parseFloat(itemTotalElement.textContent) || 0;
+                        let currentGstAmount = parseFloat(gstElement.textContent) || 0;
+                        let currentTotal = parseFloat(totalElement.textContent) || 0;
+
+                       
+                        let validGstRate = gstRate > 0 ? gstRate : 18; 
+                        console.log("GST Rate:", validGstRate);
+
+                        // Calculate new totals
+                        let newItemTotal = currentItemTotal - itemPrice;
+                        let newGstAmount = newItemTotal > 0 ? newItemTotal * (validGstRate / 100) : 0;
+                        let newTotal = newItemTotal + newGstAmount;
+
+                        
+                        itemTotalElement.textContent = newItemTotal;
+                        gstElement.textContent = newGstAmount;
+                        totalElement.textContent = newTotal;
                     }
 
+                 
                     const cartCount = document.getElementById("cartItemCount");
                     if (cartCount) {
                         cartCount.textContent = data.cartItemCount;
                     }
 
+                  
                     const cartTableBody = document.querySelector("tbody");
                     if (!cartTableBody.querySelector("tr[id^='cart-item-']")) {
                         cartTableBody.innerHTML = `

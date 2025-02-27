@@ -178,8 +178,8 @@
                          <td class="text-start"><%= coupons[i].name %></td>
                          <td class="text-start"><%= new Date(coupons[i].createdOn).toLocaleDateString('en-US') %></td>
                          <td class="text-start"><%= new Date(coupons[i].expireOn).toLocaleDateString('en-US') %></td>
-                         <td class="text-start">$<%= coupons[i].offerPrice %></td>
-                         <td class="text-start">$<%= coupons[i].minimumPrice %></td>
+                         <td class="text-start">₹<%= coupons[i].offerPrice %></td>
+                         <td class="text-start">₹<%= coupons[i].minimumPrice %></td>
                          <!-- <td class="text-start"><%= coupons[i].isList %></td> -->
                          <td class="text-start">
                              <a href="/admin/editCoupon?id=<%= coupons[i]._id %>" class="btn btn-primary btn-sm" style="border-radius: 50px;">Edit</a>

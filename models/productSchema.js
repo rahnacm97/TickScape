@@ -38,11 +38,30 @@ const productSchema = new Schema({
             message: "Sale price must be less than or equal to regular price"
         }
     },
+    gstRate: { 
+        type: Number, 
+        required: true,
+        default: 18, 
+        min: 0 
+    },
+    cgstRate: {
+        type: Number,
+        required: true,
+        default: function () {
+            return this.gstRate / 2; 
+        }
+    },
+    sgstRate: {
+        type: Number,
+        required: true,
+        default: function () {
+            return this.gstRate / 2; 
+        }
+    },
     productOffer: {
         type: Number,
         default: 0,
         min: 0,
-        max: 100
     },
     quantity: {
         type: Number,

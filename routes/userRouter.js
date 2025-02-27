@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 const userController = require('../controllers/user/userController');
 const profileController = require('../controllers/user/profileController');
 const productController = require('../controllers/user/productController');
@@ -10,6 +12,11 @@ const orderController = require("../controllers/user/orderController");
 const wishlistController = require('../controllers/user/wishlistController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
+
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 router.get('/pageNotFound',userController.pageNotFound);
 
@@ -98,6 +105,14 @@ router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 //router.get("/get-coupon",userAuth,checkoutController.getCoupon);
 router.post("/apply-coupon",userAuth,checkoutController.applyCoupon);
 router.post("/remove-coupon",userAuth,checkoutController.removeCoupon );
+
+//payment management
+router.post('/razorpay-payment',userAuth,checkoutController.razorpayPayment);
+router.post('/razorpay-verify',userAuth,checkoutController.verifyRazorpay);
+router.post('/walletPayment',userAuth,checkoutController.walletPayment);
+router.get('/payment-failure',userAuth,checkoutController.paymentFailure);
+//router.post('/cod-payment',userAuth,checkoutController.codPayment);
+
 
 //Order Mangement
 router.get('/orders',userAuth,orderController.getOrders);

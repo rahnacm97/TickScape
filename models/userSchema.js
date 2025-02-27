@@ -48,8 +48,8 @@ const userSchema = new Schema({
         type : Array
     },
     wallet: [{
-        type: Schema.Types.ObjectId,
-        ref: "Wishlist"
+        amount: { type: Number, required: true },
+        date: { type: Date, default: Date.now }
     }],
     wishlist:[{
         type:Schema.Types.ObjectId,
@@ -65,7 +65,8 @@ const userSchema = new Schema({
     },
     referalCode: {
         type: String,
-        default:null
+        unique: true,  
+        default: null
     },
     redeemed: {
         type: Boolean,
@@ -89,6 +90,14 @@ const userSchema = new Schema({
         }
     }]
 })
+
+const crypto = require('crypto');
+userSchema.pre('save', function (next) {
+    if (!this.referalCode) {
+        this.referalCode = crypto.randomBytes(3).toString('hex');
+    }
+    next();
+});
 
 const User = mongoose.model('User',userSchema);
 

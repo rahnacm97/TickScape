@@ -42,6 +42,11 @@ const orderSchema = new Schema({
         type: Number,
         required: true
     },
+    gstAmount: { 
+        type: Number,
+        default: 0,
+        required: true
+    },
     discount: {
         type: Number,
         default: 0
@@ -82,7 +87,7 @@ const orderSchema = new Schema({
     paymentMethod: {
         type: String,
         required: false,
-        enum: ["Credit Card", "Online Payment","Wallet", "Cash on Delivery", "Bank Transfer"]
+        enum: ["Credit Card", "razorPay","Wallet", "Cash on Delivery", "Bank Transfer", "Online Payment"]
     },
     cancellationReason: {
         type: String,

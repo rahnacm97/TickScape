@@ -496,10 +496,11 @@ hr {
             <div class="order-info">          
               <div class="order-detail"><span>Order ID:</span> <%= order._id %></div>
               <div class="order-detail"><span>Total Items: <%= order.orderedItems.length %></span></div>
-              <div class="order-detail"><span>Total Price:</span> $<%= order.totalPrice %></div>
-              <div class="order-detail"><span>Discount:</span> $<%= order.discount %></div>
-              <div class="order-detail"><span>Shipping:</span> $<%= order.shipping %></div>
-              <div class="order-detail"><span>Final Amount:</span> $<%= order.finalAmount %></div>
+              <div class="order-detail"><span>Total Price:</span> ₹<%= order.totalPrice %></div>
+              <div class="order-detail"><span>GST:</span> ₹<%= order.gstAmount %></div>
+              <div class="order-detail"><span>Discount:</span> ₹<%= order.discount %></div>
+              <div class="order-detail"><span>Shipping:</span> ₹<%= order.shipping %></div>
+              <div class="order-detail"><span>Final Amount:</span> ₹<%= order.finalAmount %></div>
               <div class="order-detail">
                 <span>Invoice Date:</span> 
                 <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %>
@@ -560,7 +561,7 @@ hr {
               </p>
               <p><strong>Product Name:</strong> <%= item.productId.productName %></p>
               <p><strong>Quantity:</strong> <%= item.quantity %></p>
-              <p><strong>Price:</strong> $<%= item.price %></p>
+              <p><strong>Price:</strong> ₹<%= item.price %></p>
               <p>
                 <strong>Status:</strong> 
                 <span class="<%= (item.orderStatus || order.status) === 'Cancelled' ? 'text-danger' : 'text-default' %>">

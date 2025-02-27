@@ -272,48 +272,52 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+
+
     async function addOffer(categoryId) {
-  const {value:amount} = await Swal.fire({
-    title:"Offer in percentage",
-    input:"number",
-    inputLabel:"Percentage",
-    inputPlaceholder:"%",
+  const { value: amount } = await Swal.fire({
+    title: "Offer in percentage",
+    input: "number",
+    inputLabel: "Percentage",
+    inputPlaceholder: "%",
   });
-  if(amount){
-    try{
-      const response = await fetch("/admin/addCategoryOffer",{
-        method:"POST",
-        headers:{
-          'content-type':"application/json",
+
+  if (amount) {
+    try {
+      const response = await fetch("/admin/addCategoryOffer", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
         },
-        body:JSON.stringify({
-          percentage:amount,
-          categoryId:categoryId,
+        body: JSON.stringify({
+          percentage: amount,
+          categoryId: categoryId,
         }),
       });
 
       const data = await response.json();
-      if(response.ok && data.status === true){
+
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
+
+      if (response.ok && data.status === true) {
         Swal.fire({
           title: "Offer added",
           text: "The offer has been added",
-          icon: "Success"
-       }).then(() => {
+          icon: "success", // Fixed typo here
+        }).then(() => {
           location.reload();
-        })
-      }else{
-        Swal.fire("Failed",data.message || "Adding offer failed","error");
+        });
+      } else {
+        Swal.fire("Failed", data.message || "Adding offer failed", "error");
       }
-    }catch(error){
-      Swal.fire(
-        "Error",
-        "An error occured while adding the offer",
-        "error"
-      );
-      console.log("Error adding offer",error);
+    } catch (error) {
+      Swal.fire("Error", "An error occurred while adding the offer", "error");
+      console.log("Error adding offer", error);
     }
   }
 }
+
 
 async function removeOffer(categoryId){
   try {
@@ -348,6 +352,7 @@ async function removeOffer(categoryId){
     console.error("Error removing offer",error);
   }
 }
+
   function confirmAction(categoryId, action) {
     let actionText = action === 'list' ? "List" : "Unlist";
     let actionUrl = action === 'list' ? `/admin/unlistCategory?id=${categoryId}` : `/admin/listCategory?id=${categoryId}`;
