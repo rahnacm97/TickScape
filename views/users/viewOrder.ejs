@@ -585,14 +585,14 @@ hr {
               <% } %>
               <hr>
     
-              <% if (item.orderStatus === 'Delivered' || 'Return request' || 'Returned') { %>
+              <% if (item.orderStatus === 'Delivered') { %>
                 <div class="review-section">
                   <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
                   <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')">Return</button>
                 </div>
               <% } else if (item.orderStatus !== 'Cancelled') { %> 
                 <div class="btn1-container">
-                  <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= item.productId._id %>')">
+                  <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= item._id %>')">
                     <i class="fa fa-times-circle"></i> Cancel Item
                   </a>
                 </div>
@@ -677,6 +677,67 @@ document.getElementById('addressForm').addEventListener('submit', async function
 
 </script>
 <script>
+// function confirmCancel(element, itemId) { 
+//     console.log("Item ID to cancel:", itemId);
+
+//     Swal.fire({
+//         title: "Are you sure?",
+//         text: "Please select a reason for cancellation",
+//         icon: "warning",
+//         input: "select",
+//         inputOptions: {
+//             "Changed My Mind": "Changed My Mind",
+//             "Found a Better Price": "Found a Better Price",
+//             "Item No Longer Needed": "Item No Longer Needed",
+//             "Ordered by Mistake": "Ordered by Mistake",
+//             "Other": "Other"
+//         },
+//         inputPlaceholder: "Select a reason ⏷",
+//         showCancelButton: true,
+//         confirmButtonText: "Yes, Cancel it",
+//         cancelButtonText: "No, Keep it",
+//         preConfirm: (reason) => {
+//             if (!reason) {
+//                 Swal.showValidationMessage("Please select a reason");
+//                 return false;
+//             }
+//             return reason;
+//         }
+//     }).then((result) => {
+//         if (result.isConfirmed) {
+//             fetch(`/cancelOrder/${itemId}`, {
+//                 method: "DELETE",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({ reason: result.value })
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
+//                         .then(() => {
+//                             let itemElement = element.closest("li");
+//                             if (itemElement) {
+//                                 itemElement.style.transition = "opacity 0.5s";
+//                                 itemElement.style.opacity = 0;
+//                                 setTimeout(() => itemElement.remove(), 500);
+//                             }
+//                         });
+//                 } else {
+//                     Swal.fire({
+//                         title: "Error",
+//                         text: data.message || "Unable to cancel the order.",
+//                         icon: "error"
+//                     });
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error("Error cancelling order:", error);
+//                 Swal.fire("Error", "Something went wrong.", "error");
+//             });
+//         }
+//     });
+// }
+
 function confirmCancel(element, itemId) { 
     console.log("Item ID to cancel:", itemId);
 
@@ -713,7 +774,13 @@ function confirmCancel(element, itemId) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
+                    let successMessage = "Your order has been cancelled.";
+                    
+                    if (data.walletCredit) { 
+                        successMessage += ` ₹${data.walletCredit} has been credited to your wallet.`; 
+                    }
+
+                    Swal.fire("Cancelled!", successMessage, "success")
                         .then(() => {
                             let itemElement = element.closest("li");
                             if (itemElement) {
@@ -737,6 +804,72 @@ function confirmCancel(element, itemId) {
         }
     });
 }
+
+
+// function confirmOrderCancel(element, OrderId) { 
+//     console.log("Order ID to cancel:", OrderId);  
+//     Swal.fire({
+//         title: "Are you sure?",
+//         text: "Please select a reason for cancellation",
+//         icon: "warning",
+//         input: "select",
+//         inputOptions: {
+//             "Changed My Mind": "Changed My Mind",
+//             "Found a Better Price": "Found a Better Price",
+//             "Item No Longer Needed": "Item No Longer Needed",
+//             "Ordered by Mistake": "Ordered by Mistake",
+//             "Other": "Other"
+//         },
+//         inputPlaceholder: "Select a reason ⏷",
+//         showCancelButton: true,
+//         confirmButtonText: "Yes, Cancel it",
+//         cancelButtonText: "No, Keep it",
+//         preConfirm: (reason) => {
+//             if (!reason) {
+//                 Swal.showValidationMessage("Please select a reason");
+//                 return false;
+//             }
+//             return reason;
+//         }
+//     }).then((result) => {
+//         if (result.isConfirmed) {
+//             fetch(`/cancelParentOrder/${OrderId}`, {  
+//                 method: "DELETE",
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 },
+//                 body: JSON.stringify({ reason: result.value })
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
+//                         .then(() => {
+//                             const mainContainer = document.querySelector(".main-container");
+//                             if (mainContainer) {
+//                                 mainContainer.innerHTML = `
+//                                     <p style="color: red; font-weight: bold; text-align: center;">
+//                                         This order has been cancelled.
+//                                     </p>
+//                                 `;
+//                             }
+//                             element.closest(".order-item").remove();
+//                         });
+//                 } else {
+//                     Swal.fire({
+//                         title: "Error",
+//                         text: data.message || "Something went wrong.",
+//                         icon: "error"
+//                     });
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error("Error cancelling order:", error);
+//                 Swal.fire("Error", "Something went wrong.", "error");
+//             });
+//         }
+//     });
+// }
 
 
 function confirmOrderCancel(element, OrderId) { 
@@ -776,18 +909,23 @@ function confirmOrderCancel(element, OrderId) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
-                        .then(() => {
-                            const mainContainer = document.querySelector(".main-container");
-                            if (mainContainer) {
-                                mainContainer.innerHTML = `
-                                    <p style="color: red; font-weight: bold; text-align: center;">
-                                        This order has been cancelled.
-                                    </p>
-                                `;
-                            }
-                            element.closest(".order-item").remove();
-                        });
+                    Swal.fire({
+                        title: "Cancelled!",
+                        text: data.refundAmount > 0 
+                            ? `Your order has been cancelled. ₹${data.refundAmount} has been credited to your wallet.` 
+                            : "Your order has been cancelled.",
+                        icon: "success"
+                    }).then(() => {
+                        const mainContainer = document.querySelector(".main-container");
+                        if (mainContainer) {
+                            mainContainer.innerHTML = `
+                                <p style="color: red; font-weight: bold; text-align: center;">
+                                    This order has been cancelled.
+                                </p>
+                            `;
+                        }
+                        element.closest(".order-item").remove();
+                    });
                 } else {
                     Swal.fire({
                         title: "Error",

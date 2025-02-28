@@ -174,7 +174,7 @@ const returnRequest = async (req, res) => {
   try {
 
     const orders = await Order.find({ status: "Return request" })
-    .sort({ createdOn: 1 })
+    .sort({ createdOn: -1 })
     .populate("userId")
     .populate({
       path: "orderedItems.productId", 
@@ -185,7 +185,7 @@ const returnRequest = async (req, res) => {
       ]
     });
 
-    let itemsPerPage = 4;
+    let itemsPerPage = 5;
     let currentPage = parseInt(req.query.page) || 1;
     let startIndex = (currentPage - 1) * itemsPerPage;
     let endIndex = startIndex + itemsPerPage;
@@ -245,126 +245,215 @@ const rejectOrder = async (req, res) => {
 };
 
 
+// const approveOrder = async (req, res) => {
+//   try {
+//       const { orderId, productId } = req.body;
+//       console.log("Approving order:", orderId, productId);
+
+//       if (!orderId || !productId) {
+//           return res.status(400).json({ success: false, message: "Missing orderId or productId" });
+//       }
+
+//       const order = await Order.findById(orderId).populate('orderedItems.productId');;
+//       if (!order) {
+//           return res.status(404).json({ success: false, message: "Order not found" });
+//       }
+//       //console.log("Order:", order);
+   
+//       const orderedItem = order.orderedItems.find(item => 
+//         item.productId.equals(productId) && item.orderStatus === "Return request"
+//       );
+
+//       if (!orderedItem) {
+//           return res.status(404).json({ success: false, message: "Product not found in order" });
+//       }
+//       //console.log("Ordered Item:", orderedItem);
+//       //return true;
+
+//       const user = await User.findById(order.userId);
+//       if (!user) {
+//           return res.status(404).json({ success: false, message: "User not found" });
+//       }
+//       //console.log("User:", user);
+//       //return true;
+
+//       let walletCredit = 0;
+//       // console.log("Order Payment Method:", order.paymentMethod);
+//       // console.log("Order Coupon Applied:", order.couponApplied);
+//       // console.log("Order Applied Coupon:", order.appliedCoupon);
+//       // return true;
+
+//      if (order.paymentMethod !== "Cash on Delivery") {
+    
+//      if (order.couponApplied && order.appliedCoupon) {
+//         const coupon = await Coupon.findById(order.appliedCoupon);
+//        //crossOriginIsolated.log(coupon);
+//       //  console.log("Coupon:", coupon);
+//       //  return true;
+       
+//         if (coupon) {
+
+//             const totalOrderPrice = order.orderedItems.reduce((sum, item) => sum + item.price, 0);
+//             const totalItems = order.orderedItems.length;
+//             const gstAmount = order.gstAmount || 0;
+//             const finalAmount = order.finalAmount;
+//             // console.log("Total Order Price:", totalOrderPrice);
+//             // console.log("Total Items:", totalItems);
+//             // console.log("GST Amount:", gstAmount);
+//             // console.log("Final Amount:", finalAmount);
+//             // return true; 
+
+//             const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
+//             const isReturningAll = returnItemsCount === totalItems;  
+
+//             // console.log("Returning all items:", isReturningAll);
+//             // console.log("Returned Items Count:", returnItemsCount);
+//             // console.log("Total Items:", totalItems);
+
+//            // return true;
+
+
+//             if (isReturningAll) {
+                
+//                 walletCredit += order.discount;
+
+//             } else {
+
+//               const gstRate = 18; 
+
+//               const itemPriceWithGST = orderedItem.price + (orderedItem.price * (gstRate / 100));
+//               const discountContribution = (itemPriceWithGST / finalAmount) * order.discount;
+              
+//               // console.log("Discount Contribution:", discountContribution);
+//               // console.log("Item Price With GST:", itemPriceWithGST);
+              
+//               walletCredit += discountContribution;
+//               //console.log("Wallet Credit:", walletCredit);
+              
+//                // return true;
+//             }
+//             //return true;
+//             await Coupon.updateOne({ _id: order.appliedCoupon }, { $push: { users: user._id } });
+//         }
+//     }
+//     const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
+//             await User.updateOne(
+//                 { _id: user._id },
+//                 { $push: { wallet: { amount: walletCreditRounded, date: new Date() } } }
+//             );
+
+//   }
+//    // return true;
+//     await Product.updateOne({ _id: productId }, { $inc: { quantity: orderedItem.quantity } });
+
+//     await Order.updateOne(
+//         { _id: orderId, "orderedItems.productId": productId },
+//         { $set: { "orderedItems.$.orderStatus": "Returned" } }
+//     );
+
+//     const updatedOrder = await Order.findById(orderId);
+//     const allItemsReturned = updatedOrder.orderedItems.every(item => item.orderStatus === "Returned");
+
+//     if (allItemsReturned) {
+//         await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
+//     }else{
+//       await Order.updateOne({ _id: orderId }, { $set: { status: "Delivered" } });
+//     }
+
+//     return res.status(200).json({ success: true, message: "Order item return request approved successfully!" });
+
+//   } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
+
 const approveOrder = async (req, res) => {
   try {
-      const { orderId, productId } = req.body;
-      console.log("Approving order:", orderId, productId);
+    const { orderId, productId } = req.body;
+    console.log("Approving order:", orderId, productId);
 
-      if (!orderId || !productId) {
-          return res.status(400).json({ success: false, message: "Missing orderId or productId" });
-      }
-
-      const order = await Order.findById(orderId).populate('orderedItems.productId');;
-      if (!order) {
-          return res.status(404).json({ success: false, message: "Order not found" });
-      }
-      //console.log("Order:", order);
-   
-      const orderedItem = order.orderedItems.find(item => 
-        item.productId.equals(productId) && item.orderStatus === "Return request"
-      );
-
-      if (!orderedItem) {
-          return res.status(404).json({ success: false, message: "Product not found in order" });
-      }
-      //console.log("Ordered Item:", orderedItem);
-      //return true;
-
-      const user = await User.findById(order.userId);
-      if (!user) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
-      //console.log("User:", user);
-      //return true;
-
-      let walletCredit = 0;
-      // console.log("Order Payment Method:", order.paymentMethod);
-      // console.log("Order Coupon Applied:", order.couponApplied);
-      // console.log("Order Applied Coupon:", order.appliedCoupon);
-      // return true;
-
-     if (order.paymentMethod !== "Cash on Delivery") {
-    
-     if (order.couponApplied && order.appliedCoupon) {
-        const coupon = await Coupon.findById(order.appliedCoupon);
-       //crossOriginIsolated.log(coupon);
-      //  console.log("Coupon:", coupon);
-      //  return true;
-       
-        if (coupon) {
-
-            const totalOrderPrice = order.orderedItems.reduce((sum, item) => sum + item.price, 0);
-            const totalItems = order.orderedItems.length;
-            const gstAmount = order.gstAmount || 0;
-            const finalAmount = order.finalAmount;
-            // console.log("Total Order Price:", totalOrderPrice);
-            // console.log("Total Items:", totalItems);
-            // console.log("GST Amount:", gstAmount);
-            // console.log("Final Amount:", finalAmount);
-            // return true; 
-
-            const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
-            const isReturningAll = returnItemsCount === totalItems;  
-
-            // console.log("Returning all items:", isReturningAll);
-            // console.log("Returned Items Count:", returnItemsCount);
-            // console.log("Total Items:", totalItems);
-
-           // return true;
-
-
-            if (isReturningAll) {
-                
-                walletCredit += order.discount;
-
-            } else {
-
-              const gstRate = 18; 
-
-              const itemPriceWithGST = orderedItem.price + (orderedItem.price * (gstRate / 100));
-              const discountContribution = (itemPriceWithGST / finalAmount) * order.discount;
-              
-              // console.log("Discount Contribution:", discountContribution);
-              // console.log("Item Price With GST:", itemPriceWithGST);
-              
-              walletCredit += discountContribution;
-              //console.log("Wallet Credit:", walletCredit);
-              
-               // return true;
-            }
-            //return true;
-            await Coupon.updateOne({ _id: order.appliedCoupon }, { $push: { users: user._id } });
-        }
+    if (!orderId || !productId) {
+      return res.status(400).json({ success: false, message: "Missing orderId or productId" });
     }
-    const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
-            await User.updateOne(
-                { _id: user._id },
-                { $push: { wallet: { amount: walletCreditRounded, date: new Date() } } }
-            );
 
-  }
-   // return true;
-    await Product.updateOne({ _id: productId }, { $inc: { quantity: orderedItem.quantity } });
+    const order = await Order.findById(orderId).populate('orderedItems.productId');
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
-    await Order.updateOne(
-        { _id: orderId, "orderedItems.productId": productId },
-        { $set: { "orderedItems.$.orderStatus": "Returned" } }
+    const orderedItem = order.orderedItems.find(
+      (item) => item.productId.equals(productId) && item.orderStatus === "Return request"
     );
 
+    if (!orderedItem) {
+      return res.status(404).json({ success: false, message: "Product not found in order" });
+    }
+
+    const user = await User.findById(order.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    let walletCredit = 0;
+    const gstRate = 18; // GST rate (modify if needed)
+    const itemPriceWithGST = orderedItem.price + (orderedItem.price * (gstRate / 100));
+
+    if (order.paymentMethod !== "Cash on Delivery") {
+      if (order.couponApplied && order.appliedCoupon) {
+        const coupon = await Coupon.findById(order.appliedCoupon);
+        if (coupon) {
+          const totalItems = order.orderedItems.length;
+          const finalAmount = order.finalAmount;
+          const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
+          const isReturningAll = returnItemsCount === totalItems;
+
+          if (isReturningAll) {
+            walletCredit += order.discount; // Full discount refund if all items are returned
+          } else {
+            const discountContribution = (itemPriceWithGST / finalAmount) * order.discount;
+            walletCredit += itemPriceWithGST - discountContribution; // Price with GST minus discount share
+          }
+
+          await Coupon.updateOne({ _id: order.appliedCoupon }, { $push: { users: user._id } });
+        }
+      } else {
+        // No coupon applied → Refund full price including GST
+        walletCredit += itemPriceWithGST;
+      }
+
+      const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
+      await User.updateOne(
+        { _id: user._id },
+        { $push: { wallet: { amount: walletCreditRounded, date: new Date() } } }
+      );
+    }
+
+    // Update product stock
+    await Product.updateOne({ _id: productId }, { $inc: { quantity: orderedItem.quantity } });
+
+    // Update order status
+    await Order.updateOne(
+      { _id: orderId, "orderedItems.productId": productId },
+      { $set: { "orderedItems.$.orderStatus": "Returned" } }
+    );
+
+    // Check if all items are returned
     const updatedOrder = await Order.findById(orderId);
     const allItemsReturned = updatedOrder.orderedItems.every(item => item.orderStatus === "Returned");
 
     if (allItemsReturned) {
-        await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
-    }else{
+      await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
+    } else {
       await Order.updateOne({ _id: orderId }, { $set: { status: "Delivered" } });
     }
 
     return res.status(200).json({ success: true, message: "Order item return request approved successfully!" });
 
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

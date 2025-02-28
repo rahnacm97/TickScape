@@ -13,7 +13,7 @@ const bcrypt = require('bcrypt');
 const path = require("path");
 const sharp = require("sharp");
 const fs = require("fs");
-//const { default: orders } = require('razorpay/dist/types/orders');
+
 
 
 const loadDashboard = async (req,res) => {
@@ -32,17 +32,21 @@ const loadDashboard = async (req,res) => {
           const userCount = await User.countDocuments();
           //console.log(userCount);
           const totalSales = await Order.aggregate([
+            { 
+                $match: { status: { $nin: ["Cancelled", "Returned"] } } 
+            },
             { $unwind: "$orderedItems" }, 
             {
-              $group: {
-                _id: null,
-                totalAmount: { $sum: "$finalAmount" }, 
-                totalOrder: { $sum: 1 },  
-                totalDiscountPrice: { $sum: "$discount"}, 
-                itemSold: { $sum: "$orderedItems.quantity" } 
-              }
+                $group: {
+                    _id: null,
+                    totalAmount: { $sum: "$finalAmount" }, 
+                    totalOrder: { $sum: 1 },  
+                    totalDiscountPrice: { $sum: "$discount" }, 
+                    itemSold: { $sum: "$orderedItems.quantity" } 
+                }
             }
-          ]);     
+        ]);
+            
       
         //console.log('total sales',totalSales);
         const salesData = totalSales[0] || {

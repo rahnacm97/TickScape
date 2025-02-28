@@ -110,19 +110,7 @@ button:hover {
             <h2 class="content-title card-title">Dashboard </h2>
         </div>
        
-    </div>
-    <div>
-      <div style="display: flex; justify-content: end; gap: 20px; margin-top: 10px; margin-bottom: 20px;">
-        <button onclick='downloadXlsx(event)' id="download" 
-            style="background-color: rgb(9, 115, 9); padding: 10px; border-radius: 15px; color: white;">
-            Download Report <i class="fa fa-file-excel" style="color: white;"></i>
-        </button> 
-    
-        <button onclick="downloadPDF(event)" id="downloadPdf" 
-            style="background-color: rgb(210, 27, 27); padding: 10px; border-radius: 15px; color: white; ">
-            Download PDF <i class="fa fa-file-pdf" style="color: white;"></i>
-        </button>
-    </div>    
+    </div>   
           <!-- Cards -->
           <div class="grid gap-6 mb-8 md:grid-cols-1 xl:grid-cols-4" style="margin-bottom: 20px;">
             <!-- Card -->
@@ -292,7 +280,7 @@ button:hover {
             </div>
           </div>
 
-          <form id="dateForm" class="flex flex-wrap justify-center items-center gap-4 mb-6">
+          <form id="dateForm" class="flex flex-wrap items-center gap-4 mb-6">
             <label for="orderDate" class="text-black font-serif text-lg">Select Date:</label>
           
             <input type="date" id="startDate" name="startDate" 
@@ -309,6 +297,18 @@ button:hover {
             </button>
           </form>
           
+          <div>
+            <div style="display: flex; justify-content: end; gap: 20px; margin-top: 10px; margin-bottom: 20px;">
+              <button onclick='downloadXlsx(event)' id="download" 
+                  style="background-color: rgb(9, 115, 9); padding: 10px; border-radius: 15px; color: white;">
+                  Download Report <i class="fa fa-file-excel" style="color: white;"></i>
+              </button> 
+          
+              <button onclick="downloadPDF(event)" id="downloadPdf" 
+                  style="background-color: rgb(210, 27, 27); padding: 10px; border-radius: 15px; color: white; ">
+                  Download PDF <i class="fa fa-file-pdf" style="color: white;"></i>
+              </button>
+          </div> 
 
           <!-- New Table -->
           <div class="w-full overflow-x-auto rounded-lg shadow-md bg-white dark:bg-gray-800">
