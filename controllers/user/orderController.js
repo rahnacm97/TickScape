@@ -20,8 +20,8 @@ const getConfirmation = async (req, res) => {
         const { orderId } = req.query;
         const userId = req.session.user._id;
 
-        console.log("Order ID received:", orderId);
-        console.log("User ID from session:", userId);
+        //console.log("Order ID received:", orderId);
+        //console.log("User ID from session:", userId);
 
         if (!orderId) {
             return res.status(400).json({ error: "Order ID is required" });
@@ -53,7 +53,7 @@ const getConfirmation = async (req, res) => {
                 return res.status(404).json({ error: "Address not found." });
             }
 
-            console.log("Selected Address:", fullAddress);
+           // console.log("Selected Address:", fullAddress);
         }
 
         res.render("orders", {
@@ -301,7 +301,7 @@ const viewOrder = async(req,res) => {
         return new Date(a.date) - new Date(b.date);
         }): [];
 
-        console.log("Sorted Tracking History:", trackingHistory);
+       // console.log("Sorted Tracking History:", trackingHistory);
 
         const latestTrackingEntry = trackingHistory.length > 0 ? trackingHistory[trackingHistory.length - 1] : null;
         
@@ -342,8 +342,8 @@ const cancelOrder = async (req, res) => {
             return res.status(404).json({ success: false, message: "Order item not found" });
         }
 
-        console.log("Order found:", order);
-        console.log("Ordered items:", order.orderedItems);
+        //console.log("Order found:", order);
+        //console.log("Ordered items:", order.orderedItems);
 
         const itemIndex = order.orderedItems.findIndex(item => item.productId.toString() === itemId);
         if (itemIndex === -1) {
@@ -394,10 +394,10 @@ const cancelParentOrder = async (req, res) => {
             return res.json({ success: false, message: "Invalid request data." });
         }
 
-        console.log("OrderId:", OrderId);
+        //console.log("OrderId:", OrderId);
         const orders = await Order.findById(OrderId);
 
-        console.log("Orders found:", orders);
+        //console.log("Orders found:", orders);
 
         if (!orders) {
             return res.json({ success: false, message: "Parent order not found." });
@@ -427,7 +427,7 @@ const cancelParentOrder = async (req, res) => {
                         { _id: item.productId },
                         { $inc: { quantity: item.quantity } } 
                     );
-                    console.log("Product after update:", product);
+                    //console.log("Product after update:", product);
                 }
 
                 item.orderStatus = "Cancelled";
@@ -440,7 +440,7 @@ const cancelParentOrder = async (req, res) => {
 
         await orders.save();
 
-        console.log("Order after update:", orders);
+        //console.log("Order after update:", orders);
 
         return res.json({
             success: true,
@@ -536,7 +536,7 @@ const getUpdateAddress = async (req, res) => {
         if (!order) {
             return res.status(404).send("Order not found!");
         }
-        console.log("address",address);
+        //console.log("address",address);
 
         res.render('update-address', { 
             order,
@@ -554,7 +554,7 @@ const updateAddress = async (req, res) => {
     try {
         const orderid = req.query.orderid;
         const userId = req.session.user._id;
-        console.log("Order ID received:", orderid);
+        //console.log("Order ID received:", orderid);
 
         if (!mongoose.Types.ObjectId.isValid(orderid)) {
             return res.status(400).json({ error: "Invalid Order ID format" });
@@ -596,6 +596,48 @@ const updateAddress = async (req, res) => {
     }
 };
 
+const returnOrder = async (req, res) => {
+    try {
+        const { orderId, productId, returnReason } = req.body;
+
+        if (!orderId || !productId || !returnReason) {
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+
+        const order = await Order.findOne({ _id:orderId }).populate("userId").exec();
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        const productItem = order.orderedItems.find(item => item.productId.toString() === productId);
+
+        if (!productItem) {
+            return res.status(404).json({ success: false, message: "Product not found in the order" });
+        }
+
+        if (productItem.orderStatus === "Return request" || productItem.orderStatus === "Returned") {
+            return res.status(400).json({ success: false, message: "Return already requested or completed" });
+        }
+
+        productItem.orderStatus = "Return request";
+        productItem.returnReason = returnReason;
+        order.status = "Return request";
+
+        await order.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Return request processed successfully",
+        });
+
+    } catch (error) {
+        console.error("Error processing return:", error);
+        res.status(500).json({ success: false, message: "Could not process return request" });
+    }
+};
+
+
 
 module.exports = {
     getConfirmation,
@@ -607,5 +649,7 @@ module.exports = {
     getWriteReview,
     submitReview,
     getUpdateAddress,
-    updateAddress
+    updateAddress,
+    returnOrder,
+
 }

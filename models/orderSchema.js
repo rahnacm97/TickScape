@@ -35,7 +35,11 @@ const orderSchema = new Schema({
         type: String,
         required: true,
         default: 'Order Placed',
-        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned'],      
+        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned',`Return Denied`],      
+    },
+    returnReason: {
+        type: String,
+        default: null
     }
     }],
     totalPrice: {
@@ -72,7 +76,7 @@ const orderSchema = new Schema({
         type: String,
         required: true,
         default: 'Order Placed',
-        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned'],      
+        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned', `Return Denied`],      
     },
     createdOn: {
         type: Date,
@@ -83,6 +87,10 @@ const orderSchema = new Schema({
     couponApplied: {
         type: Boolean,
         default: false
+    },
+    appliedCoupon: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "Coupon" 
     },
     paymentMethod: {
         type: String,

@@ -81,6 +81,9 @@ router.get('/deleteProduct',adminAuth,productController.deleteProduct);
 router.get("/orderList", adminAuth, orderController.getOrderListPageAdmin)
 router.get("/orderDetailsAdmin/:id", adminAuth, orderController.getOrderDetailsPageAdmin)
 router.post('/update-order-status',adminAuth,orderController.updateOrderStatus);
+router.get('/returnRequest',adminAuth,orderController.returnRequest);
+router.post('/rejectOrder',adminAuth,orderController.rejectOrder);
+router.post('/approveOrder',adminAuth,orderController.approveOrder);
 
 
 //Banner Management

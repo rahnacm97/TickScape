@@ -58,7 +58,7 @@ const loadDashboard = async (req,res) => {
       const count = await Order.countDocuments();
       const totalPage = Math.ceil(count / limit);
 
-      const processingOrders = await Order.countDocuments({ status: 'Processing' });
+      const processingOrders = await Order.countDocuments({ status: 'Order Placed' });
 
         const totalCouponUsers = await Order.aggregate([
           { $match: { couponApplied: true } },

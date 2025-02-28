@@ -13,95 +13,6 @@ const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
 
 
-// const getCheckout = async (req, res) => {
-//   try {
-//     const userId = req.session.user?._id;
-//     console.log("User ID:", userId);
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "User not logged in" });
-//     }
-//     const carts = await Cart.findOne({ userId }).populate("items.productId");
-//     const address = await Address.find({ userId });
-
-//     console.log("Address:", address);
-
-//     if (!carts || carts.items.length === 0) {
-//       req.session.appliedCoupon = null;
-//       req.session.save(); 
-
-//       return res.render("checkout-cart", {
-//         carts: { items: [], total: 0 },
-//         total: 0,
-//         user: req.session.user,
-//         address,
-//         coupons: [],
-//         appliedCoupon: null,
-//         couponDiscount: 0,
-//         finalTotal: 0,
-//         couponSuccess: null,
-//         couponError: "Cart is empty.",
-//       });
-//     }
-
-//     let total = carts.items.reduce((acc, item) => acc + item.totalPrice, 0);
-//     const today = new Date();
-//     const coupons = await Coupon.find({
-//       isList: true,
-//       expireOn: { $gte: today },
-//       userId: { $nin: [userId] }, 
-//       name: { $ne: req.session.appliedCoupon?.name }
-//     });
-
-
-//     let couponDiscount = 0;
-//     let appliedCoupon = req.session.appliedCoupon; 
-
-//     if (appliedCoupon) {
-//       if (total >= appliedCoupon.discount) {
-//         couponDiscount = appliedCoupon.discount;
-//       } else {
-//         req.session.appliedCoupon = null;
-//         req.session.save(); 
-//       }
-//     }
-
-//     // const filteredCoupons = appliedCoupon 
-//     // ? coupons.filter(coupon => coupon.name !== appliedCoupon.name) 
-//     // : coupons;
-
-//     couponDiscount = Math.min(couponDiscount, total);
-//     let finalTotal = total - couponDiscount;
-//     const razorpayKey = process.env.RAZORPAY_KEY_ID;
-   
-//     req.session.couponDiscount = couponDiscount;
-//     req.session.save();
-
-//     res.render("checkout-cart", {
-//       carts,
-//       total,
-//       address,
-//       cart: carts.items,
-//       user: req.session.user,
-//       coupons,
-//       appliedCoupon: req.session.appliedCoupon || null,
-//       discount: couponDiscount,
-//       finalTotal,
-//       couponSuccess: req.session.couponSuccess || null,
-//       couponError: req.session.couponError || null,
-//       razorpayKey
-//     });
-
-//     console.log("Applied Coupon in Session:", req.session.appliedCoupon);
-//     console.log("Total:", total);
-//     console.log("Discount Applied:", couponDiscount);
-//     console.log("Final Total:", finalTotal);
-
-//   } catch (error) {
-//     console.error("Error loading checkout page:", error);
-//     res.status(500).send("An error occurred while loading the checkout page.");
-//   }
-// };
-
 const getCheckout = async (req, res) => {
   try {
     const userId = req.session.user?._id;
@@ -266,6 +177,7 @@ const applyCoupon = async (req, res) => {
     console.log("Final Total After Discount:", finalTotal);
 
     req.session.appliedCoupon = {
+      _id: coupon._id,
       name: coupon.name,
       discount: couponDiscount,
     };
@@ -312,7 +224,7 @@ const removeCoupon = async (req, res) => {
     console.log("Before removing coupon:", req.session.appliedCoupon);
 
     const discount = req.session.appliedCoupon.discount || 0;
-    req.session.appliedCoupon = null; // Remove coupon
+    req.session.appliedCoupon = null; 
 
     if (!req.session.cart) {
       req.session.cart = {};
@@ -321,11 +233,11 @@ const removeCoupon = async (req, res) => {
     const subTotal = req.session.cart.subTotal || 0;
     console.log("Subtotal:", subTotal);
 
-    const gstRate = 18; // GST rate in percentage (modify as needed)
+    const gstRate = 18; 
     const gstAmount = (subTotal * gstRate) / 100;
     console.log("GST Amount:", gstAmount);
 
-    const finalTotal = subTotal + gstAmount; // Final total after removing coupon
+    const finalTotal = subTotal + gstAmount; 
 
     req.session.cart.gstAmount = gstAmount;
     req.session.cart.finalTotal = finalTotal;
@@ -350,28 +262,6 @@ const removeCoupon = async (req, res) => {
     return res.json({ success: false, message: "Something went wrong" });
   }
 };
-
-
-// const razorpay = new Razorpay({
-//   key_id: process.env.RAZORPAY_KEY_ID,
-//   key_secret: process.env.RAZORPAY_KEY_SECRET,
-// });
-
-// const createRazoPayOrder = async (amount, receipt) => {
-//   try {
-//       console.log("a - Creating Razorpay order for:", amount, receipt);
-      
-//       return  razorpay.orders.create({
-//           amount: amount * 100, 
-//           currency: "INR",
-//           receipt: receipt,
-//           payment_capture: 1,
-//       });
-//   } catch (error) {
-//       console.error("Error creating Razorpay order:", error);
-//       throw new Error("Failed to create Razorpay order");
-//   }
-// };
 
 
 const paymentFailure = async(req,res)=>{
@@ -501,11 +391,20 @@ const placeOrder = async (req, res) => {
 
       let totalPrice = orderedItems.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)), 0);
       let finalAmount = (totalPrice + (shipping || 0) - (discount || 0) + ( gstAmount|| 0)).toFixed(2);
+
       if (isNaN(finalAmount) || finalAmount <= 0) {
           return res.status(400).json({ error: "Invalid payment amount. Please check the cart total." });
       }
 
       let couponApplied = discount > 0;
+      let appliedCoupon = null;
+      console.log("Coupon Applied:", couponApplied);
+      console.log("Applied Coupon in Session:", req.session.appliedCoupon);
+
+      if (req.session.appliedCoupon && couponApplied) {
+        appliedCoupon = req.session.appliedCoupon._id; 
+        console.log("Applied Coupon ID:", appliedCoupon);
+      }
 
       let fullAddress;
       if (address) {
@@ -561,6 +460,7 @@ const placeOrder = async (req, res) => {
           status: status || "Order Placed",
           paymentMethod,
           couponApplied,
+          appliedCoupon,
           trackingHistory: [{ status: "Order Placed" }],
       });
 
@@ -590,6 +490,7 @@ const placeOrder = async (req, res) => {
       res.status(500).json({ success: false, message: "Order placement failed." });
   }
 };
+
 
 const getUserWalletBalance = async (req, res) => {
   console.log("1")

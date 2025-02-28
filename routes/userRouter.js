@@ -126,6 +126,7 @@ router.get('/writeReview',userAuth,orderController.getWriteReview);
 router.post('/submitReview',userAuth,orderController.submitReview);
 router.get('/update-address',userAuth,orderController.getUpdateAddress);
 router.post('/update-address',userAuth,orderController.updateAddress);
+router.post('/returnOrderItem',userAuth,orderController.returnOrder);
 
 //Wishlist Management
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);

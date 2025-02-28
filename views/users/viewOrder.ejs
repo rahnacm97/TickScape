@@ -400,6 +400,16 @@ hr {
   }
 }
 
+.btn-notify{
+  background-color: #1cb28f;
+  color: #eff2f5;
+  border: 1px solid #27d7ce;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 5px;
+  text-decoration: none;
+}
+
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -520,7 +530,9 @@ hr {
                   <span style="color: rgb(6, 168, 6);"><%= order.status %></span>
                   <% } else if (order.status === 'Cancelled') { %>
                     <span style="color: rgb(241, 8, 8);"><%= order.status %></span>
-                <% } %>
+            <% } else {%>
+              <span style="color: rgb(6, 168, 6);">Delivered</span>
+              <%}%>
               </div>              
             
               <div class="order-detail">          
@@ -573,9 +585,10 @@ hr {
               <% } %>
               <hr>
     
-              <% if (item.orderStatus === 'Delivered') { %>
+              <% if (item.orderStatus === 'Delivered' || 'Return request' || 'Returned') { %>
                 <div class="review-section">
                   <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
+                  <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')">Return</button>
                 </div>
               <% } else if (item.orderStatus !== 'Cancelled') { %> 
                 <div class="btn1-container">
@@ -629,7 +642,6 @@ window.onclick = function (event) {
 };
 
 
-
 document.getElementById('addressForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -663,8 +675,8 @@ document.getElementById('addressForm').addEventListener('submit', async function
     }
 });
 
-  </script>
-  <script>
+</script>
+<script>
 function confirmCancel(element, itemId) { 
     console.log("Item ID to cancel:", itemId);
 
@@ -825,5 +837,104 @@ document.getElementById("changeAddressBtn").addEventListener("click", function(e
         }
     });
 });
+
+
+function requestReturnItem(orderId, productId) {
+    Swal.fire({
+        title: 'Return Order Item ❓',
+        text: 'Please select a reason for returning this item:',
+        icon: 'question',
+        input: 'select',
+        inputOptions: {
+            'Damaged Product': 'Damaged Product',
+            'Wrong Item Received': 'Wrong Item Received',
+            'Quality Issues': 'Quality Issues',
+            'Changed My Mind': 'Changed My Mind',
+            'Other': 'Other'
+        },
+        inputPlaceholder: 'Select a reason⏷',
+        showCancelButton: true,
+        confirmButtonText: 'Next',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to select a reason!';
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let selectedReason = result.value;
+
+            if (selectedReason === 'Other') {
+                Swal.fire({
+                    title: 'Specify Your Reason ✍️',
+                    input: 'text',
+                    inputPlaceholder: 'Enter reason here...',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#d33',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'You need to provide a reason!';
+                        }
+                    }
+                }).then((textResult) => {
+                    if (textResult.isConfirmed) {
+                        sendReturnItemRequest(orderId, productId, textResult.value);
+                    }
+                });
+            } else {
+                sendReturnItemRequest(orderId, productId, selectedReason);
+            }
+        }
+    });
+}
+
+function sendReturnItemRequest(orderId, productId, returnReason) {
+    fetch('/returnOrderItem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, productId, returnReason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let message = 'Your return request for this item has been submitted.';
+            if (data.message) {
+                message += ` ${data.message}`;
+            }
+            Swal.fire({
+                title: 'Return Requested ✅',
+                text: message,
+                icon: 'success',
+                confirmButtonColor: '#28a745'
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                title: 'Error ❌',
+                text: data.message || 'Something went wrong. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error ❌',
+            text: 'Could not process the request.',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+
 </script>
 <%- include("../../views/partials/user/footer") %>
