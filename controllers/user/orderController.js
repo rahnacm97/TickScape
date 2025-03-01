@@ -69,16 +69,154 @@ const getConfirmation = async (req, res) => {
     }
 };
 
+// const downloadInvoice = async (req, res) => {
+//     try {
+//         const { orderId } = req.params;
+//         const userId = req.session.user._id;
+
+//         const order = await Order.findById(orderId)
+//             .populate({
+//                 path: "orderedItems.productId",
+//                 model: "Product",
+//             });
+
+//         if (!order) {
+//             return res.status(404).json({ error: "Order not found" });
+//         }
+
+//         let fullAddress = null;
+//         if (order.address) {
+//             const addressDoc = await Address.findOne({ userId });
+
+//             if (!addressDoc) {
+//                 return res.status(404).json({ error: "Address document not found." });
+//             }
+
+//             fullAddress = addressDoc.address.find(addr => addr._id.toString() === order.address.toString());
+
+//             if (!fullAddress) {
+//                 return res.status(404).json({ error: "Address not found." });
+//             }
+//         }
+
+//         const invoiceDir = path.join("D:", "BROTOTYPE", "TICKSCAPE", "invoices");
+//         const invoicePath = path.join(invoiceDir, `invoice-${orderId}.pdf`);
+
+//         if (!fs.existsSync(invoiceDir)) {
+//             fs.mkdirSync(invoiceDir, { recursive: true });
+//         }
+
+//         const doc = new PDFDocument({ margin: 30 });
+//         const writeStream = fs.createWriteStream(invoicePath);
+//         doc.pipe(writeStream);
+
+        
+//         doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
+
+//         doc.fontSize(14).text(`Order ID: ${order.orderId}`);
+//         doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
+
+//         doc.fontSize(14).text("Deliver to:", { underline: true });
+//         doc.text(`${fullAddress.name}`);
+//         doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
+//         doc.text(`Pincode: ${fullAddress.pincode}`);
+//         doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
+
+//         let y = doc.y;
+//         doc.fontSize(12).text("#", 50, y);
+//         doc.text("Product Name", 80, y);
+//         doc.text("Quantity", 280, y);
+//         doc.text("Price", 350, y);
+//         doc.text("Total", 420, y);
+//         doc.moveDown();
+
+//         doc.moveTo(50, y + 15).lineTo(550, y + 15).stroke();
+
+//         doc.moveTo(75, y - 2).lineTo(75, y + 15).stroke();  
+//         doc.moveTo(270, y - 2).lineTo(270, y + 15).stroke(); 
+//         doc.moveTo(340, y - 2).lineTo(340, y + 15).stroke(); 
+//         doc.moveTo(410, y - 2).lineTo(410, y + 15).stroke(); 
+//         doc.moveTo(480, y - 2).lineTo(480, y + 15).stroke();
+
+//         order.orderedItems.forEach((item, index) => {
+//         y = doc.y + 5;
+//         doc.text(index + 1, 50, y);
+//         doc.text(item.productId.productName, 80, y);
+//         doc.text(item.quantity.toString(), 280, y);
+//         doc.text(`₹${item.price}`, 350, y);
+//         doc.text(`₹${item.quantity * item.price}`, 420, y);
+
+//         doc.moveTo(75, y - 2).lineTo(75, doc.y + 5).stroke();
+//         doc.moveTo(270, y - 2).lineTo(270, doc.y + 5).stroke();
+//         doc.moveTo(340, y - 2).lineTo(340, doc.y + 5).stroke();
+//         doc.moveTo(410, y - 2).lineTo(410, doc.y + 5).stroke();
+//         doc.moveTo(480, y - 2).lineTo(480, doc.y + 5).stroke();
+
+//         doc.moveDown();
+//     });
+
+
+//     doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+//     doc.moveDown();
+
+//     const cgst = (order.totalPrice * 0.09).toFixed(2);
+//     const sgst = (order.totalPrice * 0.09).toFixed(2);
+
+//     doc.fontSize(14);
+//     doc.text(`Total Price: ₹${order.totalPrice}`, 50, doc.y + 10);
+//     doc.text(`CGST (9%): ₹${cgst}`, 50, doc.y + 10);
+//     doc.text(`SGST (9%): ₹${sgst}`, 50, doc.y + 10);
+//     doc.text(`Total GST (18%): ₹${order.gstAmount}`, 50, doc.y + 10);
+//     doc.text(`Shipping: ₹${order.shipping}`, 50, doc.y + 10);
+//     doc.text(`Discount: ₹${order.discount}`, 50, doc.y + 10);
+//     doc.fontSize(14).text(`Final Amount: ₹${order.finalAmount}`, 50, doc.y + 10, { underline: true });
+
+//     doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+//     doc.moveDown();
+
+//     doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
+
+
+//         doc.end();
+
+//         writeStream.on("finish", () => {
+//             console.log("PDF successfully written. Ready for download.");
+
+//             fs.access(invoicePath, fs.constants.F_OK, (err) => {
+//                 if (err) {
+//                     console.error("File does not exist:", invoicePath);
+//                     return res.status(404).json({ error: "Invoice file not found" });
+//                 }
+
+//                 console.log("File exists, proceeding to download...");
+
+//                 res.download(invoicePath, `invoice-${orderId}.pdf`, (err) => {
+//                     if (err) {
+//                         console.error("Error downloading invoice:", err);
+//                         return res.status(500).json({ error: "Error downloading invoice" });
+//                     } else {
+//                         console.log("Invoice downloaded successfully.");
+//                     }
+//                 });
+//             });
+//         });
+
+//     } catch (error) {
+//         console.error("Error generating invoice:", error);
+//         res.status(500).json({ error: "Error generating invoice" });
+//     }
+// };
+
+
 const downloadInvoice = async (req, res) => {
     try {
         const { orderId } = req.params;
         const userId = req.session.user._id;
 
-        const order = await Order.findById(orderId)
-            .populate({
-                path: "orderedItems.productId",
-                model: "Product",
-            });
+        const order = await Order.findById(orderId).populate({
+            path: "orderedItems.productId",
+            model: "Product",
+        });
 
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
@@ -92,7 +230,9 @@ const downloadInvoice = async (req, res) => {
                 return res.status(404).json({ error: "Address document not found." });
             }
 
-            fullAddress = addressDoc.address.find(addr => addr._id.toString() === order.address.toString());
+            fullAddress = addressDoc.address.find(
+                (addr) => addr._id.toString() === order.address.toString()
+            );
 
             if (!fullAddress) {
                 return res.status(404).json({ error: "Address not found." });
@@ -110,75 +250,79 @@ const downloadInvoice = async (req, res) => {
         const writeStream = fs.createWriteStream(invoicePath);
         doc.pipe(writeStream);
 
-        
+        // === Header ===
         doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
 
-        doc.fontSize(14).text(`Order ID: ${order.orderId}`);
+        // Order ID and Date
+        doc.fontSize(12).text(`Order ID: ${order.orderId}`);
         doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
 
-        doc.fontSize(14).text("Deliver to:", { underline: true });
+        // Delivery Address
+        doc.fontSize(12).text("Deliver to:", { underline: true });
         doc.text(`${fullAddress.name}`);
         doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
         doc.text(`Pincode: ${fullAddress.pincode}`);
         doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
 
-        let y = doc.y;
-        doc.fontSize(12).text("#", 50, y);
-        doc.text("Product Name", 80, y);
-        doc.text("Quantity", 280, y);
-        doc.text("Price", 350, y);
-        doc.text("Total", 420, y);
-        doc.moveDown();
+        // === Table Header ===
+        const tableTop = doc.y;
+        const colWidths = [30, 200, 80, 80, 80]; // Column widths for #, Product Name, Quantity, Price, Total
+        const colPositions = [50, 80, 280, 360, 440]; // X positions for columns
 
-        doc.moveTo(50, y + 15).lineTo(550, y + 15).stroke();
+        // Draw table header
+        doc.fontSize(12).font("Helvetica-Bold");
+        doc.text("#", colPositions[0], tableTop);
+        doc.text("Product Name", colPositions[1], tableTop);
+        doc.text("Quantity", colPositions[2], tableTop);
+        doc.text("Price", colPositions[3], tableTop);
+        doc.text("Total", colPositions[4], tableTop);
 
-        doc.moveTo(75, y - 2).lineTo(75, y + 15).stroke();  
-        doc.moveTo(270, y - 2).lineTo(270, y + 15).stroke(); 
-        doc.moveTo(340, y - 2).lineTo(340, y + 15).stroke(); 
-        doc.moveTo(410, y - 2).lineTo(410, y + 15).stroke(); 
-        doc.moveTo(480, y - 2).lineTo(480, y + 15).stroke();
+        // Draw horizontal line below header
+        doc.moveTo(50, tableTop + 15).lineTo(530, tableTop + 15).stroke();
+
+        // === Table Rows ===
+        doc.font("Helvetica"); // Reset font to normal
+        let y = tableTop + 25; // Start below the header
 
         order.orderedItems.forEach((item, index) => {
-        y = doc.y + 5;
-        doc.text(index + 1, 50, y);
-        doc.text(item.productId.productName, 80, y);
-        doc.text(item.quantity.toString(), 280, y);
-        doc.text(`₹${item.price}`, 350, y);
-        doc.text(`₹${item.quantity * item.price}`, 420, y);
+            doc.text((index + 1).toString(), colPositions[0], y);
+            doc.text(item.productId.productName, colPositions[1], y);
+            doc.text(item.quantity.toString(), colPositions[2], y);
+            doc.text(`₹${item.price}`, colPositions[3], y);
+            doc.text(`₹${item.quantity * item.price}`, colPositions[4], y);
 
-        doc.moveTo(75, y - 2).lineTo(75, doc.y + 5).stroke();
-        doc.moveTo(270, y - 2).lineTo(270, doc.y + 5).stroke();
-        doc.moveTo(340, y - 2).lineTo(340, doc.y + 5).stroke();
-        doc.moveTo(410, y - 2).lineTo(410, doc.y + 5).stroke();
-        doc.moveTo(480, y - 2).lineTo(480, doc.y + 5).stroke();
+            // Draw vertical lines for columns
+            doc.moveTo(colPositions[0] - 10, y - 5).lineTo(colPositions[0] - 10, y + 15).stroke();
+            doc.moveTo(colPositions[1] - 10, y - 5).lineTo(colPositions[1] - 10, y + 15).stroke();
+            doc.moveTo(colPositions[2] - 10, y - 5).lineTo(colPositions[2] - 10, y + 15).stroke();
+            doc.moveTo(colPositions[3] - 10, y - 5).lineTo(colPositions[3] - 10, y + 15).stroke();
+            doc.moveTo(colPositions[4] - 10, y - 5).lineTo(colPositions[4] - 10, y + 15).stroke();
 
-        doc.moveDown();
-    });
+            y += 20; // Move to the next row
+        });
 
+        // Draw bottom horizontal line
+        doc.moveTo(50, y).lineTo(530, y).stroke();
 
-    doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
-    doc.moveDown();
+        // === Summary Section ===
+        doc.moveDown().fontSize(12);
+        const cgst = (order.totalPrice * 0.09).toFixed(2);
+        const sgst = (order.totalPrice * 0.09).toFixed(2);
 
-    const cgst = (order.totalPrice * 0.09).toFixed(2);
-    const sgst = (order.totalPrice * 0.09).toFixed(2);
+        doc.text(`Total Price: ₹${order.totalPrice}`, { align: "right" });
+        doc.text(`CGST (9%): ₹${cgst}`, { align: "right" });
+        doc.text(`SGST (9%): ₹${sgst}`, { align: "right" });
+        doc.text(`Total GST (18%): ₹${order.gstAmount}`, { align: "right" });
+        doc.text(`Shipping: ₹${order.shipping}`, { align: "right" });
+        doc.text(`Discount: ₹${order.discount}`, { align: "right" });
+        doc.fontSize(14).text(`Final Amount: ₹${order.finalAmount}`, { align: "right", underline: true });
 
-    doc.fontSize(14);
-    doc.text(`Total Price: ₹${order.totalPrice}`, 50, doc.y + 10);
-    doc.text(`CGST (9%): ₹${cgst}`, 50, doc.y + 10);
-    doc.text(`SGST (9%): ₹${sgst}`, 50, doc.y + 10);
-    doc.text(`Total GST (18%): ₹${order.gstAmount}`, 50, doc.y + 10);
-    doc.text(`Shipping: ₹${order.shipping}`, 50, doc.y + 10);
-    doc.text(`Discount: ₹${order.discount}`, 50, doc.y + 10);
-    doc.fontSize(14).text(`Final Amount: ₹${order.finalAmount}`, 50, doc.y + 10, { underline: true });
-
-    doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
-    doc.moveDown();
-
-    doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
-
+        // Footer
+        doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
 
         doc.end();
 
+        // Handle file download
         writeStream.on("finish", () => {
             console.log("PDF successfully written. Ready for download.");
 
@@ -200,7 +344,6 @@ const downloadInvoice = async (req, res) => {
                 });
             });
         });
-
     } catch (error) {
         console.error("Error generating invoice:", error);
         res.status(500).json({ error: "Error generating invoice" });

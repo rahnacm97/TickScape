@@ -131,7 +131,7 @@ button:hover {
                   class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
                 >
                   Total clients: 
-                  <span class="user-count" ><%= userCount %></span>
+                  <span class="user-count" id="userCount"><%= userCount %></span>
                 </p>
               </div>
             </div>
@@ -154,7 +154,7 @@ button:hover {
                 <p
                   class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
                 >
-                Total Sales:  <span class="user-count">₹<%= orders.totalAmount %></span>
+                Total Sales:  <span class="user-count" id="totalAmount">₹<%= orders.totalAmount %></span>
                 </p>
               </div>
             </div>
@@ -175,7 +175,7 @@ button:hover {
                 <p
                   class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
                 >
-                  Total Orders: <span class="user-count"><%= orders.totalOrder %></span>
+                  Total Orders: <span class="user-count" id="totalOrder"><%= orders.totalOrder %></span>
                 </p>
               </div>
             </div>
@@ -198,7 +198,7 @@ button:hover {
               <p
                 class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
               >
-                Item Sold: <span class="user-count"><%= orders.itemSold %></span>
+                Item Sold: <span class="user-count" id="itemSold"><%= orders.itemSold %></span>
               </p>
             </div>
           </div>
@@ -224,7 +224,7 @@ button:hover {
               <p
                 class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
               >
-                Total Coupons Applied : <span class="user-count"><%= totalCouponUsers %></span>
+                Total Coupons Applied : <span class="user-count" id="totalCouponUsers"><%= totalCouponUsers %></span>
               </p>
               
             </div>
@@ -248,7 +248,7 @@ button:hover {
             <p
               class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
             >
-              Total Discount Price: <span class="user-count">₹<%= orders.totalDiscountPrice %></span>
+              Total Discount Price: <span class="user-count" id="totalDiscount">₹<%= orders.totalDiscountPrice %></span>
             </p>
             
           </div>
@@ -273,7 +273,7 @@ button:hover {
                 <p
                   class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
                 >
-                  Placed Orders: <span class="user-count"><%= processingOrders %></span>
+                  Placed Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
                 </p>
               
               </div>
@@ -299,15 +299,17 @@ button:hover {
           
           <div>
             <div style="display: flex; justify-content: end; gap: 20px; margin-top: 10px; margin-bottom: 20px;">
-              <button onclick='downloadXlsx(event)' id="download" 
+              <button id="download" 
                   style="background-color: rgb(9, 115, 9); padding: 10px; border-radius: 15px; color: white;">
                   Download Report <i class="fa fa-file-excel" style="color: white;"></i>
               </button> 
           
-              <button onclick="downloadPDF(event)" id="downloadPdf" 
+              <button id="downloadPdf" 
                   style="background-color: rgb(210, 27, 27); padding: 10px; border-radius: 15px; color: white; ">
                   Download PDF <i class="fa fa-file-pdf" style="color: white;"></i>
               </button>
+              <input type="hidden" id="resultData" />
+            </div>
           </div> 
 
           <!-- New Table -->
@@ -333,23 +335,18 @@ button:hover {
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
                       <td class="px-4 py-3 text-center font-medium"><%= (currentPage - 1) * limit + index + 1 %></td>
                       <td class="px-4 py-3 font-semibold"><%= ordr._id %></td>
-                      <td class="px-4 py-3 text-center"><%= ordr.orderedItems.length %></td>
-                      <td class="px-4 py-3 text-sm">₹<%= ordr.finalAmount %></td>
-                      <td class="px-4 py-3 text-sm"><%= ordr.paymentMethod %></td>
+                      <td class="px-4 py-3 text-center"><%= ordr.orderedItems.length > 0 ? ordr.orderedItems[0].quantity : 0 %></td>
+                      <td class="px-4 py-3 text-sm">₹<%= ordr.finalAmount || '0' %></td>
+                      <td class="px-4 py-3 text-sm"><%= ordr.paymentMethod || '0' %></td>
                       <td class="px-4 py-3 text-xs">
                         <span class="px-2 py-1 font-semibold leading-tight rounded-full 
-                          <%= ordr.status === 'Order Placed' ? 'text-blue-700 bg-blue-100 dark:bg-blue-700 dark:text-blue-100' : 
-                          ordr.status === 'Processing' ? 'text-yellow-700 bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-100' : 
-                          ordr.status === 'Shipped' ? 'text-purple-700 bg-purple-100 dark:bg-purple-700 dark:text-purple-100' :
-                          ordr.status === 'Out for Delivery' ? 'text-orange-700 bg-orange-100 dark:bg-orange-700 dark:text-orange-100' :
-                          ordr.status === 'Delivered' ? 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100' : 
-                          ordr.status === 'Cancelled' ? 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100' : 
-                          ordr.status === 'Return request' ? 'text-pink-700 bg-pink-100 dark:bg-pink-700 dark:text-pink-100' : 
-                          'text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-100' %>">
+                          <%= getStatusClass(ordr.status) %>">
                           <%= ordr.status %>
                         </span>
                       </td>
-                      <td class="px-4 py-3 text-sm"><%= ordr.invoiceDate ? ordr.invoiceDate.toDateString() : 'N/A' %></td>
+                      <td class="px-4 py-3 text-sm"><%= ordr.invoiceDate ? new Date(ordr.invoiceDate).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                      }) : 'N/A' %></td>
                     </tr>
                   <% }); %>
                 <% } else { %>
@@ -357,47 +354,48 @@ button:hover {
                     <td colspan="7" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">No orders found</td>
                   </tr>
                 <% } %>
-              </tbody>
+              </tbody>              
             </table>
           </div>
 
           <!-- Pagination -->            
           <div class="flex justify-center items-center space-x-2 mt-4 mb-4">
             <% if (currentPage > 1) { %>
-              <a href="?page=<%= currentPage - 1 %>" 
-                 class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
-                &laquo; Previous
-              </a>
-            <% } else { %>
-              <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-white-200 border border-gray-300 rounded-md cursor-not-allowed dark:bg-gray-700 dark:text-gray-500">
-                &laquo; Previous
-              </span>
-            <% } %>
-          
-            <% for (let i = 1; i <= totalPage; i++) { %>
-              <% if (i === currentPage) { %>
-                <span class="px-3 py-2 text-sm font-medium text-white bg-green-600 border border-blue-600 rounded-md dark:bg-blue-500 dark:border-blue-500">
-                  <%= i %>
-                </span>
-              <% } else { %>
-                <a href="?page=<%= i %>" 
+                <a href="?page=<%= currentPage - 1 %>"
                    class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
-                  <%= i %>
+                    &laquo; Previous
                 </a>
-              <% } %>
-            <% } %>
-          
-            <% if (currentPage < totalPage) { %>
-              <a href="?page=<%= currentPage + 1 %>" 
-                 class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
-                Next &raquo;
-              </a>
             <% } else { %>
-              <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-200 border border-gray-300 rounded-md cursor-not-allowed dark:bg-gray-700 dark:text-gray-500">
-                Next &raquo;
-              </span>
+                <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-200 border border-gray-300 rounded-md cursor-not-allowed dark:bg-gray-700 dark:text-gray-500">
+                    &laquo; Previous
+                </span>
             <% } %>
-          </div>
+        
+            <% for (let i = 1; i <= totalPage; i++) { %>
+                <% if (i === currentPage) { %>
+                    <span class="px-3 py-2 text-sm font-medium text-white bg-green-600 border border-blue-600 rounded-md dark:bg-blue-500 dark:border-blue-500">
+                        <%= i %>
+                    </span>
+                <% } else { %>
+                    <a href="?page=<%= i %>"
+                       class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
+                        <%= i %>
+                    </a>
+                <% } %>
+            <% } %>
+        
+            <% if (currentPage < totalPage) { %>
+                <a href="?page=<%= currentPage + 1 %>"
+                   class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
+                    Next &raquo;
+                </a>
+            <% } else { %>
+                <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-200 border border-gray-300 rounded-md cursor-not-allowed dark:bg-gray-700 dark:text-gray-500">
+                    Next &raquo;
+                </span>
+            <% } %>
+        </div>
+        
            
           </div>
 
@@ -494,155 +492,226 @@ button:hover {
       </main>
     </div>
 </div>
+<% 
+  function getStatusClass(status) {
+    switch (status) {
+      case 'Order Placed': return 'text-blue-700 bg-blue-100 dark:bg-blue-700 dark:text-blue-100';
+      case 'Processing': return 'text-yellow-700 bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-100';
+      case 'Shipped': return 'text-purple-700 bg-purple-100 dark:bg-purple-700 dark:text-purple-100';
+      case 'Out for Delivery': return 'text-orange-700 bg-orange-100 dark:bg-orange-700 dark:text-orange-100';
+      case 'Delivered': return 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100';
+      case 'Cancelled': return 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100';
+      case 'Return request': return 'text-pink-700 bg-pink-100 dark:bg-pink-700 dark:text-pink-100';
+      default: return 'text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-100';
+    }
+  }
+%>
 
 </section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-            
-let result = null
+let result = null;
+let eventListenersAdded = false;
 
-document.getElementById("dateForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById('endDate').value
-  console.log('start date and end date is',startDate,endDate)
+document.addEventListener("DOMContentLoaded", () => {
+    if (eventListenersAdded) {
+        console.log("Event listeners already added");
+        return;
+    }
 
-  // Convert to full DateTime string
-  const startDatee = new Date(startDate).toISOString().split("T")[0];
-  const endDatee = new Date(endDate).toISOString().split("T")[0];
+    console.log("DOMContentLoaded event fired");
+    const downloadButton = document.getElementById("download");
+    const downloadPdfButton = document.getElementById("downloadPdf");
 
+    if (!downloadButton || !downloadPdfButton) {
+        console.error("Download buttons not found in the DOM");
+        return;
+    }
 
-  try {
-      const response = await fetch(`/admin/salesReport?startDatee=${startDatee}&&endDatee=${endDatee}`, {
-          method: "GET",
-      });
+    downloadButton.addEventListener("click", () => {
+        console.log("Download button clicked");
+        if (result) {
+            downloadXlsx(result);
+        } else {
+            console.error("No result data available to download.");
+        }
+    });
 
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    downloadPdfButton.addEventListener("click", () => {
+        console.log("Download PDF button clicked");
+        if (result) {
+            downloadPDF(result);
+        } else {
+            console.error("No result data available to download.");
+        }
+    });
 
-      result = await response.json();
-      console.log("API Response:", result);
- 
-     
-      document.getElementById("totalAmount").innerText = result.totalAmount || 0;
-      document.getElementById("totalOrder").innerText = result.totalOrder || 0;
-      document.getElementById("totalDiscount").innerText = result.totalCouponDiscount || 0;
-      document.getElementById("totalDiscountPrice").innerText = result.totalDiscountPrice || 0;
-      document.getElementById("itemSold").innerText = result.itemSold || 0;
-      document.getElementById("pendingOrders").innerText = result.pendingOrderCount || 0;
-      document.getElementById("userCount").innerText = result.userCount || 0;
-     
-
-
-      const ordersTableBody = document.getElementById('ordersTableBody')
-      ordersTableBody.innerHTML = ''
-       result.order.forEach(order => {
-        const row = `
-              <tr class="text-gray-700 dark:text-gray-400">
-                  <td class="px-4 py-3">${order._id}</td>
-                  <td class="px-4 py-3">${order.orderedItems[0].quantity}</td>
-                  <td class="px-4 py-3">₹${order.finalAmount}</td>
-                  <td class="px-4 py-3 text-xs">
-                      <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                          ${order.status}
-                      </span>
-                  </td>
-                  <td class="px-4 py-3 text-sm">
-                      ${new Date(order.createdOn).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                      })}
-                  </td>
-              </tr>
-          `;
-          ordersTableBody.innerHTML += row;
-       });
-
-
-       document.getElementById("download").addEventListener("click", () => {
-          downloadXlsx(result);
-      }, { once: true });
-
-      document.getElementById('downloadPdf').addEventListener('click',()=>{
-        downloadPDF(result);
-      },{once:true})
-   
-  } catch (error) {
-      console.error("Fetch error:", error);
-  }
+    eventListenersAdded = true;
 });
 
+document.getElementById("dateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById('endDate').value;
+    console.log('start date and end date is', startDate, endDate);
 
-const downloadXlsx = async(result)=>{
-console.log('reulsts data',result)
-const startDatee = document.getElementById("startDate").value;
-  const endDatee = document.getElementById('endDate').value
-  console.log('start date and end date is',startDatee,endDatee)
-if(!startDatee && endDatee){
- swal.fire({
-  title:'warning',
-  text:'please select a date',
-  icon:'warning'
- })
+    const startDatee = new Date(startDate).toISOString().split("T")[0];
+    const endDatee = new Date(endDate).toISOString().split("T")[0];
 
+    try {
+        const response = await fetch(`/admin/salesReport?startDatee=${startDatee}&&endDatee=${endDatee}`, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        result = await response.json();
+        console.log("API Response:", result);
+
+        // Update the UI with the result data
+        document.getElementById("totalAmount").innerText = `₹${result.totalAmount || 0}`;
+        document.getElementById("totalOrder").innerText = result.totalOrder || 0;
+        document.getElementById("totalDiscount").innerText = `₹${result.totalDiscountPrice || 0}`;
+        document.getElementById("totalCouponUsers").innerText = result.totalCouponUsers || 0;
+        document.getElementById("itemSold").innerText = result.itemSold || 0;
+        document.getElementById("processingOrders").innerText = result.processingOrders || 0;
+        document.getElementById("userCount").innerText = result.userCount || 0;
+
+        // Update the orders table
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        ordersTableBody.innerHTML = '';
+
+        if (result.order && result.order.length > 0) {
+            result.order.forEach((ordr, index) => {
+                const quantity = ordr.orderedItems.length > 0 ? ordr.orderedItems[0].quantity : 0;
+                const finalAmount = ordr.finalAmount || '0';
+                const statusClass = getStatusClass(ordr.status);
+
+                const row = `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
+                        <td class="px-4 py-3 text-center font-medium">${index + 1}</td>
+                        <td class="px-4 py-3 font-semibold">${ordr._id}</td>
+                        <td class="px-4 py-3 text-center">${quantity}</td>
+                        <td class="px-4 py-3 text-sm">₹${finalAmount}</td>
+                        <td class="px-4 py-3 text-sm">${ordr.paymentMethod || 'N/A'}</td>
+                        <td class="px-4 py-3 text-xs">
+                            <span class="px-2 py-1 font-semibold leading-tight rounded-full ${statusClass}">
+                                ${ordr.status}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            ${ordr.createdOn ? new Date(ordr.createdOn).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }) : 'N/A'}
+                        </td>
+                    </tr>
+                `;
+
+                ordersTableBody.innerHTML += row;
+            });
+        } else {
+            ordersTableBody.innerHTML = `<tr><td colspan="7" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">No orders found</td></tr>`;
+        }
+
+    } catch (error) {
+        console.error("Fetch error:", error);
+    }
+});
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'Order Placed': return 'text-blue-700 bg-blue-100 dark:bg-blue-700 dark:text-blue-100';
+        case 'Processing': return 'text-yellow-700 bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-100';
+        case 'Shipped': return 'text-purple-700 bg-purple-100 dark:bg-purple-700 dark:text-purple-100';
+        case 'Out for Delivery': return 'text-orange-700 bg-orange-100 dark:bg-orange-700 dark:text-orange-100';
+        case 'Delivered': return 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100';
+        case 'Cancelled': return 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100';
+        case 'Return request': return 'text-pink-700 bg-pink-100 dark:bg-pink-700 dark:text-pink-100';
+        default: return 'text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-100';
+    }
 }
 
-try {
-const response = await fetch(`/admin/download-sales-data`, {
-          method: "POST",  
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ startDatee,endDatee, salesData: result }) 
-      });
-const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `TickScape-sales-report-${startDate}-${endDate}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch (error) {
-    console.error("Error downloading report:", error);
-  }
-
-}
-
-const downloadPDF = async (result)=>{
-
-console.log('pdf downloading result',result)
-const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById('endDate').value
-  console.log('start date and end date is',startDate,endDate)
-if(!startDate && endDate){
-  swal.fire({
-    title:'warning',
-    text:'please select a date',
-    icon:'warning'
-  })
-}
-try {
-  const response = await fetch(`/admin/download-pdf`, {
-          method: "POST",  
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ startDatee:startDate,endDatee:endDate, salesData: result }) 
-      });
-  const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `TickScape-sales-report-${startDate}-${endDate}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch (error) {
-    console.error("Error downloading report:", error);
-  }
-}
-</script>
+const downloadXlsx = async (result) => {
+  console.log("Downloading xls file",result);
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
     
+    if (!startDate || !endDate) {  
+        swal.fire({
+            title: 'Warning',
+            text: 'Please select both Start and End dates',
+            icon: 'warning'
+        });
+        return;
+    }
+
+    try {
+        const response = await fetch(`/admin/download-sales-data`, {
+            method: "POST",  
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ startDate, endDate, salesData: result })  
+        });
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `TickScape-sales-report-${startDate}-${endDate}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error("Error downloading report:", error);
+    }
+};
+
+
+const downloadPDF = async (result) => {
+    console.log('PDF Downloading Result:', result);
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    
+    if (!startDate || !endDate) { 
+        swal.fire({
+            title: 'Warning',
+            text: 'Please select both Start and End dates',
+            icon: 'warning'
+        });
+        return;
+    }
+
+    try {
+        const response = await fetch(`/admin/download-pdf`, {
+            method: "POST",  
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ startDate, endDate, salesData: result })
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `TickScape-sales-report-${startDate}-${endDate}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error("Error downloading report:", error);
+    }
+};
+
+</script>
+ 
 <%- include("../../views/partials/admin/footer") %>
