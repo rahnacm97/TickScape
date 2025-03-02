@@ -175,15 +175,43 @@ const postNewPassword = async(req,res) => {
 }
 
 
+// const userProfile = async (req, res) => {
+//     try {
+//         const userId = req.session.user._id;
+//         const userData = await User.findById(userId);
+//         const addressData = await Address.findOne({ userId: userId });
+
+//         res.render('profile', {
+//             user: userData,
+//             userAddress: addressData,
+//         });
+
+//     } catch (error) {
+//         console.error("Error retrieving user profile", error);
+//         res.redirect('/pageNotFound');
+//     }
+// };
+
 const userProfile = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({ userId: userId });
 
+        // Pagination logic
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; 
+        const skip = (page - 1) * limit;
+
+        const totalEntries = userData.wallet.length;
+        const paginatedWallet = userData.wallet.slice(skip, skip + limit);
+
         res.render('profile', {
             user: userData,
             userAddress: addressData,
+            walletHistory: paginatedWallet,
+            currentPage: page,
+            totalPages: Math.ceil(totalEntries / limit),
         });
 
     } catch (error) {
@@ -191,6 +219,7 @@ const userProfile = async (req, res) => {
         res.redirect('/pageNotFound');
     }
 };
+
 
 
 const changeEmail = async(req,res) => {

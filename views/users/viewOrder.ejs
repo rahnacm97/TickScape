@@ -573,7 +573,7 @@ hr {
               </p>
               <p><strong>Product Name:</strong> <%= item.productId.productName %></p>
               <p><strong>Quantity:</strong> <%= item.quantity %></p>
-              <p><strong>Price:</strong> ₹<%= item.price %></p>
+              <p><strong>Price per Item:</strong> ₹<%= item.price %></p>
               <p>
                 <strong>Status:</strong> 
                 <span class="<%= (item.orderStatus || order.status) === 'Cancelled' ? 'text-danger' : 'text-default' %>">
@@ -590,14 +590,32 @@ hr {
                   <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
                   <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')">Return</button>
                 </div>
+                <% } else if (item.orderStatus === 'Return request'){ %>              
+                  <div class="btn1-container">
+                    <a href="#" class="btn-notify" >
+                      <i class="fa fa-exchange"></i> Return Requested
+                    </a>
+                  </div>
+                  <% } else if (item.orderStatus === 'Returned') { %>  
+                    <div class="btn1-container">
+                      <a href="#" class="btn-returned">
+                        <i class="fa fa-box-open"></i> Returned
+                      </a>
+                    </div>
+                    <% } else if (item.orderStatus === 'Return Denied') { %>  
+                      <div class="btn1-container">
+                        <a href="#" class="btn-returned">
+                          <i class="fa fa-ban"></i> Return Denied
+                        </a>
+                      </div>
               <% } else if (item.orderStatus !== 'Cancelled') { %> 
                 <div class="btn1-container">
                   <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= item._id %>')">
                     <i class="fa fa-times-circle"></i> Cancel Item
                   </a>
                 </div>
-              <% } %>              
-    
+              
+                <% } %>
             </li>
           <% }) %>
         </ul>
@@ -609,7 +627,7 @@ hr {
     <div class="btn1-container"> 
       <a href="/orders" class="btn">Back to Orders</a>
     
-      <% if (order.status !== "Cancelled" && order.status !== "Delivered") { %>
+      <% if (order.status !== "Cancelled" && order.status !== "Delivered" && order.status !== "Return Request" && order.status !== "Returned") { %>
         <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
           <i class="fa fa-ban"></i> Cancel Order
         </a>

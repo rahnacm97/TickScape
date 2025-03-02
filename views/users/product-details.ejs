@@ -470,9 +470,9 @@ h2{
                               <% if (!highestOffer) { %>
                                 No Offers
                             <% } else if (categoryOffer > productOffer) { %>
-                                <%= categoryOffer %>% Off
+                              Category Offer: <%= categoryOffer %>% Off
                             <% } else { %>
-                              ₹<%= productOffer %> Off
+                             Product Offer: ₹<%= productOffer %> Off
                             <% } %>
                             </span>
                         </div>
@@ -537,7 +537,7 @@ h2{
           <% reviews.forEach(review => { %>
             <div class="review">
               <div class="review-header">
-                <strong><%= review.user.fname %> <%= review.user.lname %></strong>  
+                <strong><%= review.user ? `${review.user.fname || 'Anonymous'} ${review.user.lname || ''}` : 'Anonymous' %></strong>   
               </div>
               <div class="review-rating">
                 <% if(review.rating == 1){ %>

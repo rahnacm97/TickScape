@@ -102,6 +102,8 @@ router.post('/createCoupon',adminAuth,couponController.createCoupon);
 router.get('/editCoupon',adminAuth,couponController.editCoupon);
 router.post('/updateCoupon',adminAuth,couponController.updateCoupon);
 router.get('/deleteCoupon',adminAuth,couponController.deleteCoupon);
+router.get('/listCoupon',adminAuth,couponController.getListCoupon);
+router.get('/unlistCoupon',adminAuth,couponController.getUnlistCoupon);
 
 //Offer Management
 router.get('/offers',adminAuth,offerController.loadOffer);

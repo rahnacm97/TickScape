@@ -230,7 +230,9 @@ body {
                     </p>
                   </div>
                 </p>
-                <a href="/download-invoice/<%= orders._id %>" class="btn1 btn-sm">Download Invoice</a>
+                <% if (orders.paymentMethod !== "Cash on Delivery") { %>
+                  <a href="/download-invoice/<%= orders._id %>" class="btn1 btn-sm">Download Invoice</a>
+                <% } %>
               </div>
             </article>
           </div>

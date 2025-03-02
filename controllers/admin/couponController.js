@@ -64,7 +64,7 @@ const createCoupon = async(req,res) => {
             minimumPrice: data.minimumPrice,
             isList: true
         });
-        console.log("This is new",newCoupon);
+        //console.log("This is new",newCoupon);
         await newCoupon.save();
         return res.redirect('/admin/coupon');
     } catch (error) {
@@ -84,33 +84,104 @@ const editCoupon = async(req,res) => {
     }
 }
 
-const updateCoupon = async(req,res) => {
-    try {
-        const couponId = req.body.couponId;
-        const oid = new mongoose.Types.ObjectId(couponId);
-        const selectedCoupon = await Coupon.findOne({_id:oid});
-        if(selectedCoupon){
-            const startDate = new Date(req.body.startDate);
-            const endDate = new Date(req.body.endDate);
-            const updatedCoupon = await Coupon.updateOne({_id:oid},
-                {$set: {
-                    name: req.body.couponName,
-                    createdOn: startDate,
-                    expireOn: endDate,
-                    offerPrice: parseInt(req.body.offerPrice),
-                    minimumPrice: parseInt(req.body.minimumPrice),
-                }
-            }, {new:true}
-            );
-            if(updatedCoupon !== null){
-                res.send("Coupon updated successfully");
-            }else{
-                res.status(500).send("Coupon update failed");
-            }
-        }
-    } catch (error) {
-        res.redirect('/pageerror');
-    }
+// const updateCoupon = async(req,res) => {
+//     try {
+//         const couponId = req.body.couponId;
+//         const oid = new mongoose.Types.ObjectId(couponId);
+//         const selectedCoupon = await Coupon.findOne({_id:oid});
+//         if(selectedCoupon){
+//             const startDate = new Date(req.body.startDate);
+//             const endDate = new Date(req.body.endDate);
+//             const updatedCoupon = await Coupon.updateOne({_id:oid},
+//                 {$set: {
+//                     name: req.body.couponName,
+//                     createdOn: startDate,
+//                     expireOn: endDate,
+//                     offerPrice: parseInt(req.body.offerPrice),
+//                     minimumPrice: parseInt(req.body.minimumPrice),
+//                 }
+//             }, {new:true}
+//             );
+//             if(updatedCoupon !== null){
+//                 res.send("Coupon updated successfully");
+//             }else{
+//                 res.status(500).send("Coupon update failed");
+//             }
+//         }
+//     } catch (error) {
+//         res.redirect('/pageerror');
+//     }
+// }
+
+const updateCoupon = async (req, res) => {
+  try {
+      const couponId = req.body.couponId;
+      const oid = new mongoose.Types.ObjectId(couponId);
+      
+      // Check if the coupon exists
+      const selectedCoupon = await Coupon.findOne({ _id: oid });
+      if (!selectedCoupon) {
+          return res.status(404).send("Coupon not found");
+      }
+
+      // Check if another coupon with the same name exists
+      const existingCoupon = await Coupon.findOne({
+          name: { $regex: new RegExp("^" + req.body.couponName + "$", "i") },
+          _id: { $ne: oid } // Ensure it's not the same coupon being updated
+      });
+
+      if (existingCoupon) {
+          return res.status(400).send("Coupon name already exists, choose another name");
+      }
+
+      // Convert dates and update the coupon
+      const startDate = new Date(req.body.startDate);
+      const endDate = new Date(req.body.endDate);
+      
+      const updatedCoupon = await Coupon.updateOne(
+          { _id: oid },
+          {
+              $set: {
+                  name: req.body.couponName,
+                  createdOn: startDate,
+                  expireOn: endDate,
+                  offerPrice: parseInt(req.body.offerPrice),
+                  minimumPrice: parseInt(req.body.minimumPrice),
+              }
+          },
+          { new: true }
+      );
+
+      if (updatedCoupon.modifiedCount > 0) {
+          res.send("Coupon updated successfully");
+      } else {
+          res.status(500).send("Coupon update failed");
+      }
+      
+  } catch (error) {
+      console.error("Error updating coupon:", error);
+      res.redirect('/pageerror');
+  }
+};
+
+const getListCoupon = async(req,res,next) => {
+  try {
+      let id = req.query.id;
+      await Coupon.updateOne({_id:id},{$set:{isList:false}});
+      res.redirect('/admin/coupon');
+  } catch (error) {
+      res.redirect('/pageerror');
+  }
+}
+
+const getUnlistCoupon = async(req,res,next) => {
+  try {
+      let id = req.query.id;
+      await Coupon.updateOne({_id:id},{$set:{isList:true}});
+      res.redirect('/admin/coupon');
+  } catch (error) {
+      res.redirect('/pageerror');
+  }
 }
 
 const deleteCoupon = async (req, res) => {
@@ -137,5 +208,7 @@ module.exports = {
     createCoupon,
     editCoupon,
     updateCoupon,
+    getListCoupon,
+    getUnlistCoupon,
     deleteCoupon
 }

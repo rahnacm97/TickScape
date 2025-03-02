@@ -144,7 +144,7 @@
             <th>Sl. No</th>
             <th>User Name</th>
             <th>Order ID</th>
-            <th>Items</th>
+            <th>Amount</th>
             <th>Reason</th>
             <th>Status</th>
             <th>Action</th>
@@ -153,12 +153,12 @@
         <tbody>
           <% if(orders.length > 0){%>
           <% orders.forEach((order,index) => { %>
-            <tr>
+            <tr id="order-<%= order._id %>">
               <td class="text-center"><%= (currentPage - 1) * limit + index + 1 %></td>
               <td><%= order.userId.fname %> <%= order.userId.lname %></td>
               <td><%= order._id %></td>
               <td>
-                <%= order.orderedItems.length %>
+                <%= order.totalPrice %>
               </td>
               <td>
                 <%= order.orderedItems.length > 0 ? order.orderedItems[0].returnReason : 'N/A' %>
@@ -222,7 +222,6 @@ async function confirmReject(orderId, productId) {
         Swal.fire("Error!", "No product found to reject.", "error");
         return;
     }
-    //console.log("confirmReject called with:", orderId, productId);
 
     const result = await Swal.fire({
         title: "Are you sure?",
@@ -236,18 +235,27 @@ async function confirmReject(orderId, productId) {
 
     if (result.isConfirmed) {
         try {
-            //console.log("Sending fetch request...");
             const response = await fetch("/admin/rejectOrder", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ orderId, productId }),
             });
+
             const data = await response.json();
 
-            //console.log("Response received:", data);
             if (data.success) {
                 await Swal.fire("Rejected!", "The order has been rejected.", "success");
-                location.reload();
+
+                
+                const row = document.getElementById(`order-${orderId}`);
+                if (row) row.remove();
+
+                const remainingRows = document.querySelectorAll(`tr[data-order-id="${orderId}"]`);
+                if (remainingRows.length === 0) {
+                   
+                    const orderSection = document.querySelector(`#order-${orderId}`);
+                    if (orderSection) orderSection.remove();
+                }
             } else {
                 Swal.fire("Error!", data.message, "error");
             }
@@ -277,14 +285,14 @@ function confirmApprove(orderId, productId) {
             .then(data => {
                 if (data.success) {
                     Swal.fire("Approved!", data.message, "success").then(() => {
-                        // Find and remove the specific product row dynamically
-                        const row = document.querySelector(`tr[data-order-id="${orderId}"][data-product-id="${productId}"]`);
+                        
+                      const row = document.getElementById(`order-${orderId}`);
                         if (row) row.remove();
 
-                        // Check if the entire order is returned (i.e., no remaining rows for this order)
+                       
                         const remainingRows = document.querySelectorAll(`tr[data-order-id="${orderId}"]`);
                         if (remainingRows.length === 0) {
-                            // Optionally, remove the whole order section (if applicable)
+                            
                             const orderSection = document.querySelector(`#order-${orderId}`);
                             if (orderSection) orderSection.remove();
                         }

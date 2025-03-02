@@ -86,10 +86,10 @@
    <div class="card-body">
      <div class="row">
        <div class="col-md-12">
-         <form method="post" action="/admin/createCoupon">
-           <body onload="setDefaultStartDate()"></body>
+         <form  id="couponForm" method="post" action="/admin/createCoupon">
+          
              <div class="mb-4">
-               <label for="coupon-name" class="form-label">Coupon Name</label>
+               <label for="coupon-name" class="form-label">Coupon Code</label>
                <input
                  type="text"
                  id="coupon-name"
@@ -134,6 +134,7 @@
                  name="offerPrice"
                  placeholder="Type here"
                  class="form-control"
+                 id="offer-price"
                />
                <div id="error-offer-price" class="error-message"></div>
              </div>
@@ -141,13 +142,14 @@
 
              <div>
                <label for="minimum-price" class="form-label"
-                 >Minimum Price</label
+                 >Minimum Purchase Amount</label
                >
                <input
                  type="text"
                  name="minimumPrice"
                  placeholder="Type here"
                  class="form-control"
+                 id="minimum-price"
                />
                <div id="error-minimum-price" class="error-message"></div>
              </div>
@@ -166,118 +168,73 @@
            </body>
          </form>
        </div>
-       <script>
-        function validateForm() {
-          document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
-          const sDate = document.getElementsByName("startDate")[0].value;
-          const eDate = document.getElementsByName("endDate")[0].value;
-          const sDateObj = new Date(sDate);
-          const eDateObj = new Date(eDate);
-          const todayDateObj = new Date();
-          todayDateObj.setHours(0, 0, 0, 0);
-       
-       
-          if (sDateObj > eDateObj) {
-            document.getElementById("error-end-date").innerHTML ="End date should be after the start date";
-            return false;
-          }
-       
-       
-          if (sDateObj <= todayDateObj) {
-            document.getElementById("error-start-date").innerHTML ="Starting date should be greater than or equal to today's date";
-            return false;
-          }
-       
-       
-          let name = document.getElementsByName("couponName")[0].value;
-          const nameRegex = /^[A-Za-z0-9]{1,50}$/;
-       
-       
-          if (!nameRegex.test(name)) {
-            document.getElementById("error-coupon-name").innerHTML =
-              "Coupon Name error";
-            return false;
-          }
-       
-       
-          const offerPriceInput = document.getElementsByName("offerPrice")[0];
-          const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
-       
-       
-          const offerPrice = offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
-          const minimumPrice = minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
-       
-       
-          if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
-            document.getElementById("error-offer-price").innerHTML = "Offer Price must be greater than Minimum Price";
-            return false;
-          }
-       
-       
-          if (isNaN(offerPrice) || isNaN(minimumPrice)) {
-            document.getElementById("error-offer-price").innerHTML ="Please enter numeric values for Offer Price and Minimum Price";
-            return false;
-          }
-       
-       
-              const formData = {
-              couponName: name,
-              startDate: sDateObj,
-              endDate: eDateObj,
-              offerPrice: offerPrice,
-              minimumPrice: minimumPrice
-          };
-          return true;
-        }
-       
-        function setDefaultStartDate(){
-          const today = new Date();
-          const year = today.getFullYear();
-          let month = (today.getMonth() + 1).toString().padStart(2,"0");
-          let day = today.getDate().toString().padStart(2,"0");
-          document.getElementById("startingDate").value = `${year}-${month}-${day}`
-        }
-       
-       function confirmDelete(couponId) {
-          Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              deleteCoupon(couponId);
-            }
-          });
-        }
-       
-       
-        function deleteCoupon(couponId) {
-          $.ajax({
-            url: `/admin/deletecoupon?id=${couponId}`,
-            method: "GET",
-            success: function () {
-              Swal.fire({
-                icon: "success",
-                title: "Deleted!",
-                text: "The coupon has been deleted.",
-                confirmButtonText: "OK",
-              }).then(() => {
-                window.location.reload();
-              });
-            },
-            error: function () {
-              Swal.fire({
-                icon: "error",
-                title: "Error!",
-                text: "Failed to delete the coupon. Please try again.",
-              });
-            },
-          });
-        }
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function validateForm() {
+    document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
+    let isValid = true;
+
+    const sDate = document.getElementsByName("startDate")[0].value;
+    const eDate = document.getElementsByName("endDate")[0].value;
+    const name = document.getElementsByName("couponName")[0].value.trim();
+    const offerPriceInput = document.getElementsByName("offerPrice")[0].value.trim();
+    const minimumPriceInput = document.getElementsByName("minimumPrice")[0].value.trim();
+
+    if (!sDate) {
+        document.getElementById("error-start-date").innerHTML = "Start date is required";
+        isValid = false;
+    }
+
+    if (!eDate) {
+        document.getElementById("error-end-date").innerHTML = "End date is required";
+        isValid = false;
+    }
+
+    const sDateObj = new Date(sDate);
+    const eDateObj = new Date(eDate);
+    const todayDateObj = new Date();
+    todayDateObj.setHours(0, 0, 0, 0);
+
+    if (sDate && eDate && sDateObj > eDateObj) {
+        document.getElementById("error-end-date").innerHTML = "End date must be after the start date";
+        isValid = false;
+    }
+
+    if (sDate && sDateObj < todayDateObj) {
+        document.getElementById("error-start-date").innerHTML = "Start date should be today or later";
+        isValid = false;
+    }
+
+    const nameRegex = /^[A-Za-z0-9\s]{1,50}$/;
+    if (!name) {
+        document.getElementById("error-coupon-name").innerHTML = "Coupon name is required";
+        isValid = false;
+    } else if (!nameRegex.test(name)) {
+        document.getElementById("error-coupon-name").innerHTML = "Coupon name must be alphanumeric (max 50 characters)";
+        isValid = false;
+    }
+
+    const offerPrice = parseFloat(offerPriceInput);
+    const minimumPrice = parseFloat(minimumPriceInput);
+
+    if (isNaN(offerPrice)) {
+        document.getElementById("error-offer-price").innerHTML = "Offer price must be a number";
+        isValid = false;
+    }
+
+    if (isNaN(minimumPrice)) {
+        document.getElementById("error-minimum-price").innerHTML = "Minimum price must be a number";
+        isValid = false;
+    }
+
+    if (!isNaN(offerPrice) && !isNaN(minimumPrice) && offerPrice >= minimumPrice) {
+        document.getElementById("error-offer-price").innerHTML = "Offer price must be less than the minimum price";
+        isValid = false;
+    }
+
+    return isValid;
+}
        </script>
+
 <%- include("../../views/partials/admin/footer") %>

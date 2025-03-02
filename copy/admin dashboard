@@ -273,7 +273,7 @@ button:hover {
                 <p
                   class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
                 >
-                  Pending Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
+                  Placed Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
                 </p>
               
               </div>
@@ -554,30 +554,7 @@ document.getElementById("dateForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById('endDate').value;
-
     console.log('start date and end date is', startDate, endDate);
-
-    if (!startDate || !endDate) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Missing Dates',
-            text: 'Please select both start and end dates!',
-            confirmButtonColor: '#3085d6',
-        });
-        return;
-    }
-
-    if (new Date(startDate) > new Date(endDate)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Date Range',
-            text: 'The "From" date must be before the "To" date.',
-            confirmButtonColor: '#d33',
-        });
-        return;
-    }
-    
-    console.log("Start date and end date are valid:", startDate, endDate);
 
     const startDatee = new Date(startDate).toISOString().split("T")[0];
     const endDatee = new Date(endDate).toISOString().split("T")[0];

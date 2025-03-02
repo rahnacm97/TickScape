@@ -1,137 +1,25 @@
 <%- include("../../views/partials/user/header") %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 <style>
-  .small-card {
-    max-width: auto; 
-    font-size: 12px; 
-}
-.small-card .card-body {
-    padding: 5px;
-}
-.small-card .price {
-    font-size: 14px;
-    font-weight: bold;
-}
-.small-card .btn-small1 {
-    font-size: 12px;
-    padding: 3px 8px;
-}
-.order-card {
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
-  .price {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-  .search-bar input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+  :root {
+    --primary-color: #38b2ac;
+    --secondary-color: #4a5568;
+    --light-color: #f7fafc;
+    --dark-color: #2d3748;
+    --success-color: #48bb78;
+    --danger-color: #e53e3e;
+    --border-radius: 0.5rem;
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
   body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
+    color: var(--dark-color);
   }
-
-  .main {
-    padding: 20px 0;
-  }
-
-  .card {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    background-color: #ffffff;
-  }
-
-  .card-header {
-    background-color: #37438b;
-    color: #fff;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 10px 10px 0 0;
-    padding: 15px;
-    text-align: center;
-  }
-
-  .card-body {
-  padding: 20px;
-  line-height: 2;
-}
-
-  .btn {
-    border-radius: 5px;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-top: 10px;
-  }
-
-  .btn-success {
-    background-color: #2657a0;
-    color: #fff;
-    border: none;
-    margin-left: 20px;
-  }
-
-  .btn-success:hover {
-    background-color: #19377e;
-    transform: scale(1.05);
-  }
-
-  .btn-small {
-    font-size: 14px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    background-color: #5c6bc0;
-    color: #fff;
-    text-decoration: none;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-
-  .btn-small:hover {
-    background-color: #3f51b5;
-  }
-
-  .dashboard-menu {
-    background-color: #f0f3f3;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .dashboard-menu .nav-link {
-    font-size: 16px;
-    font-weight: bold;
-    color: #0e0e12;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
-  .dashboard-menu .nav-link.active {
-    background-color: #089f7c;
-    color: #fff;
-  }
-
-  .dashboard-menu .nav-link:hover {
-    background-color: #048b6b;
-    color: #fff;
-  }
-
-  .page-header.breadcrumb-wrap {
-    margin-top: 10px;
-    background-color: #ede9ec;
-    padding: 10px 0;
-}
-
-.breadcrumb-wrap {
+  
+  .breadcrumb-wrap {
     padding: 15px 0;
     background-color: #1e918b;
     color: #fff;
@@ -146,368 +34,405 @@
     margin: 0 5px;
     color: rgb(125, 124, 124);
 }
-
-  /* Responsive Styles */
+  
+  .dashboard-menu {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-menu .nav-item {
+    border-bottom: 1px solid #edf2f7;
+  }
+  
+  .dashboard-menu .nav-item:last-child {
+    border-bottom: none;
+  }
+  
+  .dashboard-menu .nav-link {
+    color: var(--secondary-color);
+    padding: 1rem 1.5rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+  
+  .dashboard-menu .nav-link i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+  }
+  
+  .dashboard-menu .nav-link.active,
+  .dashboard-menu .nav-link:hover {
+    color: var(--primary-color);
+    background-color: rgba(56, 178, 172, 0.05);
+    border-left: 3px solid var(--primary-color);
+  }
+  
+  .card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    background-color: white;
+    border-bottom: 1px solid #edf2f7;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .card-green .card-header {
+    background-color: rgba(56, 178, 172, 0.1);
+  }
+  
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-success:hover {
+    background-color: #38a169;
+    border-color: #38a169;
+  }
+  
+  .credit {
+    color: var(--success-color) !important;
+    font-weight: bold;
+  }
+  
+  .debit {
+    color: var(--danger-color) !important;
+    font-weight: bold;
+  }
+  
+  .table {
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+  }
+  
+  .table thead th {
+    border-top: none;
+    border-bottom: 1px solid #edf2f7;
+    padding: 0.75rem;
+    color: var(--secondary-color);
+    font-weight: 600;
+  }
+  
+  .table tbody tr {
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+  }
+  
+  .table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border: none;
+  }
+  
+  .referral-code-container {
+    background-color: white !important;
+    border: 1px dashed var(--primary-color) !important;
+  }
+  
+  .earnings-container {
+    background-color: var(--success-color) !important;
+  }
+  
   @media (max-width: 768px) {
     .dashboard-menu {
-      padding: 10px;
+      margin-bottom: 1.5rem;
     }
-
-    .dashboard-menu .nav-link {
-      font-size: 14px;
-    }
-
-    .card-header {
-      font-size: 16px;
-    }
-
-    .btn-small {
-      font-size: 12px;
-    }
-  }
-
-  .tab-pane{
-    padding: 20px;
     
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .card-header a {
+      margin-left: 0 !important;
+      margin-top: 0.5rem;
+    }
   }
-
-  .card{
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-    margin-bottom: 20px;
-    transition: transform 0.2s ease-in-out;
-  }
-
-  .card:hover {
-    transform: scale(1.02);
-  }
-
-  .card-header {
-    background-color: #007bff;
-    color: #ffffff;
-    font-weight: bold;
-    padding: 15px;
-    border-radius: 10px 10px 0 0;
-    text-align: center;
-  }
-
-  .card-body {
-    padding: 20px;
-    line-height: 1;
-  }
-
-  address {
-    font-style: normal;
-    margin-bottom: 15px;
-    color: #120d0d;
-  }
-
-  .card-body p {
-    margin: 5px 0;
-  }
-  .btn-small1{
-    display: block; 
-    width: fit-content; 
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 5px;
-    color: #ffffff;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-    display: inline-block;
-    background-color: #007bff;
-  }
-  .btn-small1:hover {
-    transform: scale(1.05);
-    color: white;
-    background-color: #17406c;
-  }
-
-  .btn-small {
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 5px;
-    color: #ffffff;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-    display: inline-block;
-  }
-
-  .btn-small:hover {
-    transform: scale(1.05);
-    color: white;
-  }
-
-  .btn-small:first-child {
-    background-color: #007bff;
-  }
-
-  .btn-small:first-child:hover {
-    background-color: #0056b3;
-  }
-
-  .btn-small:last-child {
-    background-color: #dc3545;
-  }
-
-  .btn-small:last-child:hover {
-    background-color: #c82333;
-  }
-
-  .btn-primary {
-    background-color: #136d28;
-    border: none;
-    color: #ffffff;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 5px;
-    cursor: pointer;
-    display: inline-block;
-    margin-top: 20px;
-    transition: background-color 0.3s ease-in-out;
-  }
-
-  .btn-primary:hover {
-    background-color: #0a4817;
-  }
-
-  .d-flex {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
-  }
-
-  .pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.pagination a {
-  padding: 8px 12px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  color: #333;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s ease, transform 0.2s;
-}
-
-.pagination a:hover {
-  background-color: #1e918b;
-  color: white;
-  transform: scale(1.05);
-}
-
-.pagination .active {
-  background-color: #1e918b;
-  color: white;
-}
-
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+</head>
+<body>
 <main class="main">
- <div class="page-header breadcrumb-wrap mb-3">
-   <div class="container">
-     <div class="breadcrumb">
-       <a href="/" rel="nofollow">Home</a>
-       <span></span> Profile 
-     </div>
-   </div>
- </div>
-  <section class="pt-10 pb-10">
-   <div class="container">
-     <div class="row">
-       <div class="col-lg-12 m-auto">
-         <div class="row">
-           <div class="col-md-4">
-             <div class="dashboard-menu ms-1">
-               <ul class="nav flex-column" role="tablist">
-                 <li class="nav-item">
-                   <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false">
-                     <i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+  <div class="page-header breadcrumb-wrap mb-3">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span> Profile 
+      </div>
+    </div>
+  </div>
+  <section class="pt-4 pb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 m-auto">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="dashboard-menu ms-1">
+                <ul class="nav flex-column" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false">
+                      <i class="fi-rs-settings-sliders"></i>Dashboard
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                   <a class="nav-link" href="/address">
+                      <i class="fi-rs-marker"></i>My Address
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                   <a class="nav-link" href="/orders">
+                       <i class="fi-rs-shopping-bag"></i>Orders
                    </a>
-                 </li>
-                 <li class="nav-item">
-                  <a class="nav-link" href="/address">
-                     <i class="fi-rs-marker mr-10"></i>My Address
-                   </a>
-                 </li>
-                 <li class="nav-item">
-                  <a class="nav-link" href="/orders">
-                      <i class="fi-rs-shopping-bag mr-10"></i>Orders
-                  </a>
-              </li>
-                 <li class="nav-item">
-                   <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false">
-                    <i class="fas fa-wallet mr-10"></i>Wallet Status
-                   </a>
-                 </li>
-                 <li class="nav-item">
-                   <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#wallet-history" role="tab" aria-controls="track-orders" aria-selected="false">
-                    <i class="fas fa-history mr-10"></i> Wallet History
-                   </a>
-                 </li>
-                 <li class="nav-item">
-                   <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#referal" role="tab" aria-controls="track-orders" aria-selected="false">
-                    <i class="fas fa-user-friends mr-10"></i> Referrals
-                   </a>
-                 </li>
-                 <li class="nav-item">
-                   <a class="nav-link" href="/logout">
-                     <i class="fi-rs-sign-out mr-10"></i>Logout
-                   </a>
-                 </li>
-               </ul>
-             </div>
-           </div>
-           <div class="col-md-8">
-             <div class="tab-content dashboard-content">
-               <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                 <div class="card card-green">
-                   <div class="card-header">
-                     <h5 class="mb-0 text-center">My Profile</h5>
-                     <a href="javascript:void(0);" onclick="confirmEdit('<%= user._id %>')" style="margin-left: 600px; font-size: 12px;">Edit</a>
-                   </div>
-                   <div class="card-body text-center">
-                     <h5 class="card-title"><%= user.fname %> <%= user.lname %></h5>
-                     <p class="card-text">
-                       <strong>Phone: </strong><%= user.phone %>
-                     </p>
-                     <p class="card-text">
-                       <strong>Email: </strong><%= user.email %>
-                     </p>
-                     <a href="/change-email" class="btn btn-sm btn-success ml-2">Change Email</a>
-                     <a href="/change-password" class="btn btn-sm btn-success">Change Password</a>
-                   </div>
-                 </div>
-               </div>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false">
+                     <i class="fas fa-wallet"></i>Wallet Status
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#wallet-history" role="tab" aria-controls="track-orders" aria-selected="false">
+                     <i class="fas fa-history"></i> Wallet History
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#referal" role="tab" aria-controls="track-orders" aria-selected="false">
+                     <i class="fas fa-user-friends"></i> Referrals
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/logout">
+                      <i class="fi-rs-sign-out"></i>Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="tab-content dashboard-content">
+                <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                  <div class="card card-green">
+                    <div class="card-header">
+                      <h5 class="mb-0">My Profile</h5>
+                      <a href="javascript:void(0);" onclick="confirmEdit('<%= user._id %>')" class="text-primary">
+                        <i class="fas fa-edit me-1"></i>Edit
+                      </a>
+                    </div>
+                    <div class="card-body text-center">
+                      <div class="mb-4">
+                        <div class="avatar-placeholder mb-3" style="width: 100px; height: 100px; border-radius: 50%; background-color: #e2e8f0; display: inline-flex; align-items: center; justify-content: center;">
+                          <i class="fas fa-user" style="font-size: 40px; color: #a0aec0;"></i>
+                        </div>
+                        <h4 class="card-title"><%= user.fname %> <%= user.lname %></h4>
+                      </div>
+                      <div class="user-info mb-4">
+                        <p class="card-text mb-3">
+                          <i class="fas fa-phone-alt me-2" style="color: var(--primary-color);"></i>
+                          <strong>Phone: </strong><%= user.phone %>
+                        </p>
+                        <p class="card-text mb-4">
+                          <i class="fas fa-envelope me-2" style="color: var(--primary-color);"></i>
+                          <strong>Email: </strong><%= user.email %>
+                        </p>
+                      </div>
+                      <div class="d-flex justify-content-center gap-3">
+                        <a href="/change-email" class="btn btn-success">
+                          <i class="fas fa-envelope me-1"></i> Change Email
+                        </a>
+                        <a href="/change-password" class="btn btn-success">
+                          <i class="fas fa-lock me-1"></i> Change Password
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
+                <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Wallet</h5>
+                    </div>
+                    <div class="card-body contact-from-area">
+                      <div class="row">
+                        <div class="col-lg-8 mx-auto text-center my-4">
+                          <div class="wallet-balance p-4 mb-4 rounded-3" style="background-color: #f8f9fa; border: 1px solid #e2e8f0;">
+                            <p class="text-secondary mb-1">Current Balance</p>
+                            <div class="balance-amount mb-3" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color);">
+                              ₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0).toFixed(2); %>
+                            </div>
+                            <!-- <button type="button" class="btn btn-success" onclick="">
+                              <i class="fas fa-plus-circle me-2"></i> Add Money
+                            </button> -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-               <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+                <div class="tab-pane fade" id="wallet-history" role="tabpanel" aria-labelledby="orders-tab">
                  <div class="card">
                    <div class="card-header">
-                     <h5 class="mb-0">Wallet</h5>
+                     <h5 class="mb-0">Wallet History</h5>
                    </div>
-                   <div class="card-body contact-from-area">
-                     <div class="row">
-                       <div class="col-lg-8 mx-auto text-center mt-90">
-                         <form>
-                           <div class="form-group">
-                             <label for="walletAmount" class="h4">Amount</label>
-                             <div class="h3">
-                              ₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0) %>
-                             </div>
+                   <div class="card-body">
+                     <div class="table-responsive">
+                       <table class="table">
+                         <thead>
+                           <tr>
+                             <th>Date</th>
+                             <th>Status</th>
+                             <th>Amount</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           <% user.wallet.forEach(entry => { %>
+                             <tr>
+                               <td><%= new Date(entry.date).toDateString() %></td>
+                               <td>
+                                 <% if (entry.amount > 0) { %>
+                                   <span class="badge bg-success">Credit</span>
+                                 <% } else { %>
+                                   <span class="badge bg-danger">Debit</span>
+                                 <% } %>
+                               </td>
+                               <td class="<%= entry.amount > 0 ? 'credit' : 'debit' %>">
+                                 <%= entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount) %>
+                               </td>
+                             </tr>
+                           <% }) %>
+                         </tbody>
+                       </table>
+                     </div>
+                     <nav>
+                      <nav aria-label="Wallet History Pagination" style="margin-top: 40px;">
+                        <ul class="pagination justify-content-center">
+                          <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                              <a class="page-link" href="?page=<%= currentPage - 1 %>#wallet-history" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                              </a>
+                            </li>
+                          <% } %>
+                      
+                          <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                              <a class="page-link" href="?page=<%= i %>#wallet-history"><%= i %></a>
+                            </li>
+                          <% } %>
+                      
+                          <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                              <a class="page-link" href="?page=<%= currentPage + 1 %>#wallet-history" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                              </a>
+                            </li>
+                          <% } %>
+                        </ul>
+                      </nav>                      
+                   </div>
+                 </div>
+               </div>              
+
+                <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
+                 <div class="card">
+                   <div class="card-header" style="background-color: var(--primary-color); color: white;">
+                     <h5 class="mb-0">Refer & Earn</h5>
+                   </div>
+                   <div class="card-body p-4">
+                     <div class="text-center mb-4">
+                       <img src="\assets\img\logo\3775975.jpg" alt="Referral Illustration" class="img-fluid mb-3" style="max-width: 150px;">
+                       <h5 class="mb-3">Invite Friends & Earn Rewards</h5>
+                       <p class="text-muted">Share your referral link with friends and earn when they join!</p>
+                     </div>
+                     
+                     <div class="referral-code-container p-3 my-4 rounded">
+                       <p class="mb-2 fw-bold">Your Referral Link:</p>
+                       <div class="input-group">
+                         <input type="text" class="form-control" value="<%= user.referalCode %>" readonly>
+                         <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard('<%= user.referalCode %>')">
+                           <i class="fas fa-copy me-1"></i> Copy
+                         </button>
+                       </div>
+                     </div>
+                     
+                     <div class="earnings-container p-4 text-white rounded d-flex align-items-center justify-content-between">
+                       <div>
+                         <p class="mb-1">Total Earnings</p>
+                         <h4 class="mb-0 fw-bold">₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0) %></h4>
+                       </div>
+                       <div class="referral-icon">
+                         <i class="fas fa-gift" style="font-size: 2rem;"></i>
+                       </div>
+                     </div>
+                     
+                     <div class="mt-4 text-center">
+                       <div class="row justify-content-center">
+                         <div class="col-md-8">
+                           <div class="d-flex justify-content-center gap-2">
+                             <button class="btn btn-outline-primary" type="button">
+                               <i class="fab fa-facebook"></i>
+                             </button>
+                             <button class="btn btn-outline-primary" type="button">
+                               <i class="fab fa-twitter"></i>
+                             </button>
+                             <button class="btn btn-outline-primary" type="button">
+                               <i class="fab fa-whatsapp"></i>
+                             </button>
+                             <button class="btn btn-outline-primary" type="button">
+                               <i class="fas fa-envelope"></i>
+                             </button>
                            </div>
-                           <button type="button" class="btn btn-success" onclick="">Add Money</button>
-                         </form>
+                         </div>
                        </div>
                      </div>
                    </div>
                  </div>
                </div>
-
-
-               <div class="tab-pane fade" id="wallet-history" role="tabpanel" aria-labelledby="orders-tab">
-                <div class="card">
-                  <div class="card-header">
-                    <h5 class="mb-0">Wallet History</h5>
-                  </div>
-                  <div class="card-body">
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% user.wallet.forEach(entry => { %>
-                            <tr>
-                              <td><%= new Date(entry.date).toDateString() %></td>
-                              <td>
-                                <% if (entry.amount > 0) { %>
-                                  <span style="color: green; font-weight: bold;">Credit</span>
-                                <% } else { %>
-                                  <span style="color: red; font-weight: bold;">Debit</span>
-                                <% } %>
-                              </td>
-                              <td class="<%= entry.amount > 0 ? 'credit' : 'debit' %>">
-                                <%= entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount) %>
-                              </td>
-                              <style>
-                                .credit { color: green; font-weight: bold; }
-                                .debit { color: red; font-weight: bold; }
-                              </style>
-                            </tr>
-                          <% }) %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>              
-
-
-               <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
-                <div class="card shadow-sm border-0 rounded-lg">
-                  <div class="card-header bg-primary text-white py-3">
-                    <h5 class="mb-0 font-weight-bold">Referal</h5>
-                  </div>
-                  <div class="card-body p-4">
-                    <h6 class="mb-3 text-secondary font-weight-bold">Refer your friends and earn money!</h6>
-                    
-                    <div class="referral-code-container p-3 my-4 bg-light rounded border">
-                      <p class="mb-2">Share this link:</p>
-                      <div class="input-group">
-                        <input type="text" class="form-control" value="<%= user.referalCode %>" readonly>
-                        <div class="input-group-append">
-                          <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('<%= user.referalCode %>')">
-                            <i class="fas fa-copy"></i> Copy
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div class="earnings-container p-3 bg-success text-white rounded">
-                      <p class="mb-0">Earned: <span class="h4 font-weight-bold">₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0) %></span></p>
-                    </div>
-                    
-                    <!-- <div class="mt-4 text-center">
-                      <button class="btn btn-primary">
-                        <i class="fas fa-share-alt mr-2"></i> Share on Social Media
-                      </button>
-                    </div> -->
-                  </div>
-                </div>
               </div>
-              
-              <script>
-              function copyToClipboard(text) {
-                navigator.clipboard.writeText(text).then(function() {
-                  alert('Referral code copied to clipboard!');
-                }, function() {
-                  alert('Failed to copy referral code');
-                });
-              }
-              </script>
-       </div>
-     </div>
-   </div>
- </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get the current URL hash (e.g., #wallet-history)
+    let activeTab = window.location.hash;
+    
+    // If there's a hash, activate the corresponding tab
+    if (activeTab) {
+      let tabElement = document.querySelector(`a[href="${activeTab}"]`);
+      if (tabElement) {
+        new bootstrap.Tab(tabElement).show();
+      }
+    }
+  });
+</script>
+
 <script>
     function confirmEdit(userId) {
         Swal.fire({

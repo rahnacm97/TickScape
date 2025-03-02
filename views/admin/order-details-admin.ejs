@@ -141,15 +141,13 @@
                                                 data-order-id="<%= order._id %>" 
                                                 data-current-status="<%= order.status %>">
                                             
-                                            <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled" ,"Return request", "Returned",  'Return Denied']; %>
-                                            
                                             <% 
-                                                let adjustedStatus = (order.status === "Return Request" || order.status === "Returned" ||  order.status === "Return Denied" ) 
-                                                                     ? "Delivered" 
-                                                                     : order.status;
+                                                let statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"];
+                                                
+                                                let adjustedStatus = ["Return Request", "Returned", "Return Denied"].includes(order.status) ? "Delivered" : order.status;
                                                 let currentIndex = statuses.indexOf(adjustedStatus);
                                             %>
-                                
+                                            
                                             <% statuses.forEach((status, index) => { %>
                                                 <option value="<%= status %>" 
                                                     <%= adjustedStatus === status ? 'selected' : '' %>
@@ -160,7 +158,8 @@
                                 
                                         </select>
                                     </td>
-                                <% } %>                                
+                                <% } %>
+                                                                
                             </tr>
                         <% }); %>
                     </tbody>

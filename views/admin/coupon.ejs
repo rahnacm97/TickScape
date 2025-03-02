@@ -34,7 +34,7 @@
 
 .search-container {
   display: flex;
-  justify-content: flex-end; /* Align button to the right */
+  justify-content: flex-end; 
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
@@ -141,6 +141,33 @@
 .btn-info:hover {
   background-color: #138496;
 }
+.btn-success {
+      background-color: #28a745;
+      border: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 30px;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+    .badge {
+      padding: 5px 10px;
+      border-radius: 30px;
+      font-size: 14px;
+    }
+
+    .badge-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .badge-danger {
+      background-color: #dc3545;
+      color: white;
+    }
 </style>
 
 
@@ -165,8 +192,9 @@
                          <th>Created On</th>
                          <th>Expire On</th>
                          <th>Offer Price</th>
-                         <th>Minimum Price</th>
-                         <!-- <th>Status</th> -->
+                         <th>Minimum Purchase</th>
+                         <th>Status</th>
+                         <th>List/Unlist</th>
                          <th>Edit</th>
                          <th>Action</th>
                      </tr>
@@ -176,16 +204,29 @@
                      <tr>
                          <td class="text-center"><%= (currentPage - 1) * limit + i + 1 %></td>
                          <td class="text-start"><%= coupons[i].name %></td>
-                         <td class="text-start"><%= new Date(coupons[i].createdOn).toLocaleDateString('en-US') %></td>
-                         <td class="text-start"><%= new Date(coupons[i].expireOn).toLocaleDateString('en-US') %></td>
+                         <td class="text-start"><%= new Date(coupons[i].createdOn).toLocaleDateString('en-GB') %></td>
+                         <td class="text-start"><%= new Date(coupons[i].expireOn).toLocaleDateString('en-GB') %></td>
                          <td class="text-start">₹<%= coupons[i].offerPrice %></td>
                          <td class="text-start">₹<%= coupons[i].minimumPrice %></td>
-                         <!-- <td class="text-start"><%= coupons[i].isList %></td> -->
+                         <td>
+                          <% if (coupons[i].isList) { %>
+                          <span class="badge badge-success">Listed</span>
+                          <% } else { %>
+                          <span class="badge badge-danger">Unlisted</span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% if (coupons[i].isList) { %>
+                          <button class="btn btn-danger" onclick="confirmAction('<%= coupons[i]._id %>', 'unlist')">Unlist</button>
+                          <% } else { %>
+                          <button class="btn btn-success" onclick="confirmAction('<%= coupons[i]._id %>', 'list')">List</button>
+                          <% } %>
+                        </td>
                          <td class="text-start">
-                             <a href="/admin/editCoupon?id=<%= coupons[i]._id %>" class="btn btn-primary btn-sm" style="border-radius: 50px;">Edit</a>
+                             <a href="/admin/editCoupon?id=<%= coupons[i]._id %>" class="btn btn-primary btn-sm fas fa-edit" style="width: 10px;padding: 10px 20px;"></a>
                          </td>
                          <td class="text-start">
-                             <a href="#" onclick="confirmDelete('<%= coupons[i]._id %>')" class="btn btn-danger btn-sm" style="height: 35px;width: 105px;">Delete</a>
+                             <a href="#" onclick="confirmDelete('<%= coupons[i]._id %>')" ><i class="fas fa-trash btn btn-danger btn-sm"></i></a>
                          </td>
                      </tr>
                     <% } %>
@@ -215,69 +256,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
- function validateForm() {
-   document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
-   const sDate = document.getElementsByName("startDate")[0].value;
-   const eDate = document.getElementsByName("endDate")[0].value;
-   const sDateObj = new Date(sDate);
-   const eDateObj = new Date(eDate);
-   const todayDateObj = new Date();
-   todayDateObj.setHours(0, 0, 0, 0);
-
-
-   if (sDateObj > eDateObj) {
-     document.getElementById("error-end-date").innerHTML ="End date should be after the start date";
-     return false;
-   }
-
-
-   if (sDateObj <= todayDateObj) {
-     document.getElementById("error-start-date").innerHTML ="Starting date should be greater than or equal to today's date";
-     return false;
-   }
-
-
-   let name = document.getElementsByName("couponName")[0].value;
-   const nameRegex = /^[A-Za-z0-9]{1,50}$/;
-
-
-   if (!nameRegex.test(name)) {
-     document.getElementById("error-coupon-name").innerHTML =
-       "Coupon Name error";
-     return false;
-   }
-
-
-   const offerPriceInput = document.getElementsByName("offerPrice")[0];
-   const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
-
-
-   const offerPrice = offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
-   const minimumPrice = minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
-
-
-   if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
-     document.getElementById("error-offer-price").innerHTML = "Offer Price must be greater than Minimum Price";
-     return false;
-   }
-
-
-   if (isNaN(offerPrice) || isNaN(minimumPrice)) {
-     document.getElementById("error-offer-price").innerHTML ="Please enter numeric values for Offer Price and Minimum Price";
-     return false;
-   }
-
-
-       const formData = {
-       couponName: name,
-       startDate: sDateObj,
-       endDate: eDateObj,
-       offerPrice: offerPrice,
-       minimumPrice: minimumPrice
-   };
-   return true;
- }
-
 
 function confirmDelete(couponId) {
    Swal.fire({
@@ -317,5 +295,24 @@ function confirmDelete(couponId) {
      },
    });
  }
+
+ function confirmAction(couponId, action) {
+    let actionText = action === 'list' ? "List" : "Unlist";
+    let actionUrl = action === 'list' ? `/admin/unlistCoupon?id=${couponId}` : `/admin/listCoupon?id=${couponId}`;
+
+    Swal.fire({
+      title: `Are you sure you want to ${actionText} this coupon?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${actionText} it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = actionUrl;
+      }
+    });
+  }
+
 </script>
 <%- include("../../views/partials/admin/footer") %>

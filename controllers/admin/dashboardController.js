@@ -18,157 +18,310 @@ const sharp = require("sharp");
 const fs = require("fs");
 
 
-const loadDashboard = async (req,res) => {
-    if(req.session.admin){  
+// const loadDashboard = async (req,res) => {
+//     if(req.session.admin){  
+//       try {
+
+//         let page = parseInt(req.query.page) || 1;
+//             let limit = 10;
+//             let skip = (page - 1) * limit;
+
+//           const userCount = await User.countDocuments();
+//           //console.log(userCount);
+//           const totalSales = await Order.aggregate([
+//             { 
+//                 $match: { status: { $nin: ["Cancelled", "Returned"] } } 
+//             },
+//             { $unwind: "$orderedItems" }, 
+//             {
+//                 $group: {
+//                     _id: null,
+//                     totalAmount: { $sum: "$finalAmount" }, 
+//                     totalOrder: { $sum: 1 },  
+//                     totalDiscountPrice: { $sum: "$discount" }, 
+//                     itemSold: { $sum: "$orderedItems.quantity" } 
+//                 }
+//             }
+//         ]);
+            
+      
+//         //console.log('total sales',totalSales);
+//         const salesData = totalSales[0] || {
+//             totalAmount: 0,
+//             totalOrder: 0,
+//             totalDiscount: 0,
+//             itemSold :0,
+//        };
+
+//       const order = await Order.find().sort({createdOn:-1}).limit(limit).skip((page-1)*limit);
+//       //console.log(order,"order");
+
+//       const count = await Order.countDocuments();
+//       const totalPage = Math.ceil(count / limit);
+
+//       const processingOrders = await Order.countDocuments({ status: 'Order Placed' });
+
+//         const totalCouponUsers = await Order.aggregate([
+//           { $match: { couponApplied: true } },
+//           { $group: { _id: "$userId" } },
+//           { $count: "totalUsersApplied" }
+//       ]);
+      
+//       const couponUsersCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalUsersApplied : 0;
+      
+//       //console.log(couponUsersCount);
+      
+//       const topOrders = await Order.aggregate([
+//         { $unwind: "$orderedItems" },
+//         {
+//           $group: {
+//             _id: "$orderedItems.productId", 
+//             orderCount: { $sum: 1 },
+//           },
+//         },
+//         { $sort: { orderCount: -1 } },
+//         { $limit: 5 },
+//         {
+//           $lookup: {
+//             from: "products",
+//             localField: "_id",
+//             foreignField: "_id",
+//             as: "productDetails",
+//           },
+//         },
+//         { $unwind: "$productDetails" },
+//         {
+//           $project: {
+//             _id: 0,
+//             productId: "$_id",
+//             name: "$productDetails.productName",
+//             orderCount: 1,
+//           },
+//         },
+//       ]);
+      
+//       //console.log("Top Ordered Products:", topOrders);
+
+//       const topCategories = await Order.aggregate([
+//         { $unwind: "$orderedItems" },
+//         {
+//           $lookup: {
+//             from: "products",
+//             localField: "orderedItems.productId", 
+//             foreignField: "_id",
+//             as: "productDetails",
+//           },
+//         },
+//         { $unwind: "$productDetails" },
+//         {
+//           $group: {
+//             _id: "$productDetails.category", 
+//             categoryCount: { $sum: 1 },
+//           },
+//         },
+//         { $sort: { categoryCount: -1 } },
+//         { $limit: 5 },
+//         {
+//           $lookup: {
+//             from: "categories",
+//             localField: "_id",
+//             foreignField: "_id",
+//             as: "categoryDetails",
+//           },
+//         },
+//         { $unwind: "$categoryDetails" },
+//         {
+//           $project: {
+//             _id: 0,
+//             categoryId: "$_id",
+//             categoryName: "$categoryDetails.name",
+//             categoryCount: 1,
+//           },
+//         },
+//       ]);
+
+//       if (req.xhr) {
+//         return res.json({ orders:salesData, totalPage, currentPage: page });
+//       }
+      
+//       //console.log("Top Categories:", topCategories);
+      
+//       res.render('dashboard', {
+//             userCount,
+//             orders: salesData,
+//             processingOrders,
+//             totalCouponUsers: couponUsersCount,
+//             totalPage,
+//             currentPage: page,
+//             limit,
+//             order:order,
+//             products:topOrders,
+//             category:topCategories,
+            
+//       })
+//     } catch (error) {
+//           res.redirect('/pageerror');
+//     }
+//   }
+// }
+
+const loadDashboard = async (req, res) => {
+  if (req.session.admin) {
       try {
+          let page = parseInt(req.query.page) || 1;
+          let limit = 10;
+          let skip = (page - 1) * limit;
 
-        let page = parseInt(req.query.page) || 1;
-            let limit = 10;
-            let skip = (page - 1) * limit;
+          const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
+          const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
+          // console.log("1",startDate);
+          // console.log("2",endDate)
 
-          const userCount = await User.countDocuments();
-          //console.log(userCount);
+          let query = {};
+          if (startDate && endDate) {
+              query.createdOn = { $gte: startDate, $lte: endDate };
+          }
+
+          const userCount = await User.countDocuments({ isAdmin: false });
           const totalSales = await Order.aggregate([
-            { 
-                $match: { status: { $nin: ["Cancelled", "Returned"] } } 
-            },
-            { $unwind: "$orderedItems" }, 
+            { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+            { $unwind: "$orderedItems" },
+            { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },  
             {
-                $group: {
-                    _id: null,
-                    totalAmount: { $sum: "$finalAmount" }, 
-                    totalOrder: { $sum: 1 },  
-                    totalDiscountPrice: { $sum: "$discount" }, 
-                    itemSold: { $sum: "$orderedItems.quantity" } 
-                }
+              $group: {
+                _id: null,
+                totalAmount: { $sum: "$finalAmount" },
+                totalOrder: { $sum: 1 },
+                totalDiscountPrice: { $sum: "$discount" },
+                itemSold: { $sum: "$orderedItems.quantity" }  
+              }
             }
+          ]);
+
+          //console.log("Sales",totalSales);
+
+          const salesData = totalSales[0] || {
+              totalAmount: 0,
+              totalOrder: 0,
+              totalDiscountPrice: 0,
+              itemSold: 0,
+          };
+
+          const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
+          const count = await Order.countDocuments(query);
+          const totalPage = Math.ceil(count / limit);
+
+          const processingOrders = await Order.countDocuments({ status: 'Order Placed', ...query });
+
+          const totalCouponUsers = await Order.aggregate([
+            { $match: { couponApplied: true } },
+            { $count: "totalCouponApplied" }
         ]);
-            
-      
-        //console.log('total sales',totalSales);
-        const salesData = totalSales[0] || {
-            totalAmount: 0,
-            totalOrder: 0,
-            totalDiscount: 0,
-            itemSold :0,
-       };
 
-      const order = await Order.find().sort({createdOn:-1}).limit(limit).skip((page-1)*limit);
-      //console.log(order,"order");
+        //console.log("Coupon", totalCouponUsers)
 
-      const count = await Order.countDocuments();
-      const totalPage = Math.ceil(count / limit);
 
-      const processingOrders = await Order.countDocuments({ status: 'Order Placed' });
+        const totalCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+        console.log("Total Coupons Applied:", totalCount);
 
-        const totalCouponUsers = await Order.aggregate([
-          { $match: { couponApplied: true } },
-          { $group: { _id: "$userId" } },
-          { $count: "totalUsersApplied" }
-      ]);
-      
-      const couponUsersCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalUsersApplied : 0;
-      
-      //console.log(couponUsersCount);
-      
-      const topOrders = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        {
-          $group: {
-            _id: "$orderedItems.productId", 
-            orderCount: { $sum: 1 },
-          },
-        },
-        { $sort: { orderCount: -1 } },
-        { $limit: 5 },
-        {
-          $lookup: {
-            from: "products",
-            localField: "_id",
-            foreignField: "_id",
-            as: "productDetails",
-          },
-        },
-        { $unwind: "$productDetails" },
-        {
-          $project: {
-            _id: 0,
-            productId: "$_id",
-            name: "$productDetails.productName",
-            orderCount: 1,
-          },
-        },
-      ]);
-      
-      //console.log("Top Ordered Products:", topOrders);
+          const topOrders = await Order.aggregate([
+              { $unwind: "$orderedItems" },
+              { $match: query },
+              {
+                  $group: {
+                      _id: "$orderedItems.productId",
+                      orderCount: { $sum: 1 },
+                  },
+              },
+              { $sort: { orderCount: -1 } },
+              { $limit: 5 },
+              {
+                  $lookup: {
+                      from: "products",
+                      localField: "_id",
+                      foreignField: "_id",
+                      as: "productDetails",
+                  },
+              },
+              { $unwind: "$productDetails" },
+              {
+                  $project: {
+                      _id: 0,
+                      productId: "$_id",
+                      name: "$productDetails.productName",
+                      orderCount: 1,
+                  },
+              },
+          ]);
 
-      const topCategories = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        {
-          $lookup: {
-            from: "products",
-            localField: "orderedItems.productId", 
-            foreignField: "_id",
-            as: "productDetails",
-          },
-        },
-        { $unwind: "$productDetails" },
-        {
-          $group: {
-            _id: "$productDetails.category", 
-            categoryCount: { $sum: 1 },
-          },
-        },
-        { $sort: { categoryCount: -1 } },
-        { $limit: 5 },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "_id",
-            foreignField: "_id",
-            as: "categoryDetails",
-          },
-        },
-        { $unwind: "$categoryDetails" },
-        {
-          $project: {
-            _id: 0,
-            categoryId: "$_id",
-            categoryName: "$categoryDetails.name",
-            categoryCount: 1,
-          },
-        },
-      ]);
+          const topCategories = await Order.aggregate([
+              { $unwind: "$orderedItems" },
+              { $match: query },
+              {
+                  $lookup: {
+                      from: "products",
+                      localField: "orderedItems.productId",
+                      foreignField: "_id",
+                      as: "productDetails",
+                  },
+              },
+              { $unwind: "$productDetails" },
+              {
+                  $group: {
+                      _id: "$productDetails.category",
+                      categoryCount: { $sum: 1 },
+                  },
+              },
+              { $sort: { categoryCount: -1 } },
+              { $limit: 5 },
+              {
+                  $lookup: {
+                      from: "categories",
+                      localField: "_id",
+                      foreignField: "_id",
+                      as: "categoryDetails",
+                  },
+              },
+              { $unwind: "$categoryDetails" },
+              {
+                  $project: {
+                      _id: 0,
+                      categoryId: "$_id",
+                      categoryName: "$categoryDetails.name",
+                      categoryCount: 1,
+                  },
+              },
+          ]);
 
-      if (req.xhr) {
-        return res.json({ orders:salesData, totalPage, currentPage: page });
-      }
-      
-      //console.log("Top Categories:", topCategories);
-      
-      res.render('dashboard', {
-            userCount,
-            orders: salesData,
-            processingOrders,
-            totalCouponUsers: couponUsersCount,
-            totalPage,
-            currentPage: page,
-            limit,
-            order:order,
-            products:topOrders,
-            category:topCategories,
-            
-      })
-    } catch (error) {
+          if (req.xhr) {
+              return res.json({ orders: salesData, totalPage, currentPage: page });
+          }
+
+          res.render('dashboard', {
+              userCount,
+              orders: salesData,
+              processingOrders,
+              totalCouponUsers: totalCount,
+              totalPage,
+              currentPage: page,
+              limit,
+              order: order,
+              products: topOrders,
+              category: topCategories,
+              startDate: req.query.startDatee || '',
+              endDate: req.query.endDatee || ''
+          });
+      } catch (error) {
           res.redirect('/pageerror');
-    }
+      }
   }
-}
+};
+
 
 const salesReport = async (req, res) => {
   try {
     const {startDatee, endDatee } = req.query;
-    console.log('start date and end date is here',startDatee,endDatee)
+    //console.log('start date and end date is here',startDatee,endDatee)
 
     if (!startDatee && endDatee ) {
       return res.status(400).json({ error: "Date is required" });
@@ -480,7 +633,6 @@ const downloadPDFReport = async (req, res) => {
     res.status(500).json({ error: "Failed to generate PDF report" });
   }
 };
-
 
 module.exports = {
     loadDashboard,
