@@ -1,4 +1,5 @@
 <%- include("../../views/partials/user/header") %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 <style>
 .products {
     border: 2px solid #ddd; 
@@ -239,11 +240,11 @@ input[type="text"] {
                                     </tr>
                                     <tr>
                                         <td colspan="5" class="py-1">
-                                            <p class="mb-0 text-dark py-1">CGST ( <%= cgstRate %> % ) : ₹<%= cgstAmount %></p>
-                                            <p class="mb-0 text-dark py-1">SGST ( <%= sgstRate %> % ) : ₹<%= sgstAmount %></p>
+                                            <p class="mb-0 text-dark py-1">CGST ( <%= cgstRate %> % ) : ₹<%= cgstAmount.toFixed(2) %></p>
+                                            <p class="mb-0 text-dark py-1">SGST ( <%= sgstRate %> % ) : ₹<%= sgstAmount.toFixed(2) %></p>
                                         </td>
                                         <td class="py-1">
-                                            <p class="mb-0 text-dark py-1" name="gstAmount">₹<%= gstAmount %></p>
+                                            <p class="mb-0 text-dark py-1" name="gstAmount">₹<%= gstAmount.toFixed(2) %></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -278,7 +279,7 @@ input[type="text"] {
                         <div class="text-center mb-3">
                             <p class="coupon-name font-weight-bold text-dark">Have a coupon?</p>
                             <button type="button" class="btn btn-primary btn-sm mr-3" data-toggle="modal" data-target="#couponPopup">
-                                Show Coupons
+                                <i class="fas fa-tags"></i>Show Coupons
                             </button>
                         </div>
                     
@@ -288,7 +289,7 @@ input[type="text"] {
                                 <input type="text" id="couponCode" class="form-control w-200 p-3" placeholder="Enter Coupon Code" style="height: 50px; padding: 4px 8px;" />
                                 
                                 <button id="applyCoupon" class="btn btn-success btn-sm ml-3" style="width: 150px; height: 35px; display: flex; justify-content: center; align-items: center;">
-                                    Apply Coupon
+                                    <i class="fas fa-tags"></i> Apply Coupon
                                 </button>
                             </div>
                         <% } %>
@@ -376,7 +377,7 @@ input[type="text"] {
                            
                     <div class="col-12 justify-content-center container address">
                         <div class="mb-20">
-                            <h3>Addresses</h3>
+                            <h3><i class="fas fa-map-marker-alt me-2"></i> Addresses</h3>
                         </div>
                         <div class="row align-items-start">
                             <% if (address.length > 0) { %>
@@ -449,14 +450,14 @@ input[type="text"] {
                         </div>
                         <div class="payment_method col-6">
         <input type="radio" class="form-check-input" id="paymentMethodCOD" name="paymentMethod" value="Cash on Delivery">
-        <label class="form-check-label" for="paymentMethodCOD">Cash on Delivery</label> <br>
+        <label class="form-check-label" for="paymentMethodCOD"><i class="fas fa-truck"></i>Cash on Delivery</label> <br>
         
         <input type="radio" class="form-check-input" id="Onlinepayment" name="paymentMethod" value="Online Payment">
-        <label class="form-check-label" for="Onlinepayment">Online Payment(via Razorpay)</label><br>
+        <label class="form-check-label" for="Onlinepayment"><i class="fas fa-credit-card"></i>Online Payment(via Razorpay)</label><br>
 
 
         <input type="radio" class="form-check-input" id="paymentWallet" name="paymentMethod" value="Wallet">
-        <label class="form-check-label" for="paymentWallet">Wallet</label><br>
+        <label class="form-check-label" for="paymentWallet"><i class="fas fa-wallet"></i>Wallet</label><br>
 
         
 

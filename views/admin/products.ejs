@@ -208,11 +208,11 @@
                 <% } %>
               </td>
               <td>
-                <button class="btn btn-danger" onclick="return confirmDelete()"><a href="/admin/deleteProduct?id= <%= product._id %>" class="text-white">Delete</a></button>
+                <button class="btn btn-danger" onclick="return confirmDelete()"><a href="/admin/deleteProduct?id= <%= product._id %>" class="text-white fas fa-trash"></a></button>
               </td>
 
               <td class="text-center">
-                <a href="/admin/editProduct/<%= product._id %>" class="btn btn-info" data-section="products">Edit</a>
+                <a href="/admin/editProduct/<%= product._id %>" class="btn btn-info fas fa-edit" data-section="products"></a>
               </td>
             </tr>
             <% }); %>

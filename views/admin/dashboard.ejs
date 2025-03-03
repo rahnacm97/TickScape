@@ -112,171 +112,89 @@ button:hover {
        
     </div>   
           <!-- Cards -->
-          <div class="grid gap-6 mb-8 md:grid-cols-1 xl:grid-cols-4" style="margin-bottom: 20px;">
-            <!-- Card -->
-            <div
-              class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-            >
-              <div
-                class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="">
-                  <path
-                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
-                  ></path>
+          <div id="cardForm" class="grid gap-6 mb-8 md:grid-cols-1 xl:grid-cols-4">
+            <!-- Metric Card Template -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
                 </svg>
               </div>
-              <div style="margin-top: 5px;">
-                <p
-                  class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                >
-                  Total clients: 
-                  <span class="user-count" id="userCount"><%= userCount %></span>
-                </p>
-              </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total clients: <span class="user-count" id="userCount"><%= userCount %></span>
+              </p>
             </div>
-            <!-- Card -->
-            <div
-              class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-            >
-              <div
-                class=" p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="">
-                  <path
-                    fill-rule="evenodd"
-                    d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                    clip-rule="evenodd"
-                  ></path>
+          
+            <!-- Total Sales -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
                 </svg>
               </div>
-              <div style="margin-top: 5px;">
-                <p
-                  class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                >
-                Total Sales:  <span class="user-count" id="totalAmount">₹<%= orders.totalAmount %></span>
-                </p>
-              </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Sales: <span class="user-count" id="totalAmount">₹<%= orders.totalAmount %></span>
+              </p>
             </div>
-             
-            <div
-              class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-            >
-              <div
-                class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="">
-                  <path
-                    d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
-                  ></path>
-                </svg>
-              </div>
-              <div style="margin-top: 5px;">
-                <p
-                  class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                >
-                  Total Orders: <span class="user-count" id="totalOrder"><%= orders.totalOrder %></span>
-                </p>
-              </div>
-            </div>
-            <div
-            class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-          >
-            <div
-              class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
-            >
-            <svg class="w-5 h-5 text-purple-500" fill="currentColor" viewBox="">
-              <path
-                fill-rule="evenodd"
-                d="M3 2a1 1 0 011 1v1h12V3a1 1 0 112 0v1h1a1 1 0 011 1v13a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h1V3a1 1 0 011-1zm4 1h8v1H7V3zM4 6v11h12V6H4z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
             
+            <!-- Total Orders -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
+                </svg>
+              </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Orders: <span class="user-count" id="totalOrder"><%= orders.totalOrder %></span>
+              </p>
             </div>
-            <div style="margin-top: 5px;">
-              <p
-                class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-              >
+          
+            <!-- Items Sold -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-purple-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 2a1 1 0 011 1v1h12V3a1 1 0 112 0v1h1a1 1 0 011 1v13a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h1V3a1 1 0 011-1zm4 1h8v1H7V3zM4 6v11h12V6H4z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
                 Item Sold: <span class="user-count" id="itemSold"><%= orders.itemSold %></span>
               </p>
             </div>
-          </div>
-
-            <!-- Card -->
-            <div
-            class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-          >
-            <div
-              class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
-            >
-            <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="">
-              <path 
-    fill-rule="evenodd" 
-    d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2.5a1.5 1.5 0 010 3V15a2 2 0 01-2 2H4a2 2 0 01-2-2v-2.5a1.5 1.5 0 010-3V5zm4 3a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2z" 
-    clip-rule="evenodd">
-</path>
-            </svg>
-            
-            </div>
-            
-            <div style="margin-top: 5px;">
-              <p
-                class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-              >
-                Total Coupons Applied : <span class="user-count" id="totalCouponUsers"><%= totalCouponUsers %></span>
+          
+            <!-- Total Coupons Applied -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2.5a1.5 1.5 0 010 3V15a2 2 0 01-2 2H4a2 2 0 01-2-2v-2.5a1.5 1.5 0 010-3V5zm4 3a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Coupons Applied: <span class="user-count" id="totalCouponUsers"><%= totalCouponUsers %></span>
               </p>
-              
             </div>
-          </div>
-          <div
-          class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-        >
-          <div
-            class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
-          >
-          <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="">
-            <path
-  fill-rule="evenodd"
-  d="M3 7a4 4 0 014-4h10a2 2 0 012 2v10a4 4 0 01-4 4H5a2 2 0 01-2-2V7zm6.293 5.707a1 1 0 001.414 0l5-5a1 1 0 00-1.414-1.414l-5 5a1 1 0 000 1.414zM7.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7 7a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"
-  clip-rule="evenodd">
-</path>
-
-          </svg> 
-          </div>
-          <div style="margin-top: 5px;">
-            <p
-              class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-            >
-              Total Discount Price: <span class="user-count" id="totalDiscount">₹<%= orders.totalDiscountPrice %></span>
-            </p>
-            
-          </div>
-        </div>
-
-            <div
-              class="card flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-red-800"
-            >
-              <div
-                class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500"
-              >
-              <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="">
-                <path
-                  fill-rule="evenodd"
-                  d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zM10 4a1 1 0 011 1v4.586l3.707 3.707a1 1 0 11-1.414 1.414L10 9.414V5a1 1 0 011-1z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
-              
+          
+            <!-- Total Discount Price -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-green-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 7a4 4 0 014-4h10a2 2 0 012 2v10a4 4 0 01-4 4H5a2 2 0 01-2-2V7zm6.293 5.707a1 1 0 001.414 0l5-5a1 1 0 00-1.414-1.414l-5 5a1 1 0 000 1.414zM7.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7 7a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" clip-rule="evenodd"></path>
+                </svg>
               </div>
-              <div style="margin-top: 5px;">
-                <p
-                  class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                >
-                  Pending Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
-                </p>
-              
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Discount Price: <span class="user-count" id="totalDiscount">₹<%= orders.totalDiscountPrice %></span>
+              </p>
+            </div>
+          
+            <!-- Pending Orders -->
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-red-800">
+              <div class="p-3 mr-4 text-red-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zM10 4a1 1 0 011 1v4.586l3.707 3.707a1 1 0 11-1.414 1.414L10 9.414V5a1 1 0 011-1z" clip-rule="evenodd"></path>
+                </svg>
               </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Pending Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
+              </p>
             </div>
           </div>
 
@@ -335,7 +253,9 @@ button:hover {
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
                       <td class="px-4 py-3 text-center font-medium"><%= (currentPage - 1) * limit + index + 1 %></td>
                       <td class="px-4 py-3 font-semibold"><%= ordr._id %></td>
-                      <td class="px-4 py-3 text-center"><%= ordr.orderedItems.length > 0 ? ordr.orderedItems[0].quantity : 0 %></td>
+                      <td class="px-4 py-3 text-center"><%= ordr.orderedItems
+                        .filter(item => item.orderStatus !== "Returned" && item.orderStatus !== "Cancelled")
+                        .reduce((sum, item) => sum + item.quantity, 0) %></td>
                       <td class="px-4 py-3 text-sm">₹<%= ordr.finalAmount || '0' %></td>
                       <td class="px-4 py-3 text-sm"><%= ordr.paymentMethod || '0' %></td>
                       <td class="px-4 py-3 text-xs">
@@ -361,7 +281,7 @@ button:hover {
           <!-- Pagination -->            
           <div class="flex justify-center items-center space-x-2 mt-4 mb-4">
             <% if (currentPage > 1) { %>
-                <a href="?page=<%= currentPage - 1 %>"
+                <a href="?page=<%= currentPage - 1 %>&startDate=<%= startDate %>&endDate=<%= endDate %>"
                    class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
                     &laquo; Previous
                 </a>
@@ -377,7 +297,7 @@ button:hover {
                         <%= i %>
                     </span>
                 <% } else { %>
-                    <a href="?page=<%= i %>"
+                    <a href="?page=<%= i %>&startDate=<%= startDate %>&endDate=<%= endDate %>"
                        class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
                         <%= i %>
                     </a>
@@ -385,7 +305,7 @@ button:hover {
             <% } %>
         
             <% if (currentPage < totalPage) { %>
-                <a href="?page=<%= currentPage + 1 %>"
+                <a href="?page=<%= currentPage + 1 %>&startDate=<%= startDate %>&endDate=<%= endDate %>"
                    class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
                     Next &raquo;
                 </a>
@@ -394,10 +314,9 @@ button:hover {
                     Next &raquo;
                 </span>
             <% } %>
-        </div>
-        
-           
-          </div>
+        </div> 
+              
+    </div>
 
 
           <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
@@ -511,6 +430,7 @@ button:hover {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+
 let result = null;
 let eventListenersAdded = false;
 
@@ -530,22 +450,64 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     downloadButton.addEventListener("click", () => {
-        console.log("Download button clicked");
-        if (result) {
-            downloadXlsx(result);
-        } else {
-            console.error("No result data available to download.");
-        }
-    });
+    console.log("Download button clicked");
 
-    downloadPdfButton.addEventListener("click", () => {
-        console.log("Download PDF button clicked");
-        if (result) {
-            downloadPDF(result);
-        } else {
-            console.error("No result data available to download.");
-        }
-    });
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+
+    if (!startDate || !endDate) {
+      
+        Swal.fire({
+            title: 'Warning',
+            text: 'Please select both Start and End dates',
+            icon: 'warning'
+        });
+        return; 
+    }
+
+    if (result) {
+        
+        downloadXlsx(result);
+    } else {
+       
+        Swal.fire({
+            title: 'Error',
+            text: 'No data available to download. Please filter the report first.',
+            icon: 'error'
+        });
+        console.error("No result data available to download.");
+    }
+});
+
+downloadPdfButton.addEventListener("click", () => {
+    console.log("Download PDF button clicked");
+
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+
+    if (!startDate || !endDate) {
+
+        Swal.fire({
+            title: 'Warning',
+            text: 'Please select both Start and End dates',
+            icon: 'warning'
+        });
+        return; 
+    }
+
+    if (result) {
+       
+        downloadPDF(result);
+    } else {
+       
+        Swal.fire({
+            title: 'Error',
+            text: 'No data available to download. Please filter the report first.',
+            icon: 'error'
+        });
+        console.error("No result data available to download.");
+    }
+});
 
     eventListenersAdded = true;
 });
@@ -554,8 +516,6 @@ document.getElementById("dateForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById('endDate').value;
-
-    console.log('start date and end date is', startDate, endDate);
 
     if (!startDate || !endDate) {
         Swal.fire({
@@ -576,14 +536,12 @@ document.getElementById("dateForm").addEventListener("submit", async (e) => {
         });
         return;
     }
-    
-    console.log("Start date and end date are valid:", startDate, endDate);
 
     const startDatee = new Date(startDate).toISOString().split("T")[0];
     const endDatee = new Date(endDate).toISOString().split("T")[0];
 
     try {
-        const response = await fetch(`/admin/salesReport?startDatee=${startDatee}&&endDatee=${endDatee}`, {
+        const response = await fetch(`/admin/salesReport?startDatee=${startDatee}&endDatee=${endDatee}&page=1`, {
             method: "GET",
         });
 
@@ -594,57 +552,124 @@ document.getElementById("dateForm").addEventListener("submit", async (e) => {
         result = await response.json();
         console.log("API Response:", result);
 
-        // Update the UI with the result data
-        document.getElementById("totalAmount").innerText = `₹${result.totalAmount || 0}`;
-        document.getElementById("totalOrder").innerText = result.totalOrder || 0;
-        document.getElementById("totalDiscount").innerText = `₹${result.totalDiscountPrice || 0}`;
-        document.getElementById("totalCouponUsers").innerText = result.totalCouponUsers || 0;
-        document.getElementById("itemSold").innerText = result.itemSold || 0;
-        document.getElementById("processingOrders").innerText = result.processingOrders || 0;
-        document.getElementById("userCount").innerText = result.userCount || 0;
-
-        // Update the orders table
-        const ordersTableBody = document.getElementById('ordersTableBody');
-        ordersTableBody.innerHTML = '';
-
-        if (result.order && result.order.length > 0) {
-            result.order.forEach((ordr, index) => {
-                const quantity = ordr.orderedItems.length > 0 ? ordr.orderedItems[0].quantity : 0;
-                const finalAmount = ordr.finalAmount || '0';
-                const statusClass = getStatusClass(ordr.status);
-
-                const row = `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
-                        <td class="px-4 py-3 text-center font-medium">${index + 1}</td>
-                        <td class="px-4 py-3 font-semibold">${ordr._id}</td>
-                        <td class="px-4 py-3 text-center">${quantity}</td>
-                        <td class="px-4 py-3 text-sm">₹${finalAmount}</td>
-                        <td class="px-4 py-3 text-sm">${ordr.paymentMethod || 'N/A'}</td>
-                        <td class="px-4 py-3 text-xs">
-                            <span class="px-2 py-1 font-semibold leading-tight rounded-full ${statusClass}">
-                                ${ordr.status}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-sm">
-                            ${ordr.createdOn ? new Date(ordr.createdOn).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            }) : 'N/A'}
-                        </td>
-                    </tr>
-                `;
-
-                ordersTableBody.innerHTML += row;
-            });
-        } else {
-            ordersTableBody.innerHTML = `<tr><td colspan="7" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">No orders found</td></tr>`;
-        }
+        updateTable(result);
+        updatePagination(result);
 
     } catch (error) {
         console.error("Fetch error:", error);
     }
 });
+
+function updateTable(result) {
+    const ordersTableBody = document.getElementById('ordersTableBody');
+    ordersTableBody.innerHTML = '';
+
+    if (result.order && result.order.length > 0) {
+        result.order.forEach((ordr, index) => {
+          const quantity = ordr.orderedItems
+    .filter(item => item.orderStatus !== "Returned" && item.orderStatus !== "Cancelled")
+    .reduce((sum, item) => sum + item.quantity, 0);
+
+            const finalAmount = ordr.finalAmount || '0';
+            const statusClass = getStatusClass(ordr.status);
+
+            const row = `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
+                    <td class="px-4 py-3 text-center font-medium">${index + 1}</td>
+                    <td class="px-4 py-3 font-semibold">${ordr._id}</td>
+                    <td class="px-4 py-3 text-center">${quantity}</td>
+                    <td class="px-4 py-3 text-sm">₹${finalAmount}</td>
+                    <td class="px-4 py-3 text-sm">${ordr.paymentMethod || 'N/A'}</td>
+                    <td class="px-4 py-3 text-xs">
+                        <span class="px-2 py-1 font-semibold leading-tight rounded-full ${statusClass}">
+                            ${ordr.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        ${ordr.createdOn ? new Date(ordr.createdOn).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        }) : 'N/A'}
+                    </td>
+                </tr>
+            `;
+
+            ordersTableBody.innerHTML += row;
+        });
+    } else {
+        ordersTableBody.innerHTML = `<tr><td colspan="7" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">No orders found</td></tr>`;
+    }
+    updateCardForm(result);
+}
+
+
+function updateCardForm(result) {
+    // Update Total Clients
+    document.getElementById('userCount').textContent = result.userCount || 0;
+
+    // Update Total Sales
+    document.getElementById('totalAmount').textContent = `₹${result.totalAmount || 0}`;
+
+    // Update Total Orders
+    document.getElementById('totalOrder').textContent = result.totalOrder || 0;
+
+    // Update Items Sold
+    document.getElementById('itemSold').textContent = result.itemSold || 0;
+
+    // Update Total Coupons Applied
+    document.getElementById('totalCouponUsers').textContent = result.totalCouponUsers || 0;
+
+    // Update Total Discount Price
+    document.getElementById('totalDiscount').textContent = `₹${result.totalDiscountPrice || 0}`;
+
+    // Update Pending Orders
+    document.getElementById('processingOrders').textContent = result.processingOrders || 0;
+}
+
+function updatePagination(result) {
+    const paginationContainer = document.querySelector('.pagination-container');
+    if (paginationContainer) {
+        paginationContainer.innerHTML = `
+            <div class="flex justify-center items-center space-x-2 mt-4 mb-4">
+                ${result.currentPage > 1 ? `
+                    <a href="?page=${result.currentPage - 1}&startDate=${result.startDate}&endDate=${result.endDate}"
+                       class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
+                        &laquo; Previous
+                    </a>
+                ` : `
+                    <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-200 border border-gray-300 rounded-md cursor-not-allowed dark:bg-gray-700 dark:text-gray-500">
+                        &laquo; Previous
+                    </span>
+                `}
+
+                ${Array.from({ length: result.totalPage }, (_, i) => i + 1).map(page => `
+                    ${page === result.currentPage ? `
+                        <span class="px-3 py-2 text-sm font-medium text-white bg-green-600 border border-blue-600 rounded-md dark:bg-blue-500 dark:border-blue-500">
+                            ${page}
+                        </span>
+                    ` : `
+                        <a href="?page=${page}&startDate=${result.startDate}&endDate=${result.endDate}"
+                           class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
+                            ${page}
+                        </a>
+                    `}
+                `).join('')}
+
+                ${result.currentPage < result.totalPage ? `
+                    <a href="?page=${result.currentPage + 1}&startDate=${result.startDate}&endDate=${result.endDate}"
+                       class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700">
+                        Next &raquo;
+                    </a>
+                ` : `
+                    <span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-200 border border-gray-300 rounded-md cursor-not-allowed dark:bg-gray-700 dark:text-gray-500">
+                        Next &raquo;
+                    </span>
+                `}
+            </div>
+        `;
+    }
+}
 
 function getStatusClass(status) {
     switch (status) {
@@ -663,9 +688,10 @@ const downloadXlsx = async (result) => {
   console.log("Downloading xls file",result);
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
-    
+    console.log(startDate,endDate,"1");
+
     if (!startDate || !endDate) {  
-        swal.fire({
+        Swal.fire({
             title: 'Warning',
             text: 'Please select both Start and End dates',
             icon: 'warning'
@@ -700,9 +726,10 @@ const downloadPDF = async (result) => {
     console.log('PDF Downloading Result:', result);
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
+    console.log(startDate,endDate,"1");
     
     if (!startDate || !endDate) { 
-        swal.fire({
+        Swal.fire({
             title: 'Warning',
             text: 'Please select both Start and End dates',
             icon: 'warning'

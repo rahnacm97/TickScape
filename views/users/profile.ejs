@@ -169,6 +169,42 @@
       margin-top: 0.5rem;
     }
   }
+
+  .bg-gradient-primary {
+                  background: linear-gradient(45deg, var(--primary-color), var(--primary-color-dark, #0056b3));
+                }
+                
+                .wallet-balance {
+                  transition: all 0.3s ease;
+                  overflow: hidden;
+                }
+                
+                .wallet-balance:hover {
+                  transform: translateY(-5px);
+                  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+                }
+                
+                .shine-effect {
+                  position: absolute;
+                  top: 0;
+                  left: -100%;
+                  width: 50%;
+                  height: 100%;
+                  background: linear-gradient(
+                    to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%
+                  );
+                  transform: skewX(-25deg);
+                  animation: shine 3s infinite;
+                }
+                
+                @keyframes shine {
+                  0% { left: -100%; }
+                  20% { left: 100%; }
+                  100% { left: 100%; }
+                }
 </style>
 </head>
 <body>
@@ -267,27 +303,36 @@
                 </div>
 
                 <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
-                  <div class="card">
-                    <div class="card-header">
-                      <h5 class="mb-0">Wallet</h5>
+                  <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient-primary text-white py-3">
+                      <h5 class="mb-0 fw-bold"><i class="fas fa-wallet me-2"></i>My Wallet</h5>
                     </div>
-                    <div class="card-body contact-from-area">
+                    <div class="card-body contact-from-area p-4">
                       <div class="row">
-                        <div class="col-lg-8 mx-auto text-center my-4">
-                          <div class="wallet-balance p-4 mb-4 rounded-3" style="background-color: #f8f9fa; border: 1px solid #e2e8f0;">
-                            <p class="text-secondary mb-1">Current Balance</p>
-                            <div class="balance-amount mb-3" style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color);">
-                              ₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0).toFixed(2); %>
+                        <div class="col-lg-8 mx-auto my-4">
+                          <div class="wallet-balance p-4 mb-4 rounded-4 shadow-sm position-relative" 
+                               style="background: linear-gradient(135deg, #f8f9fa 0%, #e2e8f0 100%); border: 1px solid #e2e8f0;">
+                            <div class="row align-items-center">
+                              <div class="col-md-3 text-center mb-3 mb-md-0">
+                                <img src="\assets\img\logo\wallet_6445868.png" alt="Wallet Icon" class="img-fluid" 
+                                     style="max-width: 100px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                              </div>
+                              <div class="col-md-9">
+                                <p class="text-secondary mb-1 fw-light">Current Balance</p>
+                                <div class="balance-amount mb-2" 
+                                     style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(to right, var(--primary-color), var(--secondary-color, #6c757d)); background-clip: text; -webkit-text-fill-color: transparent;">
+                                  ₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0).toFixed(2); %>
+                                </div>
+                              </div>
                             </div>
-                            <!-- <button type="button" class="btn btn-success" onclick="">
-                              <i class="fas fa-plus-circle me-2"></i> Add Money
-                            </button> -->
+                            <div class="shine-effect"></div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                
 
                 <div class="tab-pane fade" id="wallet-history" role="tabpanel" aria-labelledby="orders-tab">
                  <div class="card">
@@ -375,11 +420,11 @@
                        </div>
                      </div>
                      
-                     <div class="earnings-container p-4 text-white rounded d-flex align-items-center justify-content-between">
-                       <div>
+                     <div class="earnings-container p-4 text-white rounded d-flex align-items-center justify-content-center">
+                       <!-- <div>
                          <p class="mb-1">Total Earnings</p>
                          <h4 class="mb-0 fw-bold">₹<%= user.wallet.reduce((sum, entry) => sum + entry.amount, 0) %></h4>
-                       </div>
+                       </div> -->
                        <div class="referral-icon">
                          <i class="fas fa-gift" style="font-size: 2rem;"></i>
                        </div>

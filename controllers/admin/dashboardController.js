@@ -18,153 +18,6 @@ const sharp = require("sharp");
 const fs = require("fs");
 
 
-// const loadDashboard = async (req,res) => {
-//     if(req.session.admin){  
-//       try {
-
-//         let page = parseInt(req.query.page) || 1;
-//             let limit = 10;
-//             let skip = (page - 1) * limit;
-
-//           const userCount = await User.countDocuments();
-//           //console.log(userCount);
-//           const totalSales = await Order.aggregate([
-//             { 
-//                 $match: { status: { $nin: ["Cancelled", "Returned"] } } 
-//             },
-//             { $unwind: "$orderedItems" }, 
-//             {
-//                 $group: {
-//                     _id: null,
-//                     totalAmount: { $sum: "$finalAmount" }, 
-//                     totalOrder: { $sum: 1 },  
-//                     totalDiscountPrice: { $sum: "$discount" }, 
-//                     itemSold: { $sum: "$orderedItems.quantity" } 
-//                 }
-//             }
-//         ]);
-            
-      
-//         //console.log('total sales',totalSales);
-//         const salesData = totalSales[0] || {
-//             totalAmount: 0,
-//             totalOrder: 0,
-//             totalDiscount: 0,
-//             itemSold :0,
-//        };
-
-//       const order = await Order.find().sort({createdOn:-1}).limit(limit).skip((page-1)*limit);
-//       //console.log(order,"order");
-
-//       const count = await Order.countDocuments();
-//       const totalPage = Math.ceil(count / limit);
-
-//       const processingOrders = await Order.countDocuments({ status: 'Order Placed' });
-
-//         const totalCouponUsers = await Order.aggregate([
-//           { $match: { couponApplied: true } },
-//           { $group: { _id: "$userId" } },
-//           { $count: "totalUsersApplied" }
-//       ]);
-      
-//       const couponUsersCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalUsersApplied : 0;
-      
-//       //console.log(couponUsersCount);
-      
-//       const topOrders = await Order.aggregate([
-//         { $unwind: "$orderedItems" },
-//         {
-//           $group: {
-//             _id: "$orderedItems.productId", 
-//             orderCount: { $sum: 1 },
-//           },
-//         },
-//         { $sort: { orderCount: -1 } },
-//         { $limit: 5 },
-//         {
-//           $lookup: {
-//             from: "products",
-//             localField: "_id",
-//             foreignField: "_id",
-//             as: "productDetails",
-//           },
-//         },
-//         { $unwind: "$productDetails" },
-//         {
-//           $project: {
-//             _id: 0,
-//             productId: "$_id",
-//             name: "$productDetails.productName",
-//             orderCount: 1,
-//           },
-//         },
-//       ]);
-      
-//       //console.log("Top Ordered Products:", topOrders);
-
-//       const topCategories = await Order.aggregate([
-//         { $unwind: "$orderedItems" },
-//         {
-//           $lookup: {
-//             from: "products",
-//             localField: "orderedItems.productId", 
-//             foreignField: "_id",
-//             as: "productDetails",
-//           },
-//         },
-//         { $unwind: "$productDetails" },
-//         {
-//           $group: {
-//             _id: "$productDetails.category", 
-//             categoryCount: { $sum: 1 },
-//           },
-//         },
-//         { $sort: { categoryCount: -1 } },
-//         { $limit: 5 },
-//         {
-//           $lookup: {
-//             from: "categories",
-//             localField: "_id",
-//             foreignField: "_id",
-//             as: "categoryDetails",
-//           },
-//         },
-//         { $unwind: "$categoryDetails" },
-//         {
-//           $project: {
-//             _id: 0,
-//             categoryId: "$_id",
-//             categoryName: "$categoryDetails.name",
-//             categoryCount: 1,
-//           },
-//         },
-//       ]);
-
-//       if (req.xhr) {
-//         return res.json({ orders:salesData, totalPage, currentPage: page });
-//       }
-      
-//       //console.log("Top Categories:", topCategories);
-      
-//       res.render('dashboard', {
-//             userCount,
-//             orders: salesData,
-//             processingOrders,
-//             totalCouponUsers: couponUsersCount,
-//             totalPage,
-//             currentPage: page,
-//             limit,
-//             order:order,
-//             products:topOrders,
-//             category:topCategories,
-            
-//       })
-//     } catch (error) {
-//           res.redirect('/pageerror');
-//     }
-//   }
-// }
-
 const loadDashboard = async (req, res) => {
   if (req.session.admin) {
       try {
@@ -198,7 +51,10 @@ const loadDashboard = async (req, res) => {
             }
           ]);
 
-          //console.log("Sales",totalSales);
+          const orders = await Order.countDocuments();
+          //console.log(orders);
+
+          //console.log("Sales",itemSold);
 
           const salesData = totalSales[0] || {
               totalAmount: 0,
@@ -220,9 +76,8 @@ const loadDashboard = async (req, res) => {
 
         //console.log("Coupon", totalCouponUsers)
 
-
         const totalCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
-        console.log("Total Coupons Applied:", totalCount);
+        //console.log("Total Coupons Applied:", totalCount);
 
           const topOrders = await Order.aggregate([
               { $unwind: "$orderedItems" },
@@ -320,85 +175,79 @@ const loadDashboard = async (req, res) => {
 
 const salesReport = async (req, res) => {
   try {
-    const {startDatee, endDatee } = req.query;
-    //console.log('start date and end date is here',startDatee,endDatee)
+      let page = parseInt(req.query.page) || 1;
+      let limit = 10;
+      let skip = (page - 1) * limit;
 
-    if (!startDatee && endDatee ) {
-      return res.status(400).json({ error: "Date is required" });
-    }
+      const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
+      const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
 
-    const startDate = new Date(startDatee);
-    const endDate = new Date(endDatee);
-    endDate.setHours(23, 59, 59, 999);
+      if (!startDate || !endDate) {
+          return res.status(400).json({ error: "Both start and end dates are required" });
+      }
 
-    //console.log("Start Date:", startDate.toISOString());
-    //console.log("End Date:", endDate.toISOString());
+      endDate.setHours(23, 59, 59, 999);
 
-    
-    const userCount = await User.countDocuments();
-    //console.log("User Count:", userCount);
+      let query = {};
+      if (startDate && endDate) {
+          query.createdOn = { $gte: startDate, $lte: endDate };
+      }
 
+      const userCount = await User.countDocuments({ isAdmin: false });
 
-    const processingOrders = await Order.countDocuments({
-      status: "Order Placed",
-      createdOn: { $gte: startDate, $lte: endDate }
-    });
+      const totalSales = await Order.aggregate([
+          { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+          { $unwind: "$orderedItems" },
+          { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+          {
+              $group: {
+                  _id: null,
+                  totalAmount: { $sum: "$finalAmount" },
+                  totalOrder: { $sum: 1 },
+                  totalDiscountPrice: { $sum: "$discount" },
+                  itemSold: { $sum: "$orderedItems.quantity" },
+                  totalCouponDiscount: { $sum: "$couponDiscount" },
+              }
+          }
+      ]);
 
-    //console.log("Pending Order Count:", processingOrders);
+      const salesData = totalSales.length
+          ? totalSales[0]
+          : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
 
-    const order = await Order.find({createdOn: { $gte: startDate, $lte: endDate }}).sort({finalAmount:-1}).limit(10)
-    const salesData = await Order.aggregate([
-      { $match: { createdOn: { $gte: startDate, $lte: endDate } } },
-      { $unwind: "$orderedItems" },
-      {
-        $group: {
-          _id: null,
-          totalAmount: { $sum: "$finalAmount" },
-          totalOrder: { $sum: 1 },
-          totalCouponDiscount: { $sum:'$couponDiscount'},
-          totalDiscountPrice: { $sum: "$discount" },
-          itemSold: { $sum: "$orderedItems.quantity" } 
-        },
-      },
-    ]);
+      const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
 
-    //console.log("Sales Data:", salesData);
-    const totalCouponUsers = await Order.aggregate([
-      { $match: { couponApplied: true } },
-      { $group: { _id: "$userId" } },
-      { $count: "totalUsersApplied" }
-  ]);
-  
-  const couponUsersCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalUsersApplied : 0;
+      const count = await Order.countDocuments(query);
+      const totalPage = Math.max(Math.ceil(count / limit), 1);
 
-   
-    const salesReportData = salesData.length
-      ? salesData[0]
-      : {
-          totalAmount: 0,
-          totalOrder: 0,
-          totalCouponDiscount: 0,
-          totalDiscountPrice: 0,
-          itemSold: 0,
-        };
+      const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
 
-    const report = {
-      ...salesReportData,
-      userCount,
-      processingOrders,
-      order,
-      totalCouponUsers: couponUsersCount,
-    };
+      const totalCouponUsers = await Order.aggregate([
+          { $match: { couponApplied: true } },
+          { $count: "totalCouponApplied" }
+      ]);
 
-    res.json(report);
+      const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
 
-    //console.log("Sales Report:", report);
+      const result = {
+          ...salesData,
+          userCount,
+          processingOrders,
+          order,
+          totalCouponUsers: totalCouponCount,
+          totalPage,
+          currentPage: page,
+          startDate: req.query.startDatee || '',
+          endDate: req.query.endDatee || ''
+      };
 
+      res.json(result);
   } catch (error) {
-    console.error("Sales report error:", error);
-    res.status(500).json({ error: "Server error", details: error.message });
+      console.error("Sales report error:", error);
+      res.status(500).json({ error: "Server error", details: error.message });
   }
 };
+
 
 
 const downloadExcelReport = async (req, res) => {
@@ -412,10 +261,8 @@ const downloadExcelReport = async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
 
-    // Define total columns
     const totalColumns = 10;
 
-    // Merge header across all columns
     worksheet.mergeCells("A1:J1");
     const headerCell = worksheet.getCell("A1");
     headerCell.value = `Sales Report from ${startDate} to ${endDate}`;
@@ -424,16 +271,13 @@ const downloadExcelReport = async (req, res) => {
     headerCell.fill = {
       type: "pattern",
       pattern: "solid",
-      fgColor: { argb: "4F81BD" }, // Blue background
+      fgColor: { argb: "4F81BD" }, 
     };
 
-    // Set row height for visibility
     worksheet.getRow(1).height = 30;
 
-    // Add an empty row to avoid conflicts
     worksheet.addRow([]);
 
-    // === ORDER DETAILS SECTION ===
     const orderDetailsHeaderRow = worksheet.addRow([
       "Order ID",
       "User ID",
@@ -447,7 +291,6 @@ const downloadExcelReport = async (req, res) => {
       "Order Date",
     ]);
 
-    // Style the order details header
     orderDetailsHeaderRow.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFF" } };
       cell.fill = {
@@ -458,7 +301,7 @@ const downloadExcelReport = async (req, res) => {
       cell.alignment = { horizontal: "center", vertical: "middle" };
     });
 
-    // Set column widths
+  
     worksheet.columns = [
       { key: 'orderId', width: 15 },
       { key: 'userId', width: 15 },
@@ -472,7 +315,6 @@ const downloadExcelReport = async (req, res) => {
       { key: 'invoiceDate', width: 20 },
     ];
 
-    // Add order data
     salesData.order.forEach((order) => {
       const row = worksheet.addRow([
         order.orderId,
@@ -487,15 +329,12 @@ const downloadExcelReport = async (req, res) => {
         order.invoiceDate,
       ]);
 
-      // Format the date in the last column
       const dateCell = row.getCell(10);
-      dateCell.numFmt = 'mm/dd/yyyy'; // Change this to your desired date format
+      dateCell.numFmt = 'mm/dd/yyyy'; 
     });
 
-    // Add space before Summary section
     worksheet.addRow([]);
 
-    // === SUMMARY SECTION ===
     worksheet.addRow(["Summary"]).font = { bold: true, size: 14 };
 
     const summaryHeaderRow = worksheet.addRow([
@@ -506,7 +345,6 @@ const downloadExcelReport = async (req, res) => {
       "Items Sold",
     ]);
 
-    // Style the summary headers
     summaryHeaderRow.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFF" } };
       cell.fill = {
@@ -517,7 +355,6 @@ const downloadExcelReport = async (req, res) => {
       cell.alignment = { horizontal: "center", vertical: "middle" };
     });
 
-    // Add summary data
     worksheet.addRow([
       salesData.totalAmount,
       salesData.totalOrder,
