@@ -76,6 +76,9 @@ const loadDashboard = async (req, res) => {
 
         //console.log("Coupon", totalCouponUsers)
 
+        const lowStockProducts = await Product.find({ quantity: { $lte: 5 } });
+        //console.log("2",lowStockProducts);
+
         const totalCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
         //console.log("Total Coupons Applied:", totalCount);
 
@@ -89,7 +92,7 @@ const loadDashboard = async (req, res) => {
                   },
               },
               { $sort: { orderCount: -1 } },
-              { $limit: 5 },
+              { $limit: 10 },
               {
                   $lookup: {
                       from: "products",
@@ -128,7 +131,7 @@ const loadDashboard = async (req, res) => {
                   },
               },
               { $sort: { categoryCount: -1 } },
-              { $limit: 5 },
+              { $limit: 10 },
               {
                   $lookup: {
                       from: "categories",
@@ -148,6 +151,50 @@ const loadDashboard = async (req, res) => {
               },
           ]);
 
+
+          const topBrands = await Order.aggregate([
+            { $unwind: "$orderedItems" },
+            { $match: query },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderedItems.productId",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $lookup: {
+                    from: "brands", 
+                    localField: "productDetails.brand",
+                    foreignField: "_id",
+                    as: "brandDetails",
+                },
+            },
+            { $unwind: "$brandDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.brand",
+                    brandCount: { $sum: 1 },
+                    brandName: { $first: "$brandDetails.brandName" }, 
+                },
+            },
+            { $sort: { brandCount: -1 } },
+            { $limit: 10 },
+            {
+                $project: {
+                    _id: 0,
+                    brandId: "$_id",
+                    brandName: 1, 
+                    brandCount: 1,
+                },
+            },
+        ]);
+        
+        
+        //console.log(topBrands);        
+
           if (req.xhr) {
               return res.json({ orders: salesData, totalPage, currentPage: page });
           }
@@ -163,8 +210,10 @@ const loadDashboard = async (req, res) => {
               order: order,
               products: topOrders,
               category: topCategories,
+              brand: topBrands,
               startDate: req.query.startDatee || '',
-              endDate: req.query.endDatee || ''
+              endDate: req.query.endDatee || '',
+              lowStockProducts: lowStockProducts
           });
       } catch (error) {
           res.redirect('/pageerror');
@@ -173,85 +222,189 @@ const loadDashboard = async (req, res) => {
 };
 
 
+// const salesReport = async (req, res) => {
+//   try {
+//       let page = parseInt(req.query.page) || 1;
+//       let limit = 20;
+//       let skip = (page - 1) * limit;
+
+//       const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
+//       const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
+
+//       if (!startDate || !endDate) {
+//           return res.status(400).json({ error: "Both start and end dates are required" });
+//       }
+
+//       endDate.setHours(23, 59, 59, 999);
+
+//       let query = {};
+//       if (startDate && endDate) {
+//           query.createdOn = { $gte: startDate, $lte: endDate };
+//       }
+
+//       const userCount = await User.countDocuments({ isAdmin: false });
+
+//       const totalSales = await Order.aggregate([
+//           { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+//           { $unwind: "$orderedItems" },
+//           { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+//           {
+//               $group: {
+//                   _id: null,
+//                   totalAmount: { $sum: "$finalAmount" },
+//                   totalOrder: { $sum: 1 },
+//                   totalDiscountPrice: { $sum: "$discount" },
+//                   itemSold: { $sum: "$orderedItems.quantity" },
+//                   totalCouponDiscount: { $sum: "$couponDiscount" },
+//               }
+//           }
+//       ]);
+
+//       const salesData = totalSales.length
+//           ? totalSales[0]
+//           : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
+
+//       const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
+
+//       const count = await Order.countDocuments(query);
+//       const totalPage = Math.max(Math.ceil(count / limit), 1);
+
+//       const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
+
+//       const totalCouponUsers = await Order.aggregate([
+//           { $match: { couponApplied: true } },
+//           { $count: "totalCouponApplied" }
+//       ]);
+
+//       const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+
+//       const result = {
+//           ...salesData,
+//           userCount,
+//           processingOrders,
+//           order,
+//           totalCouponUsers: totalCouponCount,
+//           totalPage,
+//           currentPage: page,
+//           startDate: req.query.startDatee || '',
+//           endDate: req.query.endDatee || ''
+//       };
+
+//       res.json(result);
+//   } catch (error) {
+//       console.error("Sales report error:", error);
+//       res.status(500).json({ error: "Server error", details: error.message });
+//   }
+// };
+
+
 const salesReport = async (req, res) => {
   try {
-      let page = parseInt(req.query.page) || 1;
-      let limit = 10;
-      let skip = (page - 1) * limit;
+    let page = parseInt(req.query.page) || 1;
+    let limit = 20;
+    let skip = (page - 1) * limit;
+    const filterType = req.query.filterType || "custom";
 
-      const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
-      const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
+    let startDate, endDate;
 
-      if (!startDate || !endDate) {
-          return res.status(400).json({ error: "Both start and end dates are required" });
-      }
+    // Set date range based on filter type
+    switch (filterType) {
+      case "daily":
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0); // Start of today
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); // End of today
+        break;
+      case "weekly":
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of week (Sunday)
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); // End of today
+        break;
+      case "monthly":
+        startDate = new Date();
+        startDate.setDate(1); // Start of month
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); // End of today
+        break;
+      case "custom":
+        startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
+        endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
+        if (!startDate || !endDate) {
+          return res.status(400).json({ error: "Both start and end dates are required for custom filter" });
+        }
+        endDate.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid filter type" });
+    }
 
-      endDate.setHours(23, 59, 59, 999);
+    let query = {};
+    if (startDate && endDate) {
+      query.createdOn = { $gte: startDate, $lte: endDate };
+    }
 
-      let query = {};
-      if (startDate && endDate) {
-          query.createdOn = { $gte: startDate, $lte: endDate };
-      }
+    const userCount = await User.countDocuments({ isAdmin: false });
 
-      const userCount = await User.countDocuments({ isAdmin: false });
+    const totalSales = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$finalAmount" },
+          totalOrder: { $sum: 1 },
+          totalDiscountPrice: { $sum: "$discount" },
+          itemSold: { $sum: "$orderedItems.quantity" },
+          totalCouponDiscount: { $sum: "$couponDiscount" },
+        },
+      },
+    ]);
 
-      const totalSales = await Order.aggregate([
-          { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
-          { $unwind: "$orderedItems" },
-          { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
-          {
-              $group: {
-                  _id: null,
-                  totalAmount: { $sum: "$finalAmount" },
-                  totalOrder: { $sum: 1 },
-                  totalDiscountPrice: { $sum: "$discount" },
-                  itemSold: { $sum: "$orderedItems.quantity" },
-                  totalCouponDiscount: { $sum: "$couponDiscount" },
-              }
-          }
-      ]);
+    const salesData = totalSales.length
+      ? totalSales[0]
+      : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
 
-      const salesData = totalSales.length
-          ? totalSales[0]
-          : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
+    const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
 
-      const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
+    const count = await Order.countDocuments(query);
+    const totalPage = Math.max(Math.ceil(count / limit), 1);
 
-      const count = await Order.countDocuments(query);
-      const totalPage = Math.max(Math.ceil(count / limit), 1);
+    const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
 
-      const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
+    const totalCouponUsers = await Order.aggregate([
+      { $match: { couponApplied: true, ...query } }, // Add query here to filter by date
+      { $count: "totalCouponApplied" },
+    ]);
 
-      const totalCouponUsers = await Order.aggregate([
-          { $match: { couponApplied: true } },
-          { $count: "totalCouponApplied" }
-      ]);
+    const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
 
-      const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+    const result = {
+      ...salesData,
+      userCount,
+      processingOrders,
+      order,
+      totalCouponUsers: totalCouponCount,
+      totalPage,
+      currentPage: page,
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
+      filterType,
+    };
 
-      const result = {
-          ...salesData,
-          userCount,
-          processingOrders,
-          order,
-          totalCouponUsers: totalCouponCount,
-          totalPage,
-          currentPage: page,
-          startDate: req.query.startDatee || '',
-          endDate: req.query.endDatee || ''
-      };
-
-      res.json(result);
+    res.json(result);
   } catch (error) {
-      console.error("Sales report error:", error);
-      res.status(500).json({ error: "Server error", details: error.message });
+    console.error("Sales report error:", error);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
-
-
 const downloadExcelReport = async (req, res) => {
   try {
+    //console.log(req.body);
     const { startDate, endDate, salesData } = req.body;
 
     if (!startDate || !endDate || !salesData) {
@@ -317,7 +470,7 @@ const downloadExcelReport = async (req, res) => {
 
     salesData.order.forEach((order) => {
       const row = worksheet.addRow([
-        order.orderId,
+        order.orderId || order._id,
         order.userId,
         order.totalPrice,
         order.gstAmount,
@@ -326,11 +479,11 @@ const downloadExcelReport = async (req, res) => {
         order.finalAmount,
         order.status,
         order.paymentMethod,
-        order.invoiceDate,
+        new Date(order.invoiceDate),
       ]);
 
       const dateCell = row.getCell(10);
-      dateCell.numFmt = 'mm/dd/yyyy'; 
+      dateCell.numFmt = 'dd-mm-yyyy';  
     });
 
     worksheet.addRow([]);
@@ -408,6 +561,14 @@ const downloadPDFReport = async (req, res) => {
 
     doc.fontSize(14).text("Order Details", { align: "center" }).moveDown();
 
+    const formatDate = (isoDate) => {
+      const date = new Date(isoDate);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    };
+
     const table = {
       headers: [
         "Order ID",
@@ -422,7 +583,7 @@ const downloadPDFReport = async (req, res) => {
         "Order Date",
       ],
       rows: salesData.order.map((order) => [
-        order.orderId,
+        order.orderId || order._id,
         order.userId,
         order.totalPrice,
         order.gstAmount,
@@ -431,7 +592,7 @@ const downloadPDFReport = async (req, res) => {
         order.finalAmount,
         order.status,
         order.paymentMethod,
-        order.invoiceDate,
+        formatDate(order.invoiceDate),
       ]),
     };
 
@@ -471,10 +632,73 @@ const downloadPDFReport = async (req, res) => {
   }
 };
 
+const Chart = async (req, res) => {
+  try {
+    let { filter } = req.query;
+    //console.log('filter:', filter);
+
+    let matchStage = {};
+
+    // Default to "monthly" if no filter is provided
+    if (!filter) filter = "monthly";
+
+    if (filter === "yearly") {
+      matchStage = { createdOn: { $gte: new Date(new Date().getFullYear(), 0, 1) } };
+    } else if (filter === "monthly") {
+      let startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      matchStage = { createdOn: { $gte: startOfMonth } };
+    } else if (filter === "weekly") {
+      let startOfWeek = new Date();
+      startOfWeek.setDate(startOfWeek.getDate() - 7);
+      matchStage = { createdOn: { $gte: startOfWeek } };
+    }
+
+    //console.log('Match stage:', matchStage);
+
+    const salesData = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...matchStage } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+      {
+        $group: {
+          _id: "$_id",
+          createdOn: { $first: "$createdOn" },
+          finalAmount: { $first: "$finalAmount" }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdOn" } },
+          totalSales: { $sum: "$finalAmount" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    //console.log('Sales data:', salesData);
+
+    if (!salesData || salesData.length === 0) {
+      return res.json({ labels: [], values: [], message: "No data found for the selected period" });
+    }
+
+    const labels = salesData.map((data) => data._id);
+    const values = salesData.map((data) => data.totalSales);
+
+    //console.log('labels:', labels);
+    //console.log('values:', values);
+
+    res.json({ labels, values });
+  } catch (error) {
+    console.error("Chart aggregation error:", error);
+    res.status(500).json({ error: "Internal Server Error", message: error.message });
+  }
+};
+
 module.exports = {
     loadDashboard,
     salesReport,
     downloadExcelReport,
     downloadPDFReport,
+    Chart,
 }
 

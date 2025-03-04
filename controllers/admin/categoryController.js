@@ -69,7 +69,7 @@ const addCategoryOffer = async (req, res, next) => {
         const percentage = parseInt(req.body.percentage);
         const categoryId = req.body.categoryId;
 
-        console.log("Received request:", { categoryId, percentage });
+        //console.log("Received request:", { categoryId, percentage });
 
         const category = await Category.findById(categoryId);
         if (!category) {

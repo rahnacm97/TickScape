@@ -13,6 +13,7 @@ const adminLoadLogin = async (req,res) => {
     res.render("admin-login",{message:null});
 }
 
+
 const adminLogin = async(req,res) => {
     try {
         const {email,password} = req.body;
@@ -20,7 +21,8 @@ const adminLogin = async(req,res) => {
         if(admin){
             const passwordMatch = bcrypt.compare(password,admin.password);
             if(passwordMatch){
-                req.session.admin = true;
+                //req.session.admin = true;
+                req.session.admin = { _id: admin._id };
                 return res.redirect('/admin/dashboard');
             }else{
                 return res.redirect("/login");
@@ -35,21 +37,32 @@ const adminLogin = async(req,res) => {
     }
 }
 
-const logout = async (req,res) => {
+// const logout = async (req,res) => {
+//     try {
+//         req.session.destroy(err =>{
+//             if(err){
+//                 console.log("Error dectroying session",err);
+//                 return res.redirect('/pageerror')
+//             }
+//             res.clearCookie("connect.sid"); 
+//             res.redirect('/admin/login');
+//         })
+//     } catch (error) {
+//         console.log("Unexpected Error");
+//         res.redirect("/pageerror");
+//     }
+// }
+
+// Admin Logout
+const logout = async (req, res) => {
     try {
-        req.session.destroy(err =>{
-            if(err){
-                console.log("Error dectroying session",err);
-                return res.redirect('/pageerror')
-            }
-            res.clearCookie("connect.sid"); 
-            res.redirect('/admin/login');
-        })
+        delete req.session.admin; 
+        res.redirect('/admin/login');
     } catch (error) {
-        console.log("Unexpected Error");
+        console.log("Unexpected Error", error);
         res.redirect("/pageerror");
     }
-}
+};
 
 module.exports = {
     pageerror,

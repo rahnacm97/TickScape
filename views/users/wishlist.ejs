@@ -7,81 +7,213 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 <style>
-    .header-right ul {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Adjust gap for spacing */
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+ .mt-10.mb-50 {
+  padding: 40px 0;
+  background-color: #f8f9fa;
 }
 
-        .dropdown {
-        position:relative;
-        display:inline-block;
-        }
-        .dropdown a {
-    color: #10880c;  
-    padding: 10px;
-    text-decoration: none;
-    font-size: 16px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Table styling */
+.shopping-summery {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: none !important;
+}
+
+.shopping-summery thead {
+  background-color: #f0f2f5;
+}
+
+.shopping-summery th {
+  padding: 15px 10px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border: none !important;
+  border-bottom: 1px solid #e6e6e6 !important;
+}
+
+.shopping-summery td {
+  padding: 15px 10px;
+  vertical-align: middle;
+  border: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+/* Product image styling */
+.product-thumbnail img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  transition: transform 0.3s ease;
+}
+
+.product-thumbnail img:hover {
+  transform: scale(1.05);
+}
+
+/* Product name styling */
+.product-name a {
+  color: #333;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.product-name a:hover {
+  color: #4a6cf7;
+}
+
+.font-xxs {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* Price styling */
+.price span {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+
+/* Button styling */
+.btn-sm {
+  padding: 8px 15px;
+  background-color: #08a183;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.btn-sm:hover {
+  background-color: #35d1d1;
+  text-decoration: none;
+  color: white;
+}
+
+.action .btn-sm {
+  background-color: #ff6b6b;
+}
+
+.action .btn-sm:hover {
+  background-color: #e55252;
+}
+
+.action .btn-sm i {
+  font-size: 14px;
+}
+
+/* Empty wishlist styling */
+.text-center .lead {
+  padding: 30px 0;
+  color: #888;
+}
+
+/* Pagination styling */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 30px;
+  padding: 15px 0;
+}
+
+.pagination .btn {
+  padding: 8px 15px;
+  background-color: #f0f2f5;
+  border: 1px solid #e6e6e6;
+  color: #333;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pagination .btn:hover {
+  background-color: #e6e6e6;
+}
+
+.pagination .btn.active {
+  background-color: #08b59e;
+  color: white;
+  border-color: #0ccdb6;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .shopping-summery {
+    font-size: 13px;
+  }
+  
+  .product-thumbnail img {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .shopping-summery thead {
+    display: none;
+  }
+  
+  .shopping-summery, 
+  .shopping-summery tbody, 
+  .shopping-summery tr, 
+  .shopping-summery td {
     display: block;
-}
-    .dropdown-content {
-   display: none;
-   position:absolute;
-   background-color: white;
-   min-width: 160px;
-   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-   z-index:1000;
-   right:0;
-    }
-
-
-    .dropdown-content a {
-   color: black;
-   padding: 12px 16px;
-   text-decoration: none;
-   display: block;
-   width: 100%;
-    }
-    .dropdown-content a:hover{
-   background-color: #f1f1f1;
-    }
-    .dropdown:hover .dropdown-content{
-   display: block;
-}
-.header-area {
-    background-color: #ffffff; /* Set your desired color here */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better visibility */
-    position: sticky;
-    top: 0;
-    z-index: 1000; /* Ensures it stays above other content */
-    transition: background-color 0.3s ease; /* Smooth transition for hover or other interactions */
-}
-
-.header-right ul li a,
-.main-menu nav ul li a {
-    color: #333333; /* Set text/link color to match your design */
-}
-
-.main-header.header-sticky {
-    background-color: inherit; /* Ensure sticky header keeps the set color */
-}
-
-.nav-search span,
-.flaticon-user,
-.flaticon-shopping-cart {
-    color: #333333; /* Adjust icon colors */
-}
-
-
-.products {
-    border: 2px solid #ddd; 
-    border-radius: 10px; 
-    padding: 20px; 
-    margin-top: 20px;
-    background-color: #f9f9f9;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .shopping-summery tr {
+    margin-bottom: 20px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .shopping-summery td {
+    position: relative;
+    padding-left: 120px;
+  }
+  
+  .shopping-summery td:before {
+    content: attr(data-title);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .product-thumbnail img {
+    width: 80px;
+    height: 80px;
+  }
 }
 .page-header.breadcrumb-wrap {
     margin-top: 10px;
@@ -197,7 +329,7 @@
                <div class="col-12 products">
                    <div class="table-responsive">
                        <table class="table shopping-summery text-center clean" style="font-size: 15px; border: 1px solid #e6e1e1;
-    border-collapse: collapse;">
+                            border-collapse: collapse;">
                            <thead style="border: 1px solid #e6e1e1;">
                                <tr class="main-heading" style="border: 1px solid #e6e1e1;">
                                    <th scope="col" style="border: 1px solid #e6e1e1;">Sl. No</th>
@@ -324,22 +456,7 @@
       }
    });
 }
-    // function confirmRemove(productId){
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You can't able to revert this",
-    //         icon:'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor:'#3085d6',
-    //         cancelButtonColor:'#d33',
-    //         confirmButonText: 'Yes, remove it!'
-    //     }).then((result) => {
-    //         if(result.isConfirmed){
-    //             window.location.href = `/removeFromWishlist?productId=${productId}`
-    //         }
-    //     });
-    // }
-
+    
     function confirmRemove(productId) {
     Swal.fire({
         title: 'Are you sure?',

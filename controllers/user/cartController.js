@@ -9,62 +9,6 @@ const env = require("dotenv").config();
 const session = require("express-session");
 const { default: mongoose } = require("mongoose");
 
-
-// const getCartPage = async (req, res, next) => {
-//   try {
-//     if (!req.session.user) {
-//       return res.redirect('/login');
-//     }
-
-//     const userId = req.session.user._id;
-//     const currentPage = parseInt(req.query.page) || 1;
-//     const limit = 4;
-//     const skip = (currentPage - 1) * limit;
-
-//     const carts = await Cart.findOne({ userId }).populate({
-//       path: "items.productId",
-//       populate: [{ path: "category", select: "name" }, { path: "brand", select: "brandName" }]
-//     });
-
-//     if (!carts || carts.items.length === 0) {
-//       return res.render('cart', { 
-//         carts: [], total: 0, cart: null, user: req.session.user, data: [], 
-//         currentPage: 1, totalPages: 1 
-//       });
-//     }
-
-//     // Update totalPrice for each item based on the latest salePrice from the Product model
-//     let totalamount = 0;
-//     for (let item of carts.items) {
-//       if (item.productId) {
-//         const latestPrice = item.productId.salePrice; // Get the latest salePrice
-//         item.totalPrice = item.quantity * latestPrice; // Update totalPrice
-//         totalamount += item.totalPrice;
-//       }
-//     }
-
-//     // Save the updated cart back to the database
-//     await carts.save();
-
-//     let total = Math.round(totalamount); 
-//     const totalPages = Math.ceil(carts.items.length / limit);
-
-//     res.render('cart', {
-//       user: req.session.user,
-//       data: carts.items.slice(skip, skip + limit),
-//       total: total,
-//       cart: carts,
-//       currentPage: currentPage,
-//       totalPages: totalPages
-//     });
-
-//   } catch (error) {
-//     console.error('Error fetching cart:', error);
-//     next(new CustomError(500, "An error occurred while loading the cart page."));
-//   }
-// };
-
-
 const getCartPage = async (req, res, next) => {
   try {
     if (!req.session.user) {

@@ -444,25 +444,22 @@ input[type="text"] {
                         </div>
                     </div>
 
-                    <div class="payments">
-                        <div class="mb-20">
-                            <h3>Payment Methods</h3>
-                        </div>
-                        <div class="payment_method col-6">
+<div class="payments">
+     <div class="mb-20">
+        <h3>Payment Methods</h3>
+     </div>
+     <div class="payment_method col-6">
         <input type="radio" class="form-check-input" id="paymentMethodCOD" name="paymentMethod" value="Cash on Delivery">
-        <label class="form-check-label" for="paymentMethodCOD"><i class="fas fa-truck"></i>Cash on Delivery</label> <br>
+        <label class="form-check-label" for="paymentMethodCOD"><i class="fas fa-truck"></i> Cash on Delivery</label> <br>
         
         <input type="radio" class="form-check-input" id="Onlinepayment" name="paymentMethod" value="Online Payment">
-        <label class="form-check-label" for="Onlinepayment"><i class="fas fa-credit-card"></i>Online Payment(via Razorpay)</label><br>
+        <label class="form-check-label" for="Onlinepayment"><i class="fas fa-credit-card"></i> Online Payment(via Razorpay)</label><br>
 
 
         <input type="radio" class="form-check-input" id="paymentWallet" name="paymentMethod" value="Wallet">
-        <label class="form-check-label" for="paymentWallet"><i class="fas fa-wallet"></i>Wallet</label><br>
-
-        
-
-                        </div>
-                    </div>
+        <label class="form-check-label" for="paymentWallet"><i class="fas fa-wallet"></i> Wallet</label><br>
+    </div>
+</div>
 
                     <div class="container col-6 mt-3"> 
                         <div class="ml-150">
@@ -536,98 +533,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const key = "rzp_test_YFWFrvVk0xexkK"; 
 
-// function placeOrder(paymentId = "") {
-//     let orderedItems = [];
-//     let gstAmount = parseFloat(document.querySelector("[name='gstAmount']")?.textContent.replace("₹", "").trim()) || 0;
-//     console.log(gstAmount);
-
-//     document.querySelectorAll("tbody tr").forEach(row => {
-//         let productId = row.querySelector("#productid")?.value; 
-//         let quantity = parseInt(row.cells[4]?.textContent.trim()) || 0; 
-//         let price = parseFloat(row.cells[3]?.textContent.replace("₹", "").trim()) || 0;
-//         let productTotal = parseFloat(row.cells[5]?.textContent.replace("₹", "").trim()) || 0;
-
-//         if (productId && quantity > 0) {
-//             orderedItems.push({
-//                 product: productId,  
-//                 quantity,
-//                 price,
-//                 totalPrice: productTotal
-//             });
-//         }
-        
-//     });
-
-//     if (orderedItems.length === 0) {
-//         Swal.fire({ icon: 'error', title: 'Oops...', text: 'Your cart is empty!' });
-//         return;
-//     }
-
-//     let selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
-//     if (!selectedAddress) {
-//         Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please select an address!' });
-//         return;
-//     }
-
-//     let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-//     if (!paymentMethod) {
-//         Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please select a payment method!' });
-//         return;
-//     }
-
-//     let totalPrice = orderedItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-//     let shipping = 50;
-//     let discountElement = document.querySelector("#discount p");
-//     let discount = discountElement ? parseFloat(discountElement.textContent.replace("₹", "").trim()) || 0 : 0;
-    
-//     let finalAmount = totalPrice + shipping - discount + gstAmount;
-
-//     if (isNaN(finalAmount) || finalAmount <= 0) {
-//         Swal.fire({ icon: 'error', title: 'Error', text: 'Invalid order total. Please check the cart total and discounts.' });
-//         return;
-//     }
-
-//     if (paymentMethod === "Online Payment" && !paymentId) {
-//         initiatePayment();
-//         return;
-//     }
-
-//     fetch("/placeOrder", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//             orderedItems,
-//             totalPrice,
-//             gstAmount,  
-//             discount,
-//             shipping,
-//             finalAmount,
-//             address: selectedAddress,
-//             status: "Order Placed",
-//             paymentMethod: paymentMethod,
-//             paymentId: paymentMethod === "Online Payment" ? paymentId : null
-//         })
-//     })
-//     .then(response => response.json())
-//     .then(response => {
-//         if (response.success) {
-//             Swal.fire({ icon: 'success', title: 'Order Placed!', text: 'Your order has been successfully placed.' })
-//             .then(() => {
-//                 const orderId = response.order?._id;
-//                 if (orderId) {
-//                     window.location.href = `/orderDetails?orderId=${orderId}`;
-//                 }
-//             });
-//         } else {
-//             Swal.fire({ icon: 'error', title: 'Error', text: response.message || 'There was an issue placing your order.' });
-//         }
-//     })
-//     .catch(error => {
-//         console.error("Order Placement Error:", error);
-//         Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong. Please try again later.' });
-//     });
-// }
-
 function placeOrder(paymentId = "") {
     let orderedItems = [];
     let gstAmount = parseFloat(document.querySelector("[name='gstAmount']")?.textContent.replace("₹", "").trim()) || 0;
@@ -674,6 +579,15 @@ function placeOrder(paymentId = "") {
 
     if (isNaN(finalAmount) || finalAmount <= 0) {
         Swal.fire({ icon: 'error', title: 'Error', text: 'Invalid order total. Please check the cart total and discounts.' });
+        return;
+    }
+
+    if (paymentMethod === "Cash on Delivery" && finalAmount > 1000) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'COD is not available for orders above ₹1000. Please select another payment method.'
+        });
         return;
     }
 

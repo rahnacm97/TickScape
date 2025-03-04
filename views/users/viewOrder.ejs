@@ -567,11 +567,12 @@ hr {
               <p>
                 <% if (item.productId && item.productId._id) { %>
                   <a href="/viewOrder/<%= order._id %>?productId=<%= item.productId._id %>">
-                    <img src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>">
+                    <img src="http://localhost:3000/<%= item.productImage || item.productId.productImage[0] %>" 
+                    alt="<%= item.productName || item.productId.productName %>">               
                   </a>
                 <% } %>
               </p>
-              <p><strong>Product Name:</strong> <%= item.productId.productName %></p>
+              <p><strong>Product Name:</strong> <%= item.productName || item.productId.productName %></p>
               <p><strong>Quantity:</strong> <%= item.quantity %></p>
               <p><strong>Price per Item:</strong> ₹<%= item.price %></p>
               <p>

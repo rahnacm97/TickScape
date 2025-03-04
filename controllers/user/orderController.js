@@ -69,147 +69,6 @@ const getConfirmation = async (req, res) => {
     }
 };
 
-// const downloadInvoice = async (req, res) => {
-//     try {
-//         const { orderId } = req.params;
-//         const userId = req.session.user._id;
-
-//         const order = await Order.findById(orderId).populate({
-//             path: "orderedItems.productId",
-//             model: "Product",
-//         });
-
-//         if (!order) {
-//             return res.status(404).json({ error: "Order not found" });
-//         }
-
-//         let fullAddress = null;
-//         if (order.address) {
-//             const addressDoc = await Address.findOne({ userId });
-
-//             if (!addressDoc) {
-//                 return res.status(404).json({ error: "Address document not found." });
-//             }
-
-//             fullAddress = addressDoc.address.find(
-//                 (addr) => addr._id.toString() === order.address.toString()
-//             );
-
-//             if (!fullAddress) {
-//                 return res.status(404).json({ error: "Address not found." });
-//             }
-//         }
-
-//         const invoiceDir = path.join("D:", "BROTOTYPE", "TICKSCAPE", "invoices");
-//         const invoicePath = path.join(invoiceDir, `invoice-${orderId}.pdf`);
-
-//         if (!fs.existsSync(invoiceDir)) {
-//             fs.mkdirSync(invoiceDir, { recursive: true });
-//         }
-
-//         const doc = new PDFDocument({ margin: 30 });
-//         const writeStream = fs.createWriteStream(invoicePath);
-//         doc.pipe(writeStream);
-
-//         // === Header ===
-//         doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
-
-//         // Order ID and Date
-//         doc.fontSize(12).text(`Order ID: ${order.orderId}`);
-//         doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
-
-//         // Delivery Address
-//         doc.fontSize(12).text("Deliver to:", { underline: true });
-//         doc.text(`${fullAddress.name}`);
-//         doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
-//         doc.text(`Pincode: ${fullAddress.pincode}`);
-//         doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
-
-//         // === Table Header ===
-//         const tableTop = doc.y;
-//         const colWidths = [30, 200, 80, 80, 80]; // Column widths for #, Product Name, Quantity, Price, Total
-//         const colPositions = [50, 80, 280, 360, 440]; // X positions for columns
-
-//         // Draw table header
-//         doc.fontSize(12).font("Helvetica-Bold");
-//         doc.text("#", colPositions[0], tableTop);
-//         doc.text("Product Name", colPositions[1], tableTop);
-//         doc.text("Quantity", colPositions[2], tableTop);
-//         doc.text("Price", colPositions[3], tableTop);
-//         doc.text("Total", colPositions[4], tableTop);
-
-//         // Draw horizontal line below header
-//         doc.moveTo(50, tableTop + 15).lineTo(530, tableTop + 15).stroke();
-
-//         // === Table Rows ===
-//         doc.font("Helvetica"); // Reset font to normal
-//         let y = tableTop + 25; // Start below the header
-
-//         order.orderedItems.forEach((item, index) => {
-//             doc.text((index + 1).toString(), colPositions[0], y);
-//             doc.text(item.productId.productName, colPositions[1], y);
-//             doc.text(item.quantity.toString(), colPositions[2], y);
-//             doc.text(`₹${item.price}`, colPositions[3], y);
-//             doc.text(`₹${item.quantity * item.price}`, colPositions[4], y);
-
-//             // Draw vertical lines for columns
-//             doc.moveTo(colPositions[0] - 10, y - 5).lineTo(colPositions[0] - 10, y + 15).stroke();
-//             doc.moveTo(colPositions[1] - 10, y - 5).lineTo(colPositions[1] - 10, y + 15).stroke();
-//             doc.moveTo(colPositions[2] - 10, y - 5).lineTo(colPositions[2] - 10, y + 15).stroke();
-//             doc.moveTo(colPositions[3] - 10, y - 5).lineTo(colPositions[3] - 10, y + 15).stroke();
-//             doc.moveTo(colPositions[4] - 10, y - 5).lineTo(colPositions[4] - 10, y + 15).stroke();
-
-//             y += 20; // Move to the next row
-//         });
-
-//         // Draw bottom horizontal line
-//         doc.moveTo(50, y).lineTo(530, y).stroke();
-
-//         // === Summary Section ===
-//         doc.moveDown().fontSize(12);
-//         const cgst = (order.totalPrice * 0.09).toFixed(2);
-//         const sgst = (order.totalPrice * 0.09).toFixed(2);
-
-//         doc.text(`Total Price: ₹${order.totalPrice}`, { align: "right" });
-//         doc.text(`CGST (9%): ₹${cgst}`, { align: "right" });
-//         doc.text(`SGST (9%): ₹${sgst}`, { align: "right" });
-//         doc.text(`Total GST (18%): ₹${order.gstAmount}`, { align: "right" });
-//         doc.text(`Shipping: ₹${order.shipping}`, { align: "right" });
-//         doc.text(`Discount: ₹${order.discount}`, { align: "right" });
-//         doc.fontSize(14).text(`Final Amount: ₹${order.finalAmount}`, { align: "right", underline: true });
-
-//         // Footer
-//         doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
-
-//         doc.end();
-
-//         // Handle file download
-//         writeStream.on("finish", () => {
-//             console.log("PDF successfully written. Ready for download.");
-
-//             fs.access(invoicePath, fs.constants.F_OK, (err) => {
-//                 if (err) {
-//                     console.error("File does not exist:", invoicePath);
-//                     return res.status(404).json({ error: "Invoice file not found" });
-//                 }
-
-//                 console.log("File exists, proceeding to download...");
-
-//                 res.download(invoicePath, `invoice-${orderId}.pdf`, (err) => {
-//                     if (err) {
-//                         console.error("Error downloading invoice:", err);
-//                         return res.status(500).json({ error: "Error downloading invoice" });
-//                     } else {
-//                         console.log("Invoice downloaded successfully.");
-//                     }
-//                 });
-//             });
-//         });
-//     } catch (error) {
-//         console.error("Error generating invoice:", error);
-//         res.status(500).json({ error: "Error generating invoice" });
-//     }
-// };
 
 const downloadInvoice = async (req, res) => {
     try {
@@ -280,22 +139,18 @@ const downloadInvoice = async (req, res) => {
                 `₹${(item.quantity * item.price * 1.18).toFixed(2)}`, // Total
             ]), 
         };
+
+        console.log("Table Rows:", table.rows);
+
+        doc.registerFont("NotoSans", path.join(invoiceDir, "fonts" , "Noto_Sans", "static", "NotoSans-Regular.ttf"));
+        doc.font("NotoSans");
         
         // Add the table to the PDF
         await doc.table(table, {
-            columnsSize: [100, 150, 100, 100, 100], // Define column widths
-            prepareHeader: () => doc.font("Helvetica-Bold"),
+            columnsSize: [50, 200, 80, 100, 100],
+            prepareHeader: () => doc.font("NotoSans").fontSize(12),
             prepareRow: (row, indexColumn, indexRow, rectRow) => {
-                doc.font("Helvetica");
-                if (indexColumn === 3 || indexColumn === 4) {
-                    // Align price and total columns to the right
-                    doc.text(row[indexColumn], rectRow.x + rectRow.width - 10, rectRow.y + 5, {
-                        width: rectRow.width,
-                        align: "right",
-                    });
-                } else {
-                    doc.text(row[indexColumn], rectRow.x + 5, rectRow.y + 5);
-                }
+                doc.font("NotoSans");
             },
         });
 
@@ -419,7 +274,7 @@ const viewOrder = async(req,res) => {
 
         const userId = req.session.user._id;
         const { orderid } = req.params;
-        console.log("1",orderid,userId);
+        //console.log("1",orderid,userId);
 
         const order = await Order.findById(orderid).populate({
             path: 'orderedItems.productId', 
@@ -430,7 +285,7 @@ const viewOrder = async(req,res) => {
             return res.status(404).send('Order not found');
         }
         
-        console.log("1", order);
+        //console.log("1", order);
         const addressDetails = await Address.findOne({ userId: order.userId }).exec();
    
         const address = addressDetails.address.find(
@@ -467,61 +322,6 @@ const viewOrder = async(req,res) => {
     }
 }
 
-// const cancelOrder = async (req, res) => {
-//     try {
-//         const { itemId } = req.params;
-//         const { reason } = req.body;
-
-//         if (!itemId || !reason) {
-//             return res.status(400).json({ success: false, message: "Invalid request data" });
-//         }
-
-//         const order = await Order.findOne({ "orderedItems.productId": itemId });
-//         if (!order) {
-//             return res.status(404).json({ success: false, message: "Order item not found" });
-//         }
-
-//         //console.log("Order found:", order);
-//         //console.log("Ordered items:", order.orderedItems);
-
-//         const itemIndex = order.orderedItems.findIndex(item => item.productId.toString() === itemId);
-//         if (itemIndex === -1) {
-//             return res.status(404).json({ success: false, message: "Item not found in order" });
-//         }
-
-//         const item = order.orderedItems[itemIndex];
-
-//         if (["Shipped", "Out for Delivery", "Delivered", "Cancelled"].includes(item.orderStatus)) {
-//             return res.status(400).json({ success: false, message: `You cannot cancel a ${item.orderStatus} item.` });
-//         }
-
-//         item.orderStatus = "Cancelled";
-//         item.cancellationReason = reason;
-
-//         await Product.updateOne(
-//             { _id: item.productId },
-//             { $inc: { quantity: item.quantity } }
-//         );
-
-//         order.totalPrice -= item.price * item.quantity;
-//         order.finalAmount = order.totalPrice - order.discount + order.shipping;
-
-//         const allItemsCancelled = order.orderedItems.every(i => i.orderStatus === "Cancelled");
-//         if (allItemsCancelled) {
-//             order.status = "Cancelled";
-//             order.finalAmount = 0; 
-//         }
-
-//         //order.cancellationReason.push({ date: new Date(), status: `${reason}` });
-
-//         await order.save();
-
-//         return res.status(200).json({ success: true, message: "Item cancelled successfully." });
-//     } catch (error) {
-//         console.error("Error cancelling order item:", error);
-//         return res.status(500).json({ success: false, message: "Internal server error." });
-//     }
-// };
 
 const cancelOrder = async (req, res) => {
     try {
@@ -617,73 +417,6 @@ const cancelOrder = async (req, res) => {
     }
 };
 
-
-// const cancelParentOrder = async (req, res) => {
-//     try {
-//         const { OrderId } = req.params;
-//         const { reason } = req.body;
-
-//         if (!OrderId || !reason) {
-//             return res.json({ success: false, message: "Invalid request data." });
-//         }
-
-//         //console.log("OrderId:", OrderId);
-//         const orders = await Order.findById(OrderId);
-
-//         //console.log("Orders found:", orders);
-
-//         if (!orders) {
-//             return res.json({ success: false, message: "Parent order not found." });
-//         }
-
-//         const isShippedOrDelivered = orders.orderedItems.some(
-//             (item) =>
-//                 item.orderStatus === "Shipped" ||
-//                 item.orderStatus === "Delivered" ||
-//                 item.orderStatus === "Out for Delivery"
-//         );
-
-//         if (isShippedOrDelivered) {
-//             return res.json({
-//                 success: false,
-//                 message:
-//                     "One or more items in this order have already been shipped, delivered, or are out for delivery. Cancellation is not allowed.",
-//             });
-//         }
-
-//         for (const item of orders.orderedItems) {
-//             if (item.orderStatus !== "Cancelled") {
-//                 const product = await Product.findById(item.productId);
-//                 if (product) {
-//                     console.log("Product before update:", product);
-//                     await Product.updateOne(
-//                         { _id: item.productId },
-//                         { $inc: { quantity: item.quantity } } 
-//                     );
-//                     //console.log("Product after update:", product);
-//                 }
-
-//                 item.orderStatus = "Cancelled";
-//             }
-//         }
-
-//         orders.status = "Cancelled";
-//         orders.finalAmount = 0;
-//         orders.trackingHistory.push({ date: new Date(), status: "Cancelled - " + reason });
-
-//         await orders.save();
-
-//         //console.log("Order after update:", orders);
-
-//         return res.json({
-//             success: true,
-//             message: "All eligible items under the parent order have been cancelled successfully.",
-//         });
-//     } catch (error) {
-//         console.error("Error cancelling parent order:", error);
-//         return res.json({ success: false, message: "Internal server error." });
-//     }
-// };
 
 const cancelParentOrder = async (req, res) => {
     try {

@@ -65,9 +65,6 @@ const loadLoginPage = async(req,res,next) => {
 
 const login = async(req,res,next) => {
     try{
-
-        // const bytes = CryptoJS.AES.decrypt(password, "your-secret-key");
-        // const decryptedPassword = bytes.toString(CryptoJS.enc.Utf8);
         
         const {email,password} = req.body;
         //console.log("password",password);
@@ -81,7 +78,7 @@ const login = async(req,res,next) => {
 
        const passwordMatch = await bcrypt.compare(password,findUser.password);
 
-        console.log("Password Match:", passwordMatch);
+        //console.log("Password Match:", passwordMatch);
         if(!passwordMatch){
             return res.render("login",{message:"Incorrect Password"});
         }
@@ -138,49 +135,6 @@ const loadSignupPage = async(req,res) => {
         res.status(500).send("Server Error");
     }
 }
-
-// const signup = async(req,res) => {
-//     try{
-//         const {fname,lname,phone,email, password,cpassword} = req.body;
-//         if(password !== cpassword){
-//             return res.render('signup',{message:"Password do not match"});
-//         }
-//         const findUser = await User.findOne({email});
-//         if(findUser){
-//             return res.render('signup',{message:"Email already exists"});
-//         }
-//         console.log
-
-//         const otp = generateOtp();
-
-//         const emailSent = await sentVerification(email,otp);
-
-//         if(!emailSent){
-//             return res.json("email-error");
-//         }
-
-//         req.session.userOtp = otp;
-//         req.session.userData = {fname,lname,phone,email,password};
-
-//         setTimeout(()=>{
-//             delete req.session.userOtp
-//             req.session.save((err)=>{
-//                 if(err){
-//                     console.log('Error deleting session');
-//                 }
-//             })
-//             console.log('otp expired');
-//           },60000)
-//           //console.log('4');
-        
-//         res.render("verify-otp");
-//         console.log("OTP Sent ",otp);
-
-//     }catch(err){
-//         console.error("Signup Error",err);
-//         res.redirect('/pageNotFound');
-//     }
-// }
 
 const signup = async (req, res) => {
     try {
@@ -239,34 +193,6 @@ const securePassword = async (password) => {
     }
 }
 
-// const verifyOtp = async (req,res) => {
-//     try{
-//         const {otp} = req.body;
-//         console.log(otp);
-
-//         if(otp === req.session.userOtp){
-//             const user = req.session.userData;
-//             const passwordHash = await securePassword(user.password);
-//             const saveUserData = new User({
-//                 fname:user.fname,
-//                 lname:user.lname,
-//                 email:user.email,
-//                 phone:user.phone,
-//                 password:passwordHash,
-//                 isAdmin:0,
-//             })
-//             await saveUserData.save();
-//             req.session.user = saveUserData._id;
-
-//             res.json({success:true,redirectUrl:"/login"});
-//         }else{
-//             res.status(400).json({success:false, message:"Invalid OTP, Please try again"});
-//         }
-//     }catch(error){
-//         console.error("error verifying OTP",error);
-//         res.status(500).json({success:false, message:"An error occured"});
-//     }
-// }
 
 const verifyOtp = async (req, res) => {
     try {
@@ -346,7 +272,7 @@ const logout = async (req,res) => {
     try{
         
         if (req.session.appliedCoupon) {
-            delete req.session.appliedCoupon; // Remove applied coupon from session
+            delete req.session.appliedCoupon; 
         }
 
         req.session.destroy((err) => {

@@ -129,6 +129,7 @@ const getCheckout = async (req, res) => {
   }
 };
 
+
 const applyCoupon = async (req, res) => {
   try {
     console.log("Coupon request received:", req.body);
@@ -396,10 +397,19 @@ const placeOrder = async (req, res) => {
           return res.status(400).json({ error: "Invalid payment amount. Please check the cart total." });
       }
 
+
+      if (paymentMethod === "Cash on Delivery" && finalAmount > 1000) {
+        return res.status(400).json({
+            success: false,
+            message: "Cash on Delivery is not available for orders above ₹1000."
+        });
+      }
+
       let couponApplied = discount > 0;
       let appliedCoupon = null;
-      console.log("Coupon Applied:", couponApplied);
-      console.log("Applied Coupon in Session:", req.session.appliedCoupon);
+
+      // console.log("Coupon Applied:", couponApplied);
+      // console.log("Applied Coupon in Session:", req.session.appliedCoupon);
 
       if (req.session.appliedCoupon && couponApplied) {
         appliedCoupon = req.session.appliedCoupon._id; 
@@ -444,6 +454,8 @@ const placeOrder = async (req, res) => {
               quantity: item.quantity,
               price: item.price,
               orderStatus: item.orderStatus,
+              productName:product.productName,
+              productImage:product.productImage[0],
           });
       }
 
@@ -493,7 +505,7 @@ const placeOrder = async (req, res) => {
 
 
 const getUserWalletBalance = async (req, res) => {
-  console.log("1")
+  //console.log("1")
   try {
     const userId = req.session.user._id;
     let user = await User.findById(userId);
@@ -547,51 +559,6 @@ const deductWalletBalance = async (req, res) => {
     res.status(500).json({ message: "Error deducting wallet balance" });
   }
 };
-
-
-// const walletPayment = async (userId, amount) => {
-//   try {
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return { success: false, message: "User not found." };
-//     }
-
-//     let walletBalance = user.wallet.reduce((sum, entry) => sum + entry.amount, 0);
-
-//     if (walletBalance < amount) {
-//       return { success: false, message: "Insufficient wallet balance." };
-//     }
-
-//     let remainingAmount = amount;
-//     let updatedWallet = [];
-
-//     for (let entry of user.wallet) {
-//       if (remainingAmount <= 0) {
-//         updatedWallet.push(entry);
-//         continue;
-//       }
-
-//       if (entry.amount > remainingAmount) {
-//         updatedWallet.push({ ...entry, amount: entry.amount - remainingAmount });
-//         remainingAmount = 0;
-//       } else {
-//         remainingAmount -= entry.amount;
-//       }
-//     }
-
-//     // Remove wallet entries with zero balance
-//     user.wallet = updatedWallet.filter(entry => entry.amount > 0);
-//     await user.save();
-
-//     console.log(`Wallet Payment Successful. Deducted: ${amount}`);
-//     return { success: true };
-
-//   } catch (error) {
-//     console.error("Wallet Payment Error:", error);
-//     return { success: false, message: "Wallet payment failed." };
-//   }
-// };
-
 
 
 module.exports = {

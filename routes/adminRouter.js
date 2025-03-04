@@ -39,6 +39,7 @@ router.get('/dashboard',adminAuth,dashboardController.loadDashboard);
 router.get('/salesReport',adminAuth,dashboardController.salesReport);
 router.post("/download-sales-data", adminAuth,dashboardController.downloadExcelReport);
 router.post("/download-pdf", adminAuth,dashboardController.downloadPDFReport);
+router.get('/sales-data',adminAuth,dashboardController.Chart);
 
 //Customer Management
 router.get('/users',adminAuth,customerController.customerInfo);

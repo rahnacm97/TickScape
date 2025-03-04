@@ -19,6 +19,7 @@ app.use((req, res, next) => {
     res.set("Cache-Control", "no-store");
     next();
   });
+
 app.use(session({
     secret: process.env.SESSION_SECRET, 
     resave: false,
@@ -34,6 +35,44 @@ app.use(session({
         maxAge: 72 * 60 * 60 * 1000 
     }
 }))
+
+// const userSessionConfig = {
+//     secret: process.env.USER_SESSION_SECRET, 
+//     resave: false,
+//     saveUninitialized: true,
+//     store: MongoStore.create({
+//         mongoUrl: process.env.MONGODB_URI,
+//         collectionName: "user_sessions", 
+//         ttl: 72 * 60 * 60, 
+//     }),
+//     cookie: {
+//         secure: false, 
+//         httpOnly: true,
+//         maxAge: 72 * 60 * 60 * 1000, 
+//     },
+// };
+
+// const adminSessionConfig = {
+//     secret: process.env.ADMIN_SESSION_SECRET, 
+//     resave: false,
+//     saveUninitialized: true,
+//     store: MongoStore.create({
+//         mongoUrl: process.env.MONGODB_URI,
+//         collectionName: "admin_sessions", 
+//         ttl: 72 * 60 * 60,
+//     }),
+//     cookie: {
+//         secure: false, 
+//         httpOnly: true,
+//         maxAge: 72 * 60 * 60 * 1000, 
+//     },
+// };
+
+// // Apply user session middleware to all routes
+// app.use(session(userSessionConfig));
+
+// // Apply admin session middleware to admin routes
+// app.use('/admin', session(adminSessionConfig));
 
 app.use(passport.initialize());
 app.use(passport.session());

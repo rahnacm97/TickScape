@@ -198,6 +198,9 @@ button:hover {
             </div>
           </div>
 
+
+          <!-- <div class="flex flex-wrap items-center gap-4 ">
+
           <form id="dateForm" class="flex flex-wrap items-center gap-4 mb-6">
             <label for="orderDate" class="text-black font-serif text-lg">Select Date:</label>
           
@@ -214,6 +217,32 @@ button:hover {
               Filter
             </button>
           </form>
+        </div> -->
+
+
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <form id="dateForm" class="flex flex-wrap items-center gap-4">
+            <label for="filterType" class="text-black font-serif text-lg">Filter By:</label>
+            <select id="filterType" name="filterType" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="custom">Custom Date Range</option>
+            </select>
+        
+            <!-- Custom Date Range Inputs (hidden by default) -->
+            <div id="customDateInputs" class="flex items-center gap-4 hidden">
+              <label for="startDate" class="text-black font-serif text-lg">From:</label>
+              <input type="date" id="startDate" name="startDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <span class="font-semibold text-lg">To</span>
+              <input type="date" id="endDate" name="endDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition">
+              Filter
+            </button>
+          </form>
+        </div>
           
           <div>
             <div style="display: flex; justify-content: end; gap: 20px; margin-top: 10px; margin-bottom: 20px;">
@@ -318,13 +347,12 @@ button:hover {
               
     </div>
 
-
           <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
     style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    TOP 5 ORDERED PRODUCTS AND CATEGORIES
+    TOP 10 PRODUCTS AND CATEGORIES
 </h2>
 
-<div class="grid gap-6 mb-8 md:grid-cols-2">
+<div class="grid gap-6 mb-8 md:grid-cols-2 mt-4">
     <!-- Products Table -->
     <div class="w-full overflow-hidden rounded-lg shadow-lg">
         <table class="w-full border border-gray-300 bg-white">
@@ -382,35 +410,128 @@ button:hover {
     </div>
 </div>
 
+<h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
+    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+  TOP BRANDS
+    </h2>
+    <div class="grid mt-4 mb-4">
+      <!-- Products Table -->
+      <div class="w-full overflow-hidden rounded-lg shadow-lg">
+          <table class="w-full border border-gray-300 bg-white">
+            <thead>
+              <tr class="bg-gray-700 text-white">
+                  <th class="px-6 py-3 text-left">No</th>
+                  <th class="px-6 py-3 text-left">Name</th>
+                  <th class="px-6 py-3 text-left">Sales Count</th>
+              </tr>
+          </thead>
+          <tbody>
+              <% if (brand && brand.length > 0) { %>
+                  <% brand.forEach((item, index) => { %>
+                      <tr class="border-b hover:bg-gray-100">
+                          <td class="px-6 py-4 text-gray-700 text-sm"><%= index + 1 %></td>
+                          <td class="px-6 py-4 text-gray-700 text-sm font-medium"><%= item.brandName %></td>
+                          <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.brandCount %></td>
+                      </tr>
+                  <% }) %>
+              <% } else { %>
+                  <tr>
+                      <td colspan="3" class="text-center py-4 text-gray-500">No categories found</td>
+                  </tr>
+              <% } %>
+          </tbody>
+          </table>
+      </div>
+      </div>
+
+
+<h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
+    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+    Low Stock Products
+    </h2>
+    <div class="grid mt-4 mb-4">
+      <!-- Products Table -->
+      <div class="w-full overflow-hidden rounded-lg shadow-lg">
+          <table class="w-full border border-gray-300 bg-white">
+            <thead>
+              <tr class="bg-gray-200">
+                  <th class="border px-4 py-2">Sl. No</th>
+                  <th class="border px-4 py-2">Product Name</th>
+                  <th class="border px-4 py-2">Status</th>
+                  <th class="border px-4 py-2">Stock</th>
+                  <th class="border px-4 py-2">Price</th>
+                  <!-- <th class="border px-4 py-2">GST Rate</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <% if (lowStockProducts && lowStockProducts.length > 0) { %>
+                <% lowStockProducts.forEach((item, index) => { %>
+                    <tr class="border-b hover:bg-gray-100">
+                        <td class="px-6 py-4 text-gray-700 text-sm"><%= index + 1 %></td>
+                        <td class="px-6 py-4 text-gray-700 text-sm font-medium"><%= item.productName %></td>
+                        <td class="px-6 py-4 text-gray-700 text-sm"><%= item.status %></td>
+                        <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.quantity %></td>
+                        <td class="px-6 py-4 text-gray-700 text-sm font-semibold">₹<%= item.salePrice %></td>
+                        <!-- <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.gstRate %>%</td> -->
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-gray-500">No Low Stock Products</td>
+                </tr>
+            <% } %>
+            </tbody>
+          </table>
+      </div>
+      
+    </div>
+
 
           <!-- Charts -->
-          <h2
-              class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
-            >
-              Charts
-            </h2>
-            <div class="grid gap-6 mb-8 md:grid-cols-2">
-            <select id="filter" onchange="updateChart()">
-              <option value="yearly">Yearly</option>
-              <option value="monthly">Monthly</option>
-              <option value="weekly">Weekly</option>
-          </select>
-          </div>
-          <div class="grid gap-6 mb-8">
-            <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                Traffic
-              </h4>
-              <canvas id="line"></canvas>
-              <div class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                <!-- Chart legend -->
-              </div>
-            </div>
-          </div>
+  <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
+    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+    Charts
+</h2>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="grid gap-6 mb-8 md:grid-cols-2 mt-4">
+    <div class="w-full md:w-48">
+      <select id="filter" 
+              class="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 
+                     dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+        <option value="yearly">Yearly</option>
+        <option value="monthly" selected>Monthly</option>
+        <option value="weekly">Weekly</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid gap-6 mb-8 md:grid-cols-2">
+    <!-- Line Chart -->
+    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
+      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Trend</h4>
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
+      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Distribution</h4>
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+
         </div>
       </main>
     </div>
 </div>
+
 <% 
   function getStatusClass(status) {
     switch (status) {
@@ -428,8 +549,11 @@ button:hover {
 
 </section>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+
 
 let result = null;
 let eventListenersAdded = false;
@@ -452,19 +576,6 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadButton.addEventListener("click", () => {
     console.log("Download button clicked");
 
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-
-    if (!startDate || !endDate) {
-      
-        Swal.fire({
-            title: 'Warning',
-            text: 'Please select both Start and End dates',
-            icon: 'warning'
-        });
-        return; 
-    }
-
     if (result) {
         
         downloadXlsx(result);
@@ -481,20 +592,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 downloadPdfButton.addEventListener("click", () => {
     console.log("Download PDF button clicked");
-
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-
-    if (!startDate || !endDate) {
-
-        Swal.fire({
-            title: 'Warning',
-            text: 'Please select both Start and End dates',
-            icon: 'warning'
-        });
-        return; 
-    }
-
     if (result) {
        
         downloadPDF(result);
@@ -512,53 +609,83 @@ downloadPdfButton.addEventListener("click", () => {
     eventListenersAdded = true;
 });
 
-document.getElementById("dateForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById('endDate').value;
 
+document.addEventListener("DOMContentLoaded", () => {
+  const filterTypeSelect = document.getElementById("filterType");
+  const customDateInputs = document.getElementById("customDateInputs");
+
+  filterTypeSelect.addEventListener("change", () => {
+  if (filterTypeSelect.value === "custom") {
+    customDateInputs.classList.remove("hidden");
+    result = null; 
+    document.getElementById("startDate").value = ""; 
+    document.getElementById("endDate").value = "";
+  } else {
+    customDateInputs.classList.add("hidden");
+  }
+});
+
+  document.getElementById("dateForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const filterType = document.getElementById("filterType").value;
+  let startDate = document.getElementById("startDate").value;
+  let endDate = document.getElementById("endDate").value;
+
+  if (filterType === "custom") {
     if (!startDate || !endDate) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Missing Dates',
-            text: 'Please select both start and end dates!',
-            confirmButtonColor: '#3085d6',
-        });
-        return;
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Dates",
+        text: "Please select both start and end dates for custom range!",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Date Range',
-            text: 'The "From" date must be before the "To" date.',
-            confirmButtonColor: '#d33',
-        });
-        return;
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Date Range",
+        text: "The 'From' date must be before the 'To' date.",
+        confirmButtonColor: "#d33",
+      });
+      return;
     }
 
-    const startDatee = new Date(startDate).toISOString().split("T")[0];
-    const endDatee = new Date(endDate).toISOString().split("T")[0];
+    startDate = new Date(startDate).toISOString().split("T")[0];
+    endDate = new Date(endDate).toISOString().split("T")[0];
+  }
 
-    try {
-        const response = await fetch(`/admin/salesReport?startDatee=${startDatee}&endDatee=${endDatee}&page=1`, {
-            method: "GET",
-        });
+  try {
+    const url = `/admin/salesReport?filterType=${filterType}${
+      filterType === "custom" ? `&startDatee=${startDate}&endDatee=${endDate}` : ""
+    }&page=1`;
+    const response = await fetch(url, { method: "GET" });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        result = await response.json();
-        console.log("API Response:", result);
-
-        updateTable(result);
-        updatePagination(result);
-
-    } catch (error) {
-        console.error("Fetch error:", error);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+
+    result = await response.json();
+    console.log("API Response:", result);
+
+    updateTable(result);
+    updateCardForm(result);
+    updatePagination(result);
+  } catch (error) {
+    console.error("Fetch error:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to fetch sales report!",
+      confirmButtonColor: "#d33",
+    });
+  }
 });
+
+});
+
 
 function updateTable(result) {
     const ordersTableBody = document.getElementById('ordersTableBody');
@@ -605,26 +732,15 @@ function updateTable(result) {
 
 
 function updateCardForm(result) {
-    // Update Total Clients
+
     document.getElementById('userCount').textContent = result.userCount || 0;
-
-    // Update Total Sales
     document.getElementById('totalAmount').textContent = `₹${result.totalAmount || 0}`;
-
-    // Update Total Orders
     document.getElementById('totalOrder').textContent = result.totalOrder || 0;
-
-    // Update Items Sold
     document.getElementById('itemSold').textContent = result.itemSold || 0;
-
-    // Update Total Coupons Applied
     document.getElementById('totalCouponUsers').textContent = result.totalCouponUsers || 0;
-
-    // Update Total Discount Price
     document.getElementById('totalDiscount').textContent = `₹${result.totalDiscountPrice || 0}`;
-
-    // Update Pending Orders
     document.getElementById('processingOrders').textContent = result.processingOrders || 0;
+
 }
 
 function updatePagination(result) {
@@ -685,82 +801,272 @@ function getStatusClass(status) {
 }
 
 const downloadXlsx = async (result) => {
-  console.log("Downloading xls file",result);
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-    console.log(startDate,endDate,"1");
+  console.log("Downloading XLS file:", result);
 
-    if (!startDate || !endDate) {  
-        Swal.fire({
-            title: 'Warning',
-            text: 'Please select both Start and End dates',
-            icon: 'warning'
-        });
-        return;
+  if (!result || !result.startDate || !result.endDate || !result.filterType) {
+    Swal.fire({
+      title: "Error",
+      text: "No valid data available to download. Please filter the report first.",
+      icon: "error",
+    });
+    return;
+  }
+
+  // Validate custom filter inputs
+  if (result.filterType === "custom") {
+    const startDateInput = document.getElementById("startDate").value;
+    const endDateInput = document.getElementById("endDate").value;
+
+    if (!startDateInput || !endDateInput) {
+      Swal.fire({
+        title: "Warning",
+        text: "Please select both Start and End dates for custom range.",
+        icon: "warning",
+      });
+      return;
     }
 
-    try {
-        const response = await fetch(`/admin/download-sales-data`, {
-            method: "POST",  
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ startDate, endDate, salesData: result })  
-        });
+    const inputStartDate = new Date(startDateInput).toISOString().split("T")[0];
+    const inputEndDate = new Date(endDateInput).toISOString().split("T")[0];
 
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `TickScape-sales-report-${startDate}-${endDate}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    } catch (error) {
-        console.error("Error downloading report:", error);
+    if (result.startDate !== inputStartDate || result.endDate !== inputEndDate) {
+      Swal.fire({
+        title: "Error",
+        text: "The selected date range does not match the report data. Please filter again.",
+        icon: "error",
+      });
+      return;
     }
+  }
+
+  try {
+    const response = await fetch("/admin/download-sales-data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        startDate: result.startDate,
+        endDate: result.endDate,
+        salesData: result,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `TickScape-sales-report-${result.startDate}-${result.endDate}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading report:", error);
+    Swal.fire({
+      title: "Error",
+      text: "Failed to download Excel report!",
+      icon: "error",
+    });
+  }
 };
 
 
 const downloadPDF = async (result) => {
-    console.log('PDF Downloading Result:', result);
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-    console.log(startDate,endDate,"1");
-    
-    if (!startDate || !endDate) { 
-        Swal.fire({
-            title: 'Warning',
-            text: 'Please select both Start and End dates',
-            icon: 'warning'
-        });
-        return;
+  console.log("PDF Downloading Result:", result);
+
+  if (!result || !result.startDate || !result.endDate || !result.filterType) {
+    Swal.fire({
+      title: "Error",
+      text: "No valid data available to download. Please filter the report first.",
+      icon: "error",
+    });
+    return;
+  }
+
+  if (result.filterType === "custom") {
+    const startDateInput = document.getElementById("startDate").value;
+    const endDateInput = document.getElementById("endDate").value;
+
+    if (!startDateInput || !endDateInput) {
+      Swal.fire({
+        title: "Warning",
+        text: "Please select both Start and End dates for custom range.",
+        icon: "warning",
+      });
+      return;
     }
 
-    try {
-        const response = await fetch(`/admin/download-pdf`, {
-            method: "POST",  
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ startDate, endDate, salesData: result })
-        });
+    const inputStartDate = new Date(startDateInput).toISOString().split("T")[0];
+    const inputEndDate = new Date(endDateInput).toISOString().split("T")[0];
 
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `TickScape-sales-report-${startDate}-${endDate}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error("Error downloading report:", error);
+    if (result.startDate !== inputStartDate || result.endDate !== inputEndDate) {
+      Swal.fire({
+        title: "Error",
+        text: "The selected date range does not match the report data. Please filter again.",
+        icon: "error",
+      });
+      return;
     }
+  }
+
+  try {
+    const response = await fetch("/admin/download-pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        startDate: result.startDate,
+        endDate: result.endDate,
+        salesData: result,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `TickScape-sales-report-${result.startDate}-${result.endDate}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading report:", error);
+    Swal.fire({
+      title: "Error",
+      text: "Failed to download PDF report!",
+      icon: "error",
+    });
+  }
 };
+
+
+let lineChart = null;
+let pieChart = null;
+
+async function updateCharts() {
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  const filter = document.getElementById('filter').value;
+
+  try {
+    const response = await fetch(`/admin/sales-data?filter=${filter}`);
+    const data = await response.json();
+    console.log("Received data:", data);
+
+    // Destroy existing charts if they exist
+    if (lineChart) lineChart.destroy();
+    if (pieChart) pieChart.destroy();
+
+    // Line Chart
+    lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Sales Data',
+          data: data.values,
+          fill: false,
+          borderColor: 'rgba(100, 160, 200, 1)',
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Sales Amount (₹)' }
+          },
+          x: {
+            title: { display: true, text: 'Date' }
+          }
+        },
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { enabled: true }
+        }
+      }
+    });
+
+    // Pie Chart
+    pieChart = new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Sales Distribution',
+          data: data.values,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(153, 102, 255, 0.8)',
+            'rgba(255, 159, 64, 0.8)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function(context) {
+                let label = context.label || '';
+                if (label) label += ': ';
+                label += '₹' + context.raw.toFixed(2);
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error("Error loading chart data:", error);
+    alert("Failed to load chart data. Please try again.");
+  }
+}
+
+// Debounce function
+const debounce = (func, wait) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+};
+
+// Initial load and event listener
+document.addEventListener('DOMContentLoaded', () => {
+  updateCharts();
+});
+
+const debouncedUpdateCharts = debounce(updateCharts, 300);
+document.getElementById('filter').addEventListener('change', debouncedUpdateCharts);
 
 </script>
  
