@@ -69,7 +69,7 @@
 
       <div class="card mb-4">
           <div class="card-header">
-              <h4>Order ID: <%= order._id %></h4>
+              <h4>Order ID: <%= order.orderId %></h4>
               <p><strong class="text-light">Status: <%= order.status %></strong></p>
           </div>
 
@@ -137,28 +137,32 @@
                                 <td>₹<%= order.finalAmount %></td>
                                 <% if (order.orderedItems.indexOf(item) === 0) { %>
                                     <td rowspan="<%= order.orderedItems.length %>">
-                                        <select class="order-status-dropdown" 
-                                                data-order-id="<%= order._id %>" 
-                                                data-current-status="<%= order.status %>">
-                                            
-                                            <% 
-                                                let statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"];
-                                                
-                                                let adjustedStatus = ["Return Request", "Returned", "Return Denied"].includes(order.status) ? "Delivered" : order.status;
-                                                let currentIndex = statuses.indexOf(adjustedStatus);
-                                            %>
-                                            
-                                            <% statuses.forEach((status, index) => { %>
-                                                <option value="<%= status %>" 
-                                                    <%= adjustedStatus === status ? 'selected' : '' %>
-                                                    <%= index < currentIndex ? 'disabled' : '' %>> 
-                                                    <%= status %>
-                                                </option>
-                                            <% }); %>
-                                
-                                        </select>
+                                      <select class="order-status-dropdown" 
+                                              data-order-id="<%= order._id %>" 
+                                              data-current-status="<%= order.status %>">
+                                        
+                                        <% 
+                                          let statuses;
+                                          if (order.status === "Payment Pending") {
+                                            statuses = ["Payment Pending"]; // Only show "Payment Pending" when status is Payment Pending
+                                          } else {
+                                            statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"];
+                                          }
+                                          
+                                          let adjustedStatus = ["Return Request", "Returned", "Return Denied"].includes(order.status) ? "Delivered" : order.status;
+                                          let currentIndex = statuses.indexOf(adjustedStatus);
+                                        %>
+                                        
+                                        <% statuses.forEach((status, index) => { %>
+                                          <option value="<%= status %>" 
+                                                  <%= adjustedStatus === status ? 'selected' : '' %>
+                                                  <%= index < currentIndex && order.status !== "Payment Pending" ? 'disabled' : '' %>> 
+                                            <%= status %>
+                                          </option>
+                                        <% }); %>
+                                      </select>
                                     </td>
-                                <% } %>
+                                  <% } %>
                                                                 
                             </tr>
                         <% }); %>

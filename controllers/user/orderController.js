@@ -229,6 +229,7 @@ const getOrders = async (req, res) => {
 
         const formattedOrders = orders.map(order => ({
             orderid: order._id,
+            orderId: order.orderId,
             totalPrice: order.totalPrice,
             discount: order.discount,
             gstAmount: order.gstAmount,

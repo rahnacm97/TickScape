@@ -10,7 +10,8 @@ const orderSchema = new Schema({
     },
     orderId: {
         type: String,
-        default: () => uuidv4(),
+        //default: () => uuidv4(),
+        default: () => uuidv4().replace(/-/g, '').substring(0, 10),
         unique: true
     },
     orderedItems:[{
@@ -78,7 +79,6 @@ const orderSchema = new Schema({
     },
     createdOn: {
         type: Date,
-        // default: Date.now,
         default: () => new Date().toISOString().slice(0, 19) + "Z",
         required: true
     },

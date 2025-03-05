@@ -132,6 +132,9 @@
     .text-success{
         margin-right: 20px;
     }
+    .text-pending{
+        color:#810845;
+    }
   
     .d-flex {
       display: flex;
@@ -198,7 +201,7 @@
                               </div>
                               <div class="col-md-6">
                                   <div class="card-body">
-                                      <p class="card-text">Order ID: <%= order.orderid %></p>
+                                      <p class="card-text">Order ID: <%= order.orderId %></p>
                                       <p class="card-text">Total Items: <%= order.orderedItems.length %></p>
                                       <p class="card-text">Payment Method: <%= order.paymentMethod %></p>
                                   </div>
@@ -212,8 +215,10 @@
                                   <p class="card-text">
                                       <% if (order.status === 'Cancelled') { %>
                                           <span class="text-danger"><strong>Cancelled</strong></span>
+                                      <% } else if (order.status === 'Payment Pending'){ %>
+                                          <span class="text-pending"><strong><%= order.status %></strong></span>
                                       <% } else { %>
-                                          <span class="text-success"><strong><%= order.status %></strong></span>
+                                        <span class="text-success"><strong><%= order.status %></strong></span>
                                       <% } %>
                                   </p>
                                   <% if (order.status === 'Cancelled') { %>

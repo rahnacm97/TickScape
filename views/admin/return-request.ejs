@@ -156,7 +156,7 @@
             <tr id="order-<%= order._id %>">
               <td class="text-center"><%= (currentPage - 1) * limit + index + 1 %></td>
               <td><%= order.userId.fname %> <%= order.userId.lname %></td>
-              <td><%= order._id %></td>
+              <td><%= order.orderId %></td>
               <td>
                 <%= order.totalPrice %>
               </td>

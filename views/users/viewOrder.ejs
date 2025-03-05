@@ -515,7 +515,7 @@ hr {
       <div class="order-item">         
           <div class="container1">              
             <div class="order-info">          
-              <div class="order-detail"><span>Order ID:</span> <%= order._id %></div>
+              <div class="order-detail"><span>Order ID:</span> <%= order.orderId %></div>
               <div class="order-detail"><span>Total Items: <%= order.orderedItems.length %></span></div>
               <div class="order-detail"><span>Total Price:</span> ₹<%= order.totalPrice %></div>
               <div class="order-detail"><span>GST:</span> ₹<%= order.gstAmount %></div>
@@ -542,7 +542,7 @@ hr {
                   <% } else if (order.status === 'Cancelled') { %>
                     <span style="color: rgb(241, 8, 8);"><%= order.status %></span>
                   <% } else if (order.status === 'Payment Pending') { %>
-                    <span style="color: rgb(241, 8, 202);"><%= order.status %></span>
+                    <span style="color: #810845"><%= order.status %></span>
             <% } else {%>
               <span style="color: rgb(6, 168, 6);">Delivered</span>
               <%}%>
@@ -562,13 +562,6 @@ hr {
                 <% } else { %>
                     <p class="no-address">No address available for this order.</p>
                 <% } %>
-                <!-- <div class="btn1-container" style="margin-left: 550px;height:60px;margin-top: 25px;"> 
-                  <a href="#" class="btn" id="changeAddressBtn" 
-                     data-url="/update-address?orderid=<%= order._id %>"
-                      data-status="<%= order.status %>">
-                      Change Address
-                  </a>
-                </div> -->
             </div> 
 
     <h3 style="margin-left: 20px;margin-top: 20px;">Products in this Order:</h3>
@@ -604,8 +597,8 @@ hr {
       
                 <% if (item.orderStatus === 'Delivered') { %>
                   <div class="review-section">
-                    <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
-                    <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')">Return</button>
+                    <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary" style="text-transform: capitalize;">Write Review</a>
+                    <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')" style="text-transform: capitalize;">Return</button>
                   </div>
                 <% } else if (item.orderStatus === 'Return request') { %>              
                   <div class="btn1-container">
@@ -641,138 +634,26 @@ hr {
       <% } %>
     </div>   
 
-    <div class="btn1-container"> 
-      <a href="/orders" class="btn">Back to Orders</a>
-    
-      <% if (order.status !== "Cancelled" && order.status !== "Delivered" && order.status !== "Return Request" && order.status !== "Returned") { %>
-        <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
-          <i class="fa fa-ban"></i> Cancel Order
-        </a>
-      <% } %>
-    </div>
 
-
+  <div class="btn1-container"> 
+  <a href="/orders" class="btn" style="text-transform: capitalize;">Back to Orders</a>
+  
+  <% if (order.status === "Payment Pending") { %>
+    <a href="#" class="btn btn-sm" onclick="retryPayment('<%= order._id %>')" style="background-color: #088178;">
+      <i class="fa fa-redo"></i> Retry Payment
+    </a>
+  <% } else if (order.status !== "Cancelled" && order.status !== "Delivered" && order.status !== "Return Request" && order.status !== "Returned") { %>
+    <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
+      <i class="fa fa-ban"></i> Cancel Order
+    </a>
+  <% } %>
 </div>
+</div>
+
 </section>
-  </main>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-
-    document.getElementById('changeAddressBtn').addEventListener('click', function () {
-    document.getElementById('addressModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-});
-
-document.querySelector('.close').addEventListener('click', function () {
-    document.getElementById('addressModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-});
-
-window.onclick = function (event) {
-    let modal = document.getElementById('addressModal');
-    if (event.target === modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "auto";
-    }
-};
-
-
-document.getElementById('addressForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-    const updatedAddress = {
-        name: document.getElementById('name').value,
-        addressType: document.getElementById('addressType').value,
-        city: document.getElementById('city').value,
-        state: document.getElementById('state').value,
-        landMark: document.getElementById('landmark').value,
-        pincode: document.getElementById('pincode').value,
-        phone: document.getElementById('phone').value,
-        altPhone: document.getElementById('altPhone').value,
-    };
-
-    const orderId = "<%= order._id %>"; 
-
-    const response = await fetch(`/update-address/${orderId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedAddress)
-    });
-
-    if (response.ok) {
-        alert("Address updated successfully!");
-        document.getElementById('addressModal').style.display = 'none';
-        location.reload(); 
-    } else {
-        alert("Failed to update address.");
-    }
-});
-
-</script>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// function confirmCancel(element, itemId) { 
-//     console.log("Item ID to cancel:", itemId);
-
-//     Swal.fire({
-//         title: "Are you sure?",
-//         text: "Please select a reason for cancellation",
-//         icon: "warning",
-//         input: "select",
-//         inputOptions: {
-//             "Changed My Mind": "Changed My Mind",
-//             "Found a Better Price": "Found a Better Price",
-//             "Item No Longer Needed": "Item No Longer Needed",
-//             "Ordered by Mistake": "Ordered by Mistake",
-//             "Other": "Other"
-//         },
-//         inputPlaceholder: "Select a reason ⏷",
-//         showCancelButton: true,
-//         confirmButtonText: "Yes, Cancel it",
-//         cancelButtonText: "No, Keep it",
-//         preConfirm: (reason) => {
-//             if (!reason) {
-//                 Swal.showValidationMessage("Please select a reason");
-//                 return false;
-//             }
-//             return reason;
-//         }
-//     }).then((result) => {
-//         if (result.isConfirmed) {
-//             fetch(`/cancelOrder/${itemId}`, {
-//                 method: "DELETE",
-//                 headers: { "Content-Type": "application/json" },
-//                 body: JSON.stringify({ reason: result.value })
-//             })
-//             .then(response => response.json())
-//             .then(data => {
-//                 if (data.success) {
-//                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
-//                         .then(() => {
-//                             let itemElement = element.closest("li");
-//                             if (itemElement) {
-//                                 itemElement.style.transition = "opacity 0.5s";
-//                                 itemElement.style.opacity = 0;
-//                                 setTimeout(() => itemElement.remove(), 500);
-//                             }
-//                         });
-//                 } else {
-//                     Swal.fire({
-//                         title: "Error",
-//                         text: data.message || "Unable to cancel the order.",
-//                         icon: "error"
-//                     });
-//                 }
-//             })
-//             .catch(error => {
-//                 console.error("Error cancelling order:", error);
-//                 Swal.fire("Error", "Something went wrong.", "error");
-//             });
-//         }
-//     });
-// }
-
 function confirmCancel(element, itemId) { 
     console.log("Item ID to cancel:", itemId);
 
@@ -839,73 +720,6 @@ function confirmCancel(element, itemId) {
         }
     });
 }
-
-
-// function confirmOrderCancel(element, OrderId) { 
-//     console.log("Order ID to cancel:", OrderId);  
-//     Swal.fire({
-//         title: "Are you sure?",
-//         text: "Please select a reason for cancellation",
-//         icon: "warning",
-//         input: "select",
-//         inputOptions: {
-//             "Changed My Mind": "Changed My Mind",
-//             "Found a Better Price": "Found a Better Price",
-//             "Item No Longer Needed": "Item No Longer Needed",
-//             "Ordered by Mistake": "Ordered by Mistake",
-//             "Other": "Other"
-//         },
-//         inputPlaceholder: "Select a reason ⏷",
-//         showCancelButton: true,
-//         confirmButtonText: "Yes, Cancel it",
-//         cancelButtonText: "No, Keep it",
-//         preConfirm: (reason) => {
-//             if (!reason) {
-//                 Swal.showValidationMessage("Please select a reason");
-//                 return false;
-//             }
-//             return reason;
-//         }
-//     }).then((result) => {
-//         if (result.isConfirmed) {
-//             fetch(`/cancelParentOrder/${OrderId}`, {  
-//                 method: "DELETE",
-//                 headers: {
-//                     "Content-Type": "application/json"
-//                 },
-//                 body: JSON.stringify({ reason: result.value })
-//             })
-//             .then(response => response.json())
-//             .then(data => {
-//                 if (data.success) {
-//                     Swal.fire("Cancelled!", "Your order has been cancelled.", "success")
-//                         .then(() => {
-//                             const mainContainer = document.querySelector(".main-container");
-//                             if (mainContainer) {
-//                                 mainContainer.innerHTML = `
-//                                     <p style="color: red; font-weight: bold; text-align: center;">
-//                                         This order has been cancelled.
-//                                     </p>
-//                                 `;
-//                             }
-//                             element.closest(".order-item").remove();
-//                         });
-//                 } else {
-//                     Swal.fire({
-//                         title: "Error",
-//                         text: data.message || "Something went wrong.",
-//                         icon: "error"
-//                     });
-//                 }
-//             })
-//             .catch(error => {
-//                 console.error("Error cancelling order:", error);
-//                 Swal.fire("Error", "Something went wrong.", "error");
-//             });
-//         }
-//     });
-// }
-
 
 function confirmOrderCancel(element, OrderId) { 
     console.log("Order ID to cancel:", OrderId);  
@@ -976,41 +790,6 @@ function confirmOrderCancel(element, OrderId) {
         }
     });
 }
-
-
-document.getElementById("changeAddressBtn").addEventListener("click", function(event) {
-    event.preventDefault(); 
-
-    const updateUrl = this.getAttribute("data-url"); 
-    const orderStatus = this.getAttribute("data-status"); 
-    const restrictedStatuses = ["Shipped", "Out for Delivery", "Delivered", "Cancelled"];
-
-    if (restrictedStatuses.includes(orderStatus)) {
-        Swal.fire({
-            title: "Address Change Not Allowed!",
-            text: `You cannot change the shipping address once the order is <%= order.status %>`,
-            icon: "error",
-            confirmButtonColor: "#d33",
-            confirmButtonText: "OK"
-        });
-        return;
-    }
-
-    Swal.fire({
-        title: "Do you want to change the shipping address?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Change it!",
-        cancelButtonText: "No, Stay Here"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = updateUrl; 
-        }
-    });
-});
-
 
 function requestReturnItem(orderId, productId) {
     Swal.fire({
