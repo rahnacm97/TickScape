@@ -301,7 +301,7 @@ const loadDashboard = async (req, res) => {
 const salesReport = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
-    let limit = 20;
+    let limit = 10;
     let skip = (page - 1) * limit;
     const filterType = req.query.filterType || "custom";
 

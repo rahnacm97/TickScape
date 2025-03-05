@@ -316,9 +316,9 @@
                                 `<span class="text-danger"><strong>Cancelled</strong></span>` : 
                                 `<span class="text-success"><strong>${order.status}</strong></span>`}
                         </p>
-                        ${order.status === 'Cancelled' ? `
-                            <p class="text-danger"><strong>&#x2022; Cancelled on ${new Date(order.invoiceDate).toDateString()}</strong></p>
-                            <p class="text-muted">${order.cancellationReason || "No reason provided"}</p>` : ''}
+                        ${order.status === 'Cancelled' ? ` 
+                         <p class="text-danger"><strong>&#x2022; Cancelled on ${new Date(order.invoiceDate).toDateString()}</strong></p>` 
+                            : ''}
                         <a href="/viewOrder/${order.orderid}" class="btn-small1">View</a>
                     </div>
                 </div>

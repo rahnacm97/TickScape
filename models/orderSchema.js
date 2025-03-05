@@ -3,10 +3,6 @@ const {Schema} = mongoose;
 const {v4:uuidv4} = require('uuid');
 
 const orderSchema = new Schema({
-    // parentOrderId: {
-    //     type: String,
-    //     required: true
-    // },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
@@ -78,7 +74,7 @@ const orderSchema = new Schema({
         type: String,
         required: true,
         default: 'Order Placed',
-        enum: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned', `Return Denied`],      
+        enum: ['Payment Pending','Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered','Cancelled', 'Return request', 'Returned', `Return Denied`],      
     },
     createdOn: {
         type: Date,
@@ -97,7 +93,17 @@ const orderSchema = new Schema({
     paymentMethod: {
         type: String,
         required: false,
-        enum: ["Credit Card", "razorPay","Wallet", "Cash on Delivery", "Bank Transfer", "Online Payment"]
+        enum: ["Wallet", "Cash on Delivery", "Online Payment"]
+    },
+    paymentInfo: { 
+        paymentId: { type: String, default: null }, 
+        status: { 
+            type: String, 
+            enum: ['Pending', 'Success', 'Failed'], 
+            default: 'Pending' 
+        },
+        attempts: { type: Number, default: 0 }, 
+        lastAttempted: { type: Date, default: null },
     },
     cancellationReason: {
         type: String,

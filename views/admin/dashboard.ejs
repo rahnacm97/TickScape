@@ -133,7 +133,7 @@ button:hover {
                 </svg>
               </div>
               <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Sales: <span class="user-count" id="totalAmount">₹<%= orders.totalAmount %></span>
+                Total Sales: <span class="user-count" id="totalAmount">₹<%= orders.totalAmount.toFixed(2) %></span>
               </p>
             </div>
             
@@ -281,7 +281,7 @@ button:hover {
                   <% order.forEach((ordr, index) => { %>
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
                       <td class="px-4 py-3 text-center font-medium"><%= (currentPage - 1) * limit + index + 1 %></td>
-                      <td class="px-4 py-3 font-semibold"><%= ordr._id %></td>
+                      <td class="px-4 py-3 font-semibold"><%= ordr.orderId %></td>
                       <td class="px-4 py-3 text-center"><%= ordr.orderedItems
                         .filter(item => item.orderStatus !== "Returned" && item.orderStatus !== "Cancelled")
                         .reduce((sum, item) => sum + item.quantity, 0) %></td>
@@ -703,7 +703,7 @@ function updateTable(result) {
             const row = `
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
                     <td class="px-4 py-3 text-center font-medium">${index + 1}</td>
-                    <td class="px-4 py-3 font-semibold">${ordr._id}</td>
+                    <td class="px-4 py-3 font-semibold">${ordr.orderId}</td>
                     <td class="px-4 py-3 text-center">${quantity}</td>
                     <td class="px-4 py-3 text-sm">₹${finalAmount}</td>
                     <td class="px-4 py-3 text-sm">${ordr.paymentMethod || 'N/A'}</td>
@@ -734,7 +734,7 @@ function updateTable(result) {
 function updateCardForm(result) {
 
     document.getElementById('userCount').textContent = result.userCount || 0;
-    document.getElementById('totalAmount').textContent = `₹${result.totalAmount || 0}`;
+    document.getElementById('totalAmount').textContent = `₹${result.totalAmount.toFixed(2) || 0}`;
     document.getElementById('totalOrder').textContent = result.totalOrder || 0;
     document.getElementById('itemSold').textContent = result.itemSold || 0;
     document.getElementById('totalCouponUsers').textContent = result.totalCouponUsers || 0;

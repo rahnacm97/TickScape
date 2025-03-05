@@ -100,6 +100,7 @@ router.post("/changeQuantity",userAuth,cartController.changeQuantity);
 router.delete("/deleteProduct", userAuth, cartController.deleteProduct);
 
 // CheckOut Management
+router.get('/checkCart', userAuth, checkoutController.checkCart);
 router.get("/checkout",userAuth,checkoutController.getCheckout);
 router.post('/placeOrder',userAuth,checkoutController.placeOrder);
 //router.get("/get-coupon",userAuth,checkoutController.getCoupon);
@@ -107,8 +108,9 @@ router.post("/apply-coupon",userAuth,checkoutController.applyCoupon);
 router.post("/remove-coupon",userAuth,checkoutController.removeCoupon );
 
 //payment management
-router.post('/razorpay-payment',userAuth,checkoutController.razorpayPayment);
-router.post('/razorpay-verify',userAuth,checkoutController.verifyRazorpay);
+router.post('/razorpayPayment',userAuth,checkoutController.razorpayPayment);
+router.post('/verifyRazorpay',userAuth,checkoutController.verifyRazorpay);
+router.post('/savePendingOrder',userAuth,checkoutController.savePendingOrder);
 router.get('/getUserWalletBalance',userAuth,checkoutController.getUserWalletBalance);
 router.post('/deductWalletBalance',userAuth,checkoutController.deductWalletBalance);
 router.get('/payment-failure',userAuth,checkoutController.paymentFailure);

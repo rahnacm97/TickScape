@@ -427,59 +427,70 @@ hr {
             </div>
           </div>
         </div>
-        <div class="order-header" style="margin-left: 20px;margin-top: 20px;">Order Details</div>
-       <div class="main-container">
-      <div class="tracking-info">
-        <h3 style="margin-left: 20px; margin-top: 20px;">Track Your Order</h3>
-        <div class="container2">
-            <div>
-                <p><strong class="status">Current Status:</strong> <span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
-            </div>
-            <div class="tracking-progress">
-              <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"]; %>
-            
-              <% let latestStatus = trackingHistory.length > 0 ? trackingHistory[trackingHistory.length - 1].status : order.status; %>
-              <% let currentIndex = statuses.indexOf(latestStatus); %>
-              <% if (currentIndex === -1) { currentIndex = 0; } %>
-            
-              <% const isCancelled = order.status === "Cancelled"; %>
-            
-              <% if (isCancelled) { %>
-                <div class="tracking-step completed cancelled">
-                  <div class="circle cancelled">X</div>
-                  <p>Cancelled</p>
-                </div>
-              <% } else { %>
-                <% statuses.forEach((step, index) => { 
-                    let trackingEntry = trackingHistory.find(entry => entry.status === step);
-                    let isCompleted = index <= currentIndex;
-                %>
-                <% console.log("Step:", step, "Index:", index, "CurrentIndex:", currentIndex, "isCompleted:", isCompleted); %>
-                  <div class="tracking-step <%= isCompleted ? 'completed' : '' %> <%= step.toLowerCase().replace(/\s+/g, '-') %>">
-                    <div class="circle <%= isCompleted ? 'completed-circle' : '' %>">
-                      <%- isCompleted ? '<i class="fas fa-check"></i>' : index + 1 %>
-                    </div>
-                    <p><%= step %></p>
-                    <% if (trackingEntry) { %>
-                      <small><%= new Date(trackingEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></small>
-                    <% } %>
-                  </div>
-                <% }); %>
+        <div class="order-header" style="margin-left: 20px;margin-top: 20px;">Order Details</div>    
+  <% if (order.status !== "Payment Pending") { %>
+  <div class="main-container">
+  <div class="tracking-info">
+  <h3 style="margin-left: 20px; margin-top: 20px;">Track Your Order</h3>
+  <div class="container2">
+      <div>
+          <p><strong class="status">Current Status:</strong> <span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
+      </div>
+      <div class="tracking-progress">
+        <% const statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"]; %>
+      
+        <% let latestStatus = trackingHistory.length > 0 ? trackingHistory[trackingHistory.length - 1].status : order.status; %>
+        <% let currentIndex = statuses.indexOf(latestStatus); %>
+        <% if (currentIndex === -1) { currentIndex = 0; } %>
+      
+        <% const isCancelled = order.status === "Cancelled"; %>
+      
+        <% if (isCancelled) { %>
+          <div class="tracking-step completed cancelled">
+            <div class="circle cancelled">X</div>
+            <p>Cancelled</p>
+          </div>
+        <% } else { %>
+          <% statuses.forEach((step, index) => { 
+              let trackingEntry = trackingHistory.find(entry => entry.status === step);
+              let isCompleted = index <= currentIndex;
+          %>
+          <% console.log("Step:", step, "Index:", index, "CurrentIndex:", currentIndex, "isCompleted:", isCompleted); %>
+            <div class="tracking-step <%= isCompleted ? 'completed' : '' %> <%= step.toLowerCase().replace(/\s+/g, '-') %>">
+              <div class="circle <%= isCompleted ? 'completed-circle' : '' %>">
+                <%- isCompleted ? '<i class="fas fa-check"></i>' : index + 1 %>
+              </div>
+              <p><%= step %></p>
+              <% if (trackingEntry) { %>
+                <small><%= new Date(trackingEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></small>
               <% } %>
             </div>
-                        
-                                 
-        <% let deliveredEntry = trackingHistory.find(entry => entry.status === "Delivered"); %>
-        
-        <% if (deliveredEntry) { %>
-          <div class="expected-delivery">
-              <p><strong>Delivered On:</strong> <%= new Date(deliveredEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
-          </div>
+          <% }); %>
+        <% } %>
+      </div>
+                  
+      <% let deliveredEntry = trackingHistory.find(entry => entry.status === "Delivered"); %>
+      
+      <% if (deliveredEntry) { %>
+        <div class="expected-delivery">
+            <p><strong>Delivered On:</strong> <%= new Date(deliveredEntry.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+        </div>
       <% } else if (expectedDeliveryDate) { %>
-          <div class="expected-delivery">
-              <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
-          </div>
+        <div class="expected-delivery">
+            <p><strong>Expected Delivery:</strong> <%= expectedDeliveryDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) %></p>
+        </div>
       <% } %>
+  </div>
+<% } else { %>
+  <div class="main-container">
+  <div class="tracking-info">
+  <h3 style="margin-left: 20px; margin-top: 20px;">Payment Pending</h3>
+  <div class="container2">
+    <p>Please complete your payment to start tracking your order.</p>
+  </div>
+  </div>
+  </div>
+<% } %>%>
         
       
           <div class="order-status">
@@ -530,6 +541,8 @@ hr {
                   <span style="color: rgb(6, 168, 6);"><%= order.status %></span>
                   <% } else if (order.status === 'Cancelled') { %>
                     <span style="color: rgb(241, 8, 8);"><%= order.status %></span>
+                  <% } else if (order.status === 'Payment Pending') { %>
+                    <span style="color: rgb(241, 8, 202);"><%= order.status %></span>
             <% } else {%>
               <span style="color: rgb(6, 168, 6);">Delivered</span>
               <%}%>
@@ -575,55 +588,58 @@ hr {
               <p><strong>Product Name:</strong> <%= item.productName || item.productId.productName %></p>
               <p><strong>Quantity:</strong> <%= item.quantity %></p>
               <p><strong>Price per Item:</strong> ₹<%= item.price %></p>
-              <p>
-                <strong>Status:</strong> 
-                <span class="<%= (item.orderStatus || order.status) === 'Cancelled' ? 'text-danger' : 'text-default' %>">
-                  <%= item.orderStatus %>
-                </span>
-              </p>
-              <% if (item.orderStatus !== 'Cancelled') { %>
-                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-              <% } %>
-              <hr>
-    
-              <% if (item.orderStatus === 'Delivered') { %>
-                <div class="review-section">
-                  <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
-                  <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')">Return</button>
-                </div>
-                <% } else if (item.orderStatus === 'Return request'){ %>              
+              
+              <!-- Show status and buttons only if order.status is not "Payment Pending" -->
+              <% if (order.status !== "Payment Pending") { %>
+                <p>
+                  <strong>Status:</strong> 
+                  <span class="<%= (item.orderStatus || order.status) === 'Cancelled' ? 'text-danger' : 'text-default' %>">
+                    <%= item.orderStatus %>
+                  </span>
+                </p>
+                <% if (item.orderStatus !== 'Cancelled') { %>
+                  <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                <% } %>
+                <hr>
+      
+                <% if (item.orderStatus === 'Delivered') { %>
+                  <div class="review-section">
+                    <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary">Write Review</a>
+                    <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')">Return</button>
+                  </div>
+                <% } else if (item.orderStatus === 'Return request') { %>              
                   <div class="btn1-container">
-                    <a href="#" class="btn-notify" >
+                    <a href="#" class="btn-notify">
                       <i class="fa fa-exchange"></i> Return Requested
                     </a>
                   </div>
-                  <% } else if (item.orderStatus === 'Returned') { %>  
-                    <div class="btn1-container">
-                      <a href="#" class="btn-returned">
-                        <i class="fa fa-box-open"></i> Returned
-                      </a>
-                    </div>
-                    <% } else if (item.orderStatus === 'Return Denied') { %>  
-                      <div class="btn1-container">
-                        <a href="#" class="btn-returned">
-                          <i class="fa fa-ban"></i> Return Denied
-                        </a>
-                      </div>
-              <% } else if (item.orderStatus !== 'Cancelled') { %> 
-                <div class="btn1-container">
-                  <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= item._id %>')">
-                    <i class="fa fa-times-circle"></i> Cancel Item
-                  </a>
-                </div>
-              
+                <% } else if (item.orderStatus === 'Returned') { %>  
+                  <div class="btn1-container">
+                    <a href="#" class="btn-returned">
+                      <i class="fa fa-box-open"></i> Returned
+                    </a>
+                  </div>
+                <% } else if (item.orderStatus === 'Return Denied') { %>  
+                  <div class="btn1-container">
+                    <a href="#" class="btn-returned">
+                      <i class="fa fa-ban"></i> Return Denied
+                    </a>
+                  </div>
+                <% } else if (item.orderStatus !== 'Cancelled') { %> 
+                  <div class="btn1-container">
+                    <a href="#" class="btn btn-sm" onclick="return confirmCancel(this, '<%= item._id %>')">
+                      <i class="fa fa-times-circle"></i> Cancel Item
+                    </a>
+                  </div>
                 <% } %>
+              <% } %>
             </li>
           <% }) %>
         </ul>
       <% } else { %>
         <p>No other products in this order.</p>
       <% } %>
-    </div>    
+    </div>   
 
     <div class="btn1-container"> 
       <a href="/orders" class="btn">Back to Orders</a>

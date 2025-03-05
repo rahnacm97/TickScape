@@ -260,7 +260,7 @@ input[type="text"] {
                                             <p class="mb-0 text-dark py-1">Discount</p>
                                         </td>
                                         <td class="py-1" id="discount">
-                                            <p class="mb-0 text-dark py-1" name="discount">₹<%= discount %></p>
+                                            <p class="mb-0 text-dark py-1" name="discount">₹<%= discount || 0 %></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -371,8 +371,7 @@ input[type="text"] {
         });
     });
 });
-
-                    </script>       
+ </script>       
                     
                            
                     <div class="col-12 justify-content-center container address">
@@ -533,7 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const key = "rzp_test_YFWFrvVk0xexkK"; 
 
-function placeOrder(paymentId = "") {
+function placeOrder(paymentId = null) {
     let orderedItems = [];
     let gstAmount = parseFloat(document.querySelector("[name='gstAmount']")?.textContent.replace("₹", "").trim()) || 0;
 
@@ -634,7 +633,7 @@ function placeOrder(paymentId = "") {
     }
 
     if (paymentMethod === "Online Payment" && !paymentId) {
-        initiatePayment();
+        initiatePayment(orderedItems, totalPrice, gstAmount, discount, shipping, finalAmount, selectedAddress);
         return;
     }
 
@@ -656,7 +655,10 @@ function processOrder(paymentMethod, paymentId, orderedItems, totalPrice, gstAmo
             address: selectedAddress,
             status: "Order Placed",
             paymentMethod: paymentMethod,
-            paymentId: paymentMethod === "Online Payment" ? paymentId : null
+            paymentInfo: {
+                paymentId: paymentMethod === "Online Payment" ? paymentId : null,
+                status: paymentId ? 'Success' : 'Pending'
+            }
         })
     })
     .then(response => response.json())
@@ -664,7 +666,7 @@ function processOrder(paymentMethod, paymentId, orderedItems, totalPrice, gstAmo
         if (response.success) {
             Swal.fire({ icon: 'success', title: 'Order Placed!', text: 'Your order has been successfully placed.' })
             .then(() => {
-                const orderId = response.order?._id;
+                const orderId = response.order?.orderId;
                 if (orderId) {
                     window.location.href = `/orderDetails?orderId=${orderId}`;
                 }
@@ -680,57 +682,141 @@ function processOrder(paymentMethod, paymentId, orderedItems, totalPrice, gstAmo
 }
 
 
-function initiatePayment() {
-    let totalPrice = 0;
-    document.querySelectorAll("tbody tr").forEach(row => {
-        let productTotalText = row.cells[5]?.textContent.replace("₹", "").trim();
-        let productTotal = parseFloat(productTotalText) || 0;
-        totalPrice += productTotal;
-    });
+function initiatePayment(orderedItems, totalPrice, gstAmount, discount, shipping, finalAmount, selectedAddress) {
+    fetch("/razorpayPayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            addressId: selectedAddress,
+            orderedItems: orderedItems,
+            totalPrice: totalPrice,
+            gstAmount: gstAmount,
+            discount: discount, 
+            shipping: shipping,
+            finalAmount: finalAmount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+            return;
+        }
 
-    let shipping = 50;
-    let discountElement = document.querySelector("#discount p");
-    let discount = discountElement ? parseFloat(discountElement.textContent.replace("₹", "").trim()) || 0 : 0;
+        const razorpayOrder = data.order;
 
-    let gstAmount = parseFloat(document.querySelector("[name='gstAmount']")?.textContent.replace("₹", "").trim()) || 0;
-
-    let finalAmount = totalPrice + shipping + gstAmount - discount;
-    
-    if (isNaN(finalAmount) || finalAmount <= 0) {
-        alert("Invalid payment amount. Please check the cart total.");
-        return;
-    }
-    finalAmount = Math.round(finalAmount * 100); 
-
-    let options = {
-        key: "rzp_test_YFWFrvVk0xexkK",
-        amount: finalAmount,
-        currency: "INR",
-        name: "TickScape",
-        description: "Order Payment",
-        handler: function (response) {
-            placeOrder(response.razorpay_payment_id); 
-        },
-        prefill: {
+        let options = {
+            key: "rzp_test_YFWFrvVk0xexkK",
+            amount: razorpayOrder.amount,
+            currency: "INR",
             name: "TickScape",
-            email: "tickscapeSupport@gmail.com",
-            contact: "+91 7034316981",
-        },
-        theme: {
-            color: "#3399cc",
-        },
-    };
+            description: "Order Payment",
+            order_id: razorpayOrder.id,
+            handler: function (response) {
+                verifyPayment(response);
+            },
+            prefill: {
+                name: "TickScape",
+                email: "tickscapeSupport@gmail.com",
+                contact: "+91 7034316981",
+            },
+            theme: { color: "#3399cc" },
+            modal: {
+                ondismiss: function () {
+                    Swal.fire({
+                        title: "Payment Failed",
+                        text: "Your payment was not completed. What would you like to do?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonText: "Retry",
+                        denyButtonText: "Cancel Order",
+                        cancelButtonText: "Continue Shopping",
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            initiatePayment(orderedItems, totalPrice, gstAmount, discount, shipping, finalAmount, selectedAddress);
+                        } else if (result.isDenied) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Order Cancelled',
+                                text: 'Your order has been cancelled as per your request.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                console.log("Order canceled by user");
+                            });
+                        } else if (result.isDismissed) {
+                            // Continue Shopping: Save order with "Pending" status
+                            fetch("/savePendingOrder", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ addressId: selectedAddress }),
+                            })
+                            .then((res) => res.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Order Placed!",
+                                        text: "Your order has been placed with payment pending.",
+                                    }).then(() => {
+                                        const orderId = data.order.orderId; // Assuming _id is returned
+                                        window.location.href = `/orders`;
+                                    });
+                                } else {
+                                    Swal.fire({ icon: "error", title: "Error", text: data.message });
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Save Pending Order Error:", error);
+                                Swal.fire({ icon: "error", title: "Error", text: "Failed to save pending order." });
+                            });
+                        }
+                    });
+                }
+            }
+        };
 
-    try {
         let rzp = new Razorpay(options);
         rzp.open();
-    } catch (error) {
-        console.error("Razorpay Error:", error);
-        alert("Error initializing Razorpay. Check the console for details.");
-    }
+    })
+    .catch(error => {
+        console.error("Razorpay Initiation Error:", error);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to initiate payment.' });
+    });
 }
 
 
+function verifyPayment(response) {
+    fetch("/verifyRazorpay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            order_id: response.razorpay_order_id,
+            payment_id: response.razorpay_payment_id,
+            signature: response.razorpay_signature
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Order Placed!', text: 'Your order has been successfully placed.' })
+            .then(() => {
+                const orderId = data.order.orderId;
+                console.log("Redirecting with orderId:", orderId);
+                window.location.href = `/orderDetails?orderId=${orderId}`;
+            });
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+        }
+    })
+    .catch(error => {
+        console.error("Payment Verification Error:", error);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Payment verification failed.' });
+    });
+}
+
+
+// Apply Coupon
 $(document).on('click', '#applyCoupon', function() {
     let couponCode = $('#couponCode').val().trim();
     let carts = [];
@@ -841,31 +927,7 @@ $(document).on('click', '#applyCoupon', function() {
     });
 });
 
-// Restore the applied coupon on page load
-// $(document).ready(function() {
-//     let savedCoupon = localStorage.getItem('appliedCoupon');
-
-//     if (savedCoupon) {
-//         savedCoupon = JSON.parse(savedCoupon);
-
-//         $('.coupon-card').append(`
-//             <div class="applied-coupon mt-3 text-center">
-//                 <p class="text-success">
-//                     Coupon applied ${savedCoupon.name}: 
-//                     <span class="text-success font-weight-bold">-₹${savedCoupon.discount}</span>
-//                 </p>
-//                 <button id="removeCoupon" class="btn btn-danger btn-sm">
-//                     Remove Coupon
-//                 </button>
-//             </div>
-//         `);
-
-//         $('#applyCoupon').hide();
-//         $('#couponCode').hide();
-//     }
-// });
-
-
+//Coupon Remove
 $(document).on('click', '#removeCoupon', function() {
     Swal.fire({
         title: 'Are you sure?',
@@ -929,112 +991,6 @@ $(document).on('click', '#removeCoupon', function() {
         }
     });
 });
-
-// function placeOrder() {
-//     let orderedItems = [];
-//     document.querySelectorAll("tbody tr").forEach(row => {
-//         let productId = row.querySelector("#productid")?.value; 
-//         let quantity = row.cells[4]?.textContent; 
-//         let price = row.cells[3]?.textContent.replace("₹", ""); 
-//         let productTotal = row.cells[5]?.textContent.replace("₹", "");
-
-//         if (productId) {
-//             orderedItems.push({
-//                 product: productId,  
-//                 quantity: parseInt(quantity),
-//                 price: parseFloat(price),
-//                 totalPrice: parseFloat(productTotal) 
-//             });
-//         }
-//     });
-
-//     console.log("Ordered Items:", orderedItems);
-
-//     if (orderedItems.length === 0) {
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Oops...',
-//             text: 'Your cart is empty!',
-//         });
-//         return;
-//     }
-
-//     let selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
-//     if (!selectedAddress) {
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Oops...',
-//             text: 'Please select an address!',
-//         });
-//         return;
-//     }
-
-//     let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-//     if (!paymentMethod) {
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Oops...',
-//             text: 'Please select a payment method!',
-//         });
-//         return;
-//     }
-
-//     let totalPrice = orderedItems.reduce((sum, item) => sum + item.totalPrice, 0);
-//     let shipping = 50;
-//     let discountElement = document.querySelector("#discount p");
-//     let discount = discountElement ? parseFloat(discountElement.textContent.replace("₹", "").trim()) : 0;
-//     let finalAmount = totalPrice + shipping - discount;
-
-//     fetch("/placeOrder", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//             orderedItems,
-//             totalPrice, 
-//             discount,
-//             shipping,
-//             finalAmount,
-//             address: selectedAddress,
-//             status: "Order Placed",
-//             paymentMethod: paymentMethod
-//         })
-//     })
-//     .then(response => response.json())
-//     .then(response => {
-//         console.log(response,'response');
-//         localStorage.setItem('orders',JSON.stringify(response.orders))
-        
-//         if (response.success) {
-//             Swal.fire({
-//                 icon: 'success',
-//                 title: 'Order Placed!',
-//                 text: 'Your order has been successfully placed.',
-//             }).then(() => {
-                
-//                 const orderId = response.order._id;
-//                 if (orderId) {
-                     
-//                      window.location.href = `/orderDetails?orderId=${orderId}`;
-//                 }
-//             });
-//         } else {
-//             Swal.fire({
-//                 icon: 'error',
-//                 title: 'Error',
-//                 text: data.message || 'There was an issue placing your order.',
-//             });
-//         }
-//     })
-//     .catch(error => {
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Error',
-//             text: 'Something went wrong. Please try again later.',
-//         });
-//     });
-// }
-
-
 
 </script>
 

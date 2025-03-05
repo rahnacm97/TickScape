@@ -326,11 +326,10 @@ body {
                                 </tbody>
                             </table>
                         </div>
-                        <a href="/checkout?userId=<%= user._id %>" class="btn "> <i class="fi-rs-box-alt mr-10" style="font-size: 14px;
-                            color: #1e918b; 
-                            width: auto;
-                            height: auto; "></i>
-                            Proceed To CheckOut</a>
+                        <a href="#" id="proceedToCheckout" class="btn" data-user-id="<%= user._id %>">
+                            <i class="fi-rs-box-alt mr-10" style="font-size: 14px; color: #1e918b; width: auto; height: auto;"></i>
+                            Proceed To Checkout
+                        </a>
                     </div>
                 </div>
 
@@ -532,6 +531,34 @@ function confirmRemove(productId, productPrice, quantity, gstRate) {
     });
 }
 
+document.getElementById("proceedToCheckout").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default link behavior
+
+        const userId = this.getAttribute("data-user-id");
+
+        // Check cart status
+        fetch(`/checkCart?userId=${userId}`, {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message);
+                });
+            }
+            // Cart has items, proceed to checkout
+            window.location.href = `/checkout?userId=${userId}`;
+        })
+        .catch(error => {
+            // Show SweetAlert for empty cart or other errors
+            Swal.fire({
+                icon: "warning",
+                title: "Oops...",
+                text: error.message || "An error occurred while checking the cart.",
+            });
+        });
+    });
 
 </script>
 <%- include("../../views/partials/user/footer") %>

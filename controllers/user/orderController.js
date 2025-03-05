@@ -18,16 +18,18 @@ const PDFTable = require("pdfkit-table");
 
 const getConfirmation = async (req, res) => {
     try {
-        const { orderId } = req.query;
-        const userId = req.session.user._id;
-
+        const orderId = req.query.orderId; // Sequential number from frontend
+        console.log("Received orderId:", orderId);
+        const userId = req.session.user._id;        
+        //const order = await Order.findOne({ orderId: parseInt(orderId) });
+        
         //console.log("Order ID received:", orderId);
         //console.log("User ID from session:", userId);
 
         if (!orderId) {
             return res.status(400).json({ error: "Order ID is required" });
         }
-        const order = await Order.findById(orderId)
+        const order = await Order.findOne({ orderId: orderId })
             .populate({
                 path: "orderedItems.productId",
                 model: "Product",
