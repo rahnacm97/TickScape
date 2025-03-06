@@ -28,7 +28,10 @@ const loadHomePage = async(req,res,next) => {
             startDate:{$lt:new Date(today)},
             endDate:{$gt:new Date(today)},
         });
-        const user = req.session.user;
+        const userId = req.session.user;
+
+        const user = await User.findById({_id:userId});
+
         const categories = await Category.find({isListed:true});
         let productData = await Product.find({
             isBlocked:false,
@@ -38,7 +41,7 @@ const loadHomePage = async(req,res,next) => {
         productData.sort((a,b) => new Date(b.createdOn) - new Date(a.createdOn));
         productData = productData.slice(0,4);
         if(user){
-            const userData = await User.findOne({_id:user._id});
+            const userData = await User.findOne({_id:user});
             res.locals.user = userData;
             res.render("home",{user:userData,products:productData,banner:findBanner || []});
         }else{
@@ -83,9 +86,9 @@ const login = async(req,res,next) => {
             return res.render("login",{message:"Incorrect Password"});
         }
 
-        req.session.user = findUser;
+        req.session.user = findUser._id; // Store just the ID, not the full object
+        res.locals.user = findUser;
         // Pass user to all views using res.locals
-        res.locals.user = req.session.user;
         res.redirect('/');
     }catch(err){
         console.error("Login error",err);
@@ -268,26 +271,21 @@ const resendOtp = async (req,res) =>{
     }
 }
 
-const logout = async (req,res) => {
-    try{
-        
+
+const logout = async (req, res) => {
+    try {
+        // Clear user-specific session data
+        delete req.session.user;
         if (req.session.appliedCoupon) {
-            delete req.session.appliedCoupon; 
+            delete req.session.appliedCoupon;
         }
 
-        req.session.destroy((err) => {
-            if(err){
-                console.log("Session destruction error",err.message);
-                return res.redirect('/pageNotFound');
-            }
-            return res.redirect('/login');
-        })
-
-    }catch(error){
-        console.log("Logout Error",error);
+        res.redirect('/login');
+    } catch (error) {
+        console.log("Logout Error", error);
         res.redirect('/pageNotFound');
     }
-}
+};
 
 
 const loadShoppingPage = async (req, res, next) => {

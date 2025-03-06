@@ -15,10 +15,12 @@ const getCartPage = async (req, res, next) => {
       return res.redirect('/login');
     }
 
-    const userId = req.session.user._id;
+    const userId = req.session.user;
     const currentPage = parseInt(req.query.page) || 1;
     const limit = 4;
     const skip = (currentPage - 1) * limit;
+
+    const user = await User.findById({_id:userId});
 
     const carts = await Cart.findOne({ userId }).populate({
       path: "items.productId",
@@ -28,7 +30,7 @@ const getCartPage = async (req, res, next) => {
     if (!carts || carts.items.length === 0) {
       return res.render('cart', { 
         carts: [], itemTotal: 0, gstAmount: 0, total: 0, 
-        cart: null, user: req.session.user, data: [], 
+        cart: null, user: user, data: [], 
         currentPage: 1, totalPages: 1 
       });
     }
@@ -57,7 +59,7 @@ const getCartPage = async (req, res, next) => {
     await carts.save();
 
     res.render('cart', {
-      user: req.session.user,
+      user: user,
       data: carts.items.slice(skip, skip + limit),
       itemTotal: Math.round(itemTotal),
       gstAmount: parseFloat(gstAmount).toFixed(2),
@@ -78,7 +80,7 @@ const getCartPage = async (req, res, next) => {
 const addToCart = async (req, res,next) => {
   try {
     const { productId } = req.body;
-    const userId = req.session?.user?._id; 
+    const userId = req.session?.user; 
 
     if (!userId) {
       //return res.status(401).json({ error: "Please log in to add a product" });
@@ -168,7 +170,7 @@ const changeQuantity = async (req, res) => {
       return res.status(400).json({ error: "Invalid Product ID" });
     }
 
-    const cart = await Cart.findOne({ userId: req.session.user._id });
+    const cart = await Cart.findOne({ userId: req.session.user });
     if (!cart) {
       return res.status(404).json({ error: "Cart not found" });
     }
@@ -223,7 +225,7 @@ const deleteProduct = async (req, res) => {
           return res.status(400).json({ error: "ID is required" });
       }
 
-      let cart = await Cart.findOne({ userId: req.session.user._id });
+      let cart = await Cart.findOne({ userId: req.session.user });
       if (!cart) {
           return res.status(404).json({ error: 'Cart not found' });
       }

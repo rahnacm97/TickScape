@@ -661,7 +661,7 @@ hr {
     <a href="#" class="btn btn-sm" onclick="retryPayment('<%= order._id %>')" style="background-color: #088178;">
       <i class="fa fa-redo"></i> Retry Payment
     </a>
-  <% } else if (order.status !== "Cancelled" && order.status !== "Delivered" && order.status !== "Return Request" && order.status !== "Returned") { %>
+  <% } else if (order.status !== "Cancelled" && order.status !== "Delivered" && !order.orderedItems.some(item => item.orderStatus === "Return request") && order.status !== "Returned") { %>
     <a href="#" class="btn btn-sm" onclick="return confirmOrderCancel(this, '<%= order._id %>')">
       <i class="fa fa-ban"></i> Cancel Order
     </a>

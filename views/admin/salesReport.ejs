@@ -107,146 +107,36 @@ button:hover {
 <section class="content-main">
     <div class="content-header">
         <div>
-            <h2 class="content-title card-title">Dashboard </h2>
+            <h2 class="content-title card-title">Sales Report </h2>
         </div>
        
     </div>   
 
-    <div class="flex flex-wrap items-center gap-4 mb-6">
-      <form id="dateForm" class="flex flex-wrap items-center gap-4">
-        <label for="filterType" class="text-black font-serif text-lg">Filter By:</label>
-        <select id="filterType" name="filterType" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="custom">Custom Date Range</option>
-        </select>
-    
-        <!-- Custom Date Range Inputs (hidden by default) -->
-        <div id="customDateInputs" class="flex items-center gap-4 hidden">
-          <label for="startDate" class="text-black font-serif text-lg">From:</label>
-          <input type="date" id="startDate" name="startDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <span class="font-semibold text-lg">To</span>
-          <input type="date" id="endDate" name="endDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-    
-        <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition">
-          Filter
-        </button>
-      </form>
-    </div>
-          <!-- Cards -->
-          <div id="cardForm" class="grid gap-6 mb-8 md:grid-cols-1 xl:grid-cols-4">
-            <!-- Metric Card Template -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total clients: <span class="user-count" id="userCount"><%= userCount %></span>
-              </p>
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <form id="dateForm" class="flex flex-wrap items-center gap-4">
+            <label for="filterType" class="text-black font-serif text-lg">Filter By:</label>
+            <select id="filterType" name="filterType" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="custom">Custom Date Range</option>
+            </select>
+        
+            <!-- Custom Date Range Inputs (hidden by default) -->
+            <div id="customDateInputs" class="flex items-center gap-4 hidden">
+              <label for="startDate" class="text-black font-serif text-lg">From:</label>
+              <input type="date" id="startDate" name="startDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <span class="font-semibold text-lg">To</span>
+              <input type="date" id="endDate" name="endDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-          
-            <!-- Total Sales -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Sales: <span class="user-count" id="totalAmount">₹<%= orders.totalAmount.toFixed(2) %></span>
-              </p>
-            </div>
-            
-            <!-- Total Orders -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Orders: <span class="user-count" id="totalOrder"><%= orders.totalOrder %></span>
-              </p>
-            </div>
-          
-            <!-- Items Sold -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <div class="p-3 mr-4 text-purple-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M3 2a1 1 0 011 1v1h12V3a1 1 0 112 0v1h1a1 1 0 011 1v13a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1h1V3a1 1 0 011-1zm4 1h8v1H7V3zM4 6v11h12V6H4z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Item Sold: <span class="user-count" id="itemSold"><%= orders.itemSold %></span>
-              </p>
-            </div>
-          
-            <!-- Total Coupons Applied -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2.5a1.5 1.5 0 010 3V15a2 2 0 01-2 2H4a2 2 0 01-2-2v-2.5a1.5 1.5 0 010-3V5zm4 3a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Coupons Applied: <span class="user-count" id="totalCouponUsers"><%= totalCouponUsers %></span>
-              </p>
-            </div>
-          
-            <!-- Total Discount Price -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-              <div class="p-3 mr-4 text-green-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M3 7a4 4 0 014-4h10a2 2 0 012 2v10a4 4 0 01-4 4H5a2 2 0 01-2-2V7zm6.293 5.707a1 1 0 001.414 0l5-5a1 1 0 00-1.414-1.414l-5 5a1 1 0 000 1.414zM7.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm7 7a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Discount Price: <span class="user-count" id="totalDiscount">₹<%= orders.totalDiscountPrice %></span>
-              </p>
-            </div>
-          
-            <!-- Pending Orders -->
-            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-red-800">
-              <div class="p-3 mr-4 text-red-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zM10 4a1 1 0 011 1v4.586l3.707 3.707a1 1 0 11-1.414 1.414L10 9.414V5a1 1 0 011-1z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Pending Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
-              </p>
-            </div>
-          </div>
-
-
-          <!-- <div class="flex flex-wrap items-center gap-4 ">
-
-          <form id="dateForm" class="flex flex-wrap items-center gap-4 mb-6">
-            <label for="orderDate" class="text-black font-serif text-lg">Select Date:</label>
-          
-            <input type="date" id="startDate" name="startDate" 
-                   class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          
-            <span class="font-semibold text-lg">To</span>
-          
-            <input type="date" id="endDate" name="endDate" 
-                   class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-          
-            <button type="submit" 
-                    class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition">
+        
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition">
               Filter
             </button>
           </form>
-        </div> -->
-
-
-        
+        </div>
           
-          <!-- <div>
+          <div>
             <div style="display: flex; justify-content: end; gap: 20px; margin-top: 10px; margin-bottom: 20px;">
               <button id="download" 
                   style="background-color: rgb(9, 115, 9); padding: 10px; border-radius: 15px; color: white;">
@@ -261,10 +151,10 @@ button:hover {
             </div>
           </div> 
 
-         
+          <!-- New Table -->
           <div class="w-full overflow-x-auto rounded-lg shadow-md bg-white dark:bg-gray-800">
             <table class="w-full min-w-max table-auto text-left border-collapse">
-              
+              <!-- Table Head -->
               <thead>
                 <tr class="bg-gray-500 dark:bg-gray-900 text-gray-800 dark:text-white-300 text-xs uppercase font-semibold tracking-wide">
                   <th class="px-4 py-3 text-center">Sl. No</th>
@@ -277,7 +167,7 @@ button:hover {
                 </tr>
               </thead>
           
-             
+              <!-- Table Body -->
               <tbody id="ordersTableBody" class="text-gray-700 dark:text-gray-300 text-sm divide-y dark:divide-gray-700">
                 <% if (order.length > 0) { %>
                   <% order.forEach((ordr, index) => { %>
@@ -309,7 +199,7 @@ button:hover {
             </table>
           </div>
 
-                  
+          <!-- Pagination -->            
           <div class="flex justify-center items-center space-x-2 mt-4 mb-4">
             <% if (currentPage > 1) { %>
                 <a href="?page=<%= currentPage - 1 %>&startDate=<%= startDate %>&endDate=<%= endDate %>"
@@ -345,190 +235,9 @@ button:hover {
                     Next &raquo;
                 </span>
             <% } %>
-        </div>  -->
+        </div> 
               
     </div>
-
-          <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
-    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    TOP 10 PRODUCTS AND CATEGORIES
-</h2>
-
-<div class="grid gap-6 mb-8 md:grid-cols-2 mt-4">
-    <!-- Products Table -->
-    <div class="w-full overflow-hidden rounded-lg shadow-lg">
-        <table class="w-full border border-gray-300 bg-white">
-            <thead>
-                <tr class="bg-gray-700 text-white">
-                    <th class="px-6 py-3 text-left">No</th>
-                    <th class="px-6 py-3 text-left">Name</th>
-                    <th class="px-6 py-3 text-left">Sales Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (products && products.length > 0) { %>
-                    <% products.forEach((item, index) => { %>
-                        <tr class="border-b hover:bg-gray-100">
-                            <td class="px-6 py-4 text-gray-700 text-sm"><%= index + 1 %></td>
-                            <td class="px-6 py-4 text-gray-700 text-sm font-medium"><%= item.name %></td>
-                            <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.orderCount %></td>
-                        </tr>
-                    <% }) %>
-                <% } else { %>
-                    <tr>
-                        <td colspan="3" class="text-center py-4 text-gray-500">No products found</td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Categories Table -->
-    <div class="w-full overflow-hidden rounded-lg shadow-lg">
-        <table class="w-full border border-gray-300 bg-white">
-            <thead>
-                <tr class="bg-gray-700 text-white">
-                    <th class="px-6 py-3 text-left">No</th>
-                    <th class="px-6 py-3 text-left">Name</th>
-                    <th class="px-6 py-3 text-left">Sales Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (category && category.length > 0) { %>
-                    <% category.forEach((item, index) => { %>
-                        <tr class="border-b hover:bg-gray-100">
-                            <td class="px-6 py-4 text-gray-700 text-sm"><%= index + 1 %></td>
-                            <td class="px-6 py-4 text-gray-700 text-sm font-medium"><%= item.categoryName %></td>
-                            <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.categoryCount %></td>
-                        </tr>
-                    <% }) %>
-                <% } else { %>
-                    <tr>
-                        <td colspan="3" class="text-center py-4 text-gray-500">No categories found</td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
-    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-  TOP BRANDS
-    </h2>
-    <div class="grid mt-4 mb-4">
-      <!-- Products Table -->
-      <div class="w-full overflow-hidden rounded-lg shadow-lg">
-          <table class="w-full border border-gray-300 bg-white">
-            <thead>
-              <tr class="bg-gray-700 text-white">
-                  <th class="px-6 py-3 text-left">No</th>
-                  <th class="px-6 py-3 text-left">Name</th>
-                  <th class="px-6 py-3 text-left">Sales Count</th>
-              </tr>
-          </thead>
-          <tbody>
-              <% if (brand && brand.length > 0) { %>
-                  <% brand.forEach((item, index) => { %>
-                      <tr class="border-b hover:bg-gray-100">
-                          <td class="px-6 py-4 text-gray-700 text-sm"><%= index + 1 %></td>
-                          <td class="px-6 py-4 text-gray-700 text-sm font-medium"><%= item.brandName %></td>
-                          <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.brandCount %></td>
-                      </tr>
-                  <% }) %>
-              <% } else { %>
-                  <tr>
-                      <td colspan="3" class="text-center py-4 text-gray-500">No categories found</td>
-                  </tr>
-              <% } %>
-          </tbody>
-          </table>
-      </div>
-      </div>
-
-
-<h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
-    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    Low Stock Products
-    </h2>
-    <div class="grid mt-4 mb-4">
-      <!-- Products Table -->
-      <div class="w-full overflow-hidden rounded-lg shadow-lg">
-          <table class="w-full border border-gray-300 bg-white">
-            <thead>
-              <tr class="bg-gray-200">
-                  <th class="border px-4 py-2">Sl. No</th>
-                  <th class="border px-4 py-2">Product Name</th>
-                  <th class="border px-4 py-2">Status</th>
-                  <th class="border px-4 py-2">Stock</th>
-                  <th class="border px-4 py-2">Price</th>
-                  <!-- <th class="border px-4 py-2">GST Rate</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <% if (lowStockProducts && lowStockProducts.length > 0) { %>
-                <% lowStockProducts.forEach((item, index) => { %>
-                    <tr class="border-b hover:bg-gray-100">
-                        <td class="px-6 py-4 text-gray-700 text-sm"><%= index + 1 %></td>
-                        <td class="px-6 py-4 text-gray-700 text-sm font-medium"><%= item.productName %></td>
-                        <td class="px-6 py-4 text-gray-700 text-sm"><%= item.status %></td>
-                        <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.quantity %></td>
-                        <td class="px-6 py-4 text-gray-700 text-sm font-semibold">₹<%= item.salePrice %></td>
-                        <!-- <td class="px-6 py-4 text-gray-700 text-sm font-semibold"><%= item.gstRate %>%</td> -->
-                    </tr>
-                <% }) %>
-            <% } else { %>
-                <tr>
-                    <td colspan="5" class="text-center py-4 text-gray-500">No Low Stock Products</td>
-                </tr>
-            <% } %>
-            </tbody>
-          </table>
-      </div>
-      
-    </div>
-
-
-          <!-- Charts -->
-  <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
-    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    Charts
-</h2>
-
-<div class="container mx-auto px-4 py-8">
-  <div class="grid gap-6 mb-8 md:grid-cols-2 mt-4">
-    <div class="w-full md:w-48">
-      <select id="filter" 
-              class="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 
-                     dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
-        <option value="yearly">Yearly</option>
-        <option value="monthly" selected>Monthly</option>
-        <option value="weekly">Weekly</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="grid mb-8 ">
-    <!-- Line Chart -->
-    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden mb-4">
-      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Trend</h4>
-      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
-        <canvas id="lineChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Pie Chart -->
-    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
-      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Distribution</h4>
-      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
-        <canvas id="pieChart"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-
-
         </div>
       </main>
     </div>
@@ -672,9 +381,9 @@ document.addEventListener("DOMContentLoaded", () => {
     result = await response.json();
     console.log("API Response:", result);
 
-    //updateTable(result);
-    updateCardForm(result);
-    //updatePagination(result);
+    updateTable(result);
+    //updateCardForm(result);
+    updatePagination(result);
   } catch (error) {
     console.error("Fetch error:", error);
     Swal.fire({
@@ -729,7 +438,7 @@ function updateTable(result) {
     } else {
         ordersTableBody.innerHTML = `<tr><td colspan="7" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">No orders found</td></tr>`;
     }
-    updateCardForm(result);
+    //updateCardForm(result);
 }
 
 

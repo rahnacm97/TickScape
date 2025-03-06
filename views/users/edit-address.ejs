@@ -91,7 +91,8 @@
     <div class="container mt-5">
         <h3 class="mt-10 mb-15" style="color: #046963; margin-bottom:70px">Edit User Address</h3>
         <div class="form-card"> 
-            <form id="addressForm" method="POST" action="/editAddress?id=<%= address._id.toLocaleString() %>" class="border-0 p-3">
+            <!-- <form id="addressForm" method="POST" action="/editAddress?id=<%= address._id.toLocaleString() %>" class="border-0 p-3"> -->
+            <form id="addressForm" class="border-0 p-3">
                 <div class="row mb-3">
                     <div class="form-group col-md-6">
                         <label for="addressType">Address Type:</label>
@@ -136,7 +137,7 @@
                     </div>
                     <input type="hidden" name="redirectTo" value="<%= redirectTo %>">
                 </div>
-                <button type="submit" id="submitButton" class="btn btn-primary">Update</button>
+                <button type="submit" id="submitButton" class="btn btn-primary" style="text-transform: capitalize;">Update</button>
             </form>
         </div>
     </div>
@@ -147,108 +148,259 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-   $(document).ready(function () {
-       $('#submitButton').click(function (event) {
-           if (!validateForm()) {
-               event.preventDefault();
-           }
-       });
+//    $(document).ready(function () {
+//        $('#submitButton').click(function (event) {
+//            if (!validateForm()) {
+//                event.preventDefault();
+//            }
+//        });
 
-       function validateForm() {
-           let isValid = true;
-           const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
+//        function validateForm() {
+//            let isValid = true;
+//            const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
            
-           // Clear previous error messages
-           $(".text-danger").remove();
+//            // Clear previous error messages
+//            $(".text-danger").remove();
 
-           requiredFields.forEach(function (field) {
-               const input = $("#" + field);
-               if (input.val().trim() === "") {
-                   input.after('<div class="text-danger">This field is required.</div>');
-                   isValid = false;
-               }
-           });
+//            requiredFields.forEach(function (field) {
+//                const input = $("#" + field);
+//                if (input.val().trim() === "") {
+//                    input.after('<div class="text-danger">This field is required.</div>');
+//                    isValid = false;
+//                }
+//            });
 
-           // Custom validation for phone numbers and pincode
-           const namePattern = /^[A-Za-z\s]+$/;
-           const pincodePattern = /^\d{6}$/;
-           const phonePattern = /^\d{10}$/;
+//            // Custom validation for phone numbers and pincode
+//            const namePattern = /^[A-Za-z\s]+$/;
+//            const pincodePattern = /^\d{6}$/;
+//            const phonePattern = /^\d{10}$/;
 
-           if (!namePattern.test($("#name").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Name should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!namePattern.test($("#name").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'Name should contain alphabets only.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if (!namePattern.test($("#city").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'City should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!namePattern.test($("#city").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'City should contain alphabets only.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if (!namePattern.test($("#landMark").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Landmark should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!namePattern.test($("#landMark").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'Landmark should contain alphabets only.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if (!namePattern.test($("#state").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'State should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!namePattern.test($("#state").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'State should contain alphabets only.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if (!pincodePattern.test($("#pincode").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Pincode should be a 6-digit number.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!pincodePattern.test($("#pincode").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'Pincode should be a 6-digit number.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if (!phonePattern.test($("#phone").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Phone number should be a 10-digit number.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!phonePattern.test($("#phone").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'Phone number should be a 10-digit number.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if (!phonePattern.test($("#altPhone").val())) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Alternate phone number should be a 10-digit number.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if (!phonePattern.test($("#altPhone").val())) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'Alternate phone number should be a 10-digit number.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           if ($("#phone").val() === $("#altPhone").val()) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Phone number and alternate phone number should be different.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
+//            if ($("#phone").val() === $("#altPhone").val()) {
+//                Swal.fire({
+//                    title: 'Error',
+//                    text: 'Phone number and alternate phone number should be different.',
+//                    icon: 'error'
+//                });
+//                isValid = false;
+//            }
 
-           return isValid;
-       }
-   });
+//            return isValid;
+//        }
+//    });
+</script>
+
+<script>
+$(document).ready(function () {
+    $('#addressForm').on('submit', function (event) {
+        event.preventDefault(); 
+
+        if (!validateForm()) {
+            return; 
+        }
+
+        const formData = $(this).serialize(); 
+        const addressId = new URLSearchParams(window.location.search).get('id');
+
+        $.ajax({
+            url: `/editAddress?id=${addressId}`,
+            method: 'PUT', // Change to PUT
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Address Updated',
+                        text: 'Your address has been successfully updated!',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Redirect based on response.redirectTo
+                        if (response.redirectTo === "checkout") {
+                            window.location.href = '/checkout';
+                        } else {
+                            window.location.href = '/address';
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to update address.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = '/pageNotFound';
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An unexpected error occurred.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '/pageNotFound';
+                });
+            }
+        });
+    });
+
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
+
+       
+        $(".text-danger").remove();
+
+        requiredFields.forEach(function (field) {
+            const input = $("#" + field);
+            if (input.val().trim() === "") {
+                input.after('<div class="text-danger">This field is required.</div>');
+                isValid = false;
+            }
+        });
+
+        const namePattern = /^[A-Za-z\s]+$/;
+        const pincodePattern = /^\d{6}$/;
+        const phonePattern = /^\d{10}$/;
+
+        if (!namePattern.test($("#name").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Name should contain alphabets only.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if (!namePattern.test($("#city").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'City should contain alphabets only.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if (!namePattern.test($("#landMark").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Landmark should contain alphabets only.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if (!namePattern.test($("#state").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'State should contain alphabets only.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if (!pincodePattern.test($("#pincode").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Pincode should be a 6-digit number.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if (!phonePattern.test($("#phone").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Phone number should be a 10-digit number.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if (!phonePattern.test($("#altPhone").val())) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Alternate phone number should be a 10-digit number.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        if ($("#phone").val() === $("#altPhone").val()) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Phone number and alternate phone number should be different.',
+                icon: 'error'
+            });
+            isValid = false;
+        }
+
+        return isValid;
+    }
+});
 </script>
 
 <%- include("../../views/partials/user/footer") %>

@@ -221,113 +221,36 @@ const loadDashboard = async (req, res) => {
   }
 };
 
-
-// const salesReport = async (req, res) => {
-//   try {
-//       let page = parseInt(req.query.page) || 1;
-//       let limit = 20;
-//       let skip = (page - 1) * limit;
-
-//       const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
-//       const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
-
-//       if (!startDate || !endDate) {
-//           return res.status(400).json({ error: "Both start and end dates are required" });
-//       }
-
-//       endDate.setHours(23, 59, 59, 999);
-
-//       let query = {};
-//       if (startDate && endDate) {
-//           query.createdOn = { $gte: startDate, $lte: endDate };
-//       }
-
-//       const userCount = await User.countDocuments({ isAdmin: false });
-
-//       const totalSales = await Order.aggregate([
-//           { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
-//           { $unwind: "$orderedItems" },
-//           { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
-//           {
-//               $group: {
-//                   _id: null,
-//                   totalAmount: { $sum: "$finalAmount" },
-//                   totalOrder: { $sum: 1 },
-//                   totalDiscountPrice: { $sum: "$discount" },
-//                   itemSold: { $sum: "$orderedItems.quantity" },
-//                   totalCouponDiscount: { $sum: "$couponDiscount" },
-//               }
-//           }
-//       ]);
-
-//       const salesData = totalSales.length
-//           ? totalSales[0]
-//           : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
-
-//       const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
-
-//       const count = await Order.countDocuments(query);
-//       const totalPage = Math.max(Math.ceil(count / limit), 1);
-
-//       const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
-
-//       const totalCouponUsers = await Order.aggregate([
-//           { $match: { couponApplied: true } },
-//           { $count: "totalCouponApplied" }
-//       ]);
-
-//       const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
-
-//       const result = {
-//           ...salesData,
-//           userCount,
-//           processingOrders,
-//           order,
-//           totalCouponUsers: totalCouponCount,
-//           totalPage,
-//           currentPage: page,
-//           startDate: req.query.startDatee || '',
-//           endDate: req.query.endDatee || ''
-//       };
-
-//       res.json(result);
-//   } catch (error) {
-//       console.error("Sales report error:", error);
-//       res.status(500).json({ error: "Server error", details: error.message });
-//   }
-// };
-
-
 const salesReport = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
-    let limit = 10;
+    let limit = 20;
     let skip = (page - 1) * limit;
     const filterType = req.query.filterType || "custom";
 
     let startDate, endDate;
 
-    // Set date range based on filter type
+    // Setting date range 
     switch (filterType) {
       case "daily":
         startDate = new Date();
-        startDate.setHours(0, 0, 0, 0); // Start of today
+        startDate.setHours(0, 0, 0, 0); 
         endDate = new Date();
-        endDate.setHours(23, 59, 59, 999); // End of today
+        endDate.setHours(23, 59, 59, 999); 
         break;
       case "weekly":
         startDate = new Date();
-        startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of week (Sunday)
+        startDate.setDate(startDate.getDate() - startDate.getDay()); 
         startDate.setHours(0, 0, 0, 0);
         endDate = new Date();
-        endDate.setHours(23, 59, 59, 999); // End of today
+        endDate.setHours(23, 59, 59, 999); 
         break;
       case "monthly":
         startDate = new Date();
-        startDate.setDate(1); // Start of month
+        startDate.setDate(1); 
         startDate.setHours(0, 0, 0, 0);
         endDate = new Date();
-        endDate.setHours(23, 59, 59, 999); // End of today
+        endDate.setHours(23, 59, 59, 999); 
         break;
       case "custom":
         startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
@@ -376,7 +299,7 @@ const salesReport = async (req, res) => {
     const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
 
     const totalCouponUsers = await Order.aggregate([
-      { $match: { couponApplied: true, ...query } }, // Add query here to filter by date
+      { $match: { couponApplied: true, ...query } }, 
       { $count: "totalCouponApplied" },
     ]);
 
@@ -509,7 +432,7 @@ const downloadExcelReport = async (req, res) => {
     });
 
     worksheet.addRow([
-      salesData.totalAmount,
+      salesData.totalAmount.toFixed(2),
       salesData.totalOrder,
       salesData.totalCouponDiscount,
       salesData.totalDiscountPrice,
@@ -604,7 +527,7 @@ const downloadPDFReport = async (req, res) => {
 
     doc.moveDown().fontSize(14).text("Summary", { align: "center" }).moveDown();
     doc.fontSize(12);
-    doc.text(`Total Amount: ${salesData.totalAmount}`);
+    doc.text(`Total Amount: ${salesData.totalAmount.toFixed(2)}`);
     doc.text(`Total Orders: ${salesData.totalOrder}`);
     doc.text(`Total Coupon Discount: ${salesData.totalCouponDiscount}`);
     doc.text(`Total Discount Price: ${salesData.totalDiscountPrice}`);
@@ -694,11 +617,98 @@ const Chart = async (req, res) => {
   }
 };
 
+
+const getSalesReport = async(req,res) => {
+  if (req.session.admin) {
+    try {
+        let page = parseInt(req.query.page) || 1;
+        let limit = 10;
+        let skip = (page - 1) * limit;
+
+        const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
+        const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
+        // console.log("1",startDate);
+        // console.log("2",endDate)
+
+        let query = {};
+        if (startDate && endDate) {
+            query.createdOn = { $gte: startDate, $lte: endDate };
+        }
+
+        const userCount = await User.countDocuments({ isAdmin: false });
+        const totalSales = await Order.aggregate([
+          { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+          { $unwind: "$orderedItems" },
+          { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },  
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$finalAmount" },
+              totalOrder: { $sum: 1 },
+              totalDiscountPrice: { $sum: "$discount" },
+              itemSold: { $sum: "$orderedItems.quantity" }  
+            }
+          }
+        ]);
+
+        const orders = await Order.countDocuments();
+        //console.log(orders);
+
+        //console.log("Sales",itemSold);
+
+        const salesData = totalSales[0] || {
+            totalAmount: 0,
+            totalOrder: 0,
+            totalDiscountPrice: 0,
+            itemSold: 0,
+        };
+
+        const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
+        const count = await Order.countDocuments(query);
+        const totalPage = Math.ceil(count / limit);
+
+        const processingOrders = await Order.countDocuments({ status: 'Order Placed', ...query });
+
+        const totalCouponUsers = await Order.aggregate([
+          { $match: { couponApplied: true } },
+          { $count: "totalCouponApplied" }
+      ]);
+
+      //console.log("Coupon", totalCouponUsers)
+
+      const totalCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+      //console.log("Total Coupons Applied:", totalCount);
+      
+      //console.log(topBrands);        
+
+        if (req.xhr) {
+            return res.json({ orders: salesData, totalPage, currentPage: page });
+        }
+
+        res.render('salesReport', {
+            userCount,
+            orders: salesData,
+            processingOrders,
+            totalCouponUsers: totalCount,
+            totalPage,
+            currentPage: page,
+            limit,
+            order: order,
+            startDate: req.query.startDatee || '',
+            endDate: req.query.endDatee || ''
+        });
+    } catch (error) {
+        res.redirect('/pageerror');
+    }
+}
+}
+
 module.exports = {
     loadDashboard,
     salesReport,
     downloadExcelReport,
     downloadPDFReport,
     Chart,
+    getSalesReport
 }
 

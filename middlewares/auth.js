@@ -9,12 +9,12 @@ const userAuth = async (req, res, next) => {
         const user = await User.findById(req.session.user);
 
         if (!user) {
-            req.session.destroy();
+            delete req.session.user;
             return res.redirect("/login");
         }
 
         if (user.isBlocked) {
-            req.session.destroy();
+            delete req.session.user;
             return res.render("404page", { 
                 message: "Your account has been blocked by the admin. Please contact support." 
             });

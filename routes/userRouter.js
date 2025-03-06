@@ -27,14 +27,7 @@ router.post('/signup',userController.signup);
 router.post('/verify-otp',userController.verifyOtp);
 router.post('/resend-otp',userController.resendOtp);
 router.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}));
-// router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/signup'}),(req,res) => {
-//      const user = req.session.user;
-//         //req.session.user = findUser;
-//         // Pass user to all views using res.locals
-//         res.locals.user = req.session.user;
-//     console.log("user");
-//     res.redirect('/');
-// });
+
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), async (req, res) => {
     try {
         const user = req.user;
@@ -76,14 +69,14 @@ router.get('/change-password',userAuth,profileController.changePassword);
 router.post('/change-password',userAuth,profileController.changePasswordValid);
 router.post('/verify-changepassword-otp',userAuth,profileController.verifyChangePassOtp);
 router.get('/edit-profile',userAuth,profileController.geteditProfile);
-router.post('/edit-profile',userAuth,profileController.editProfile);
+router.put('/edit-profile',userAuth,profileController.editProfile);
 
 // Address Management
 router.get('/address',userAuth,profileController.getAddress); 
 router.get('/addAddress',userAuth,profileController.addAddress);
 router.post('/addAddress',userAuth,profileController.userAddAddress);
 router.get('/editAddress',userAuth,profileController.editAddress);
-router.post('/editAddress',userAuth,profileController.userEditAddress);
+router.put('/editAddress',userAuth,profileController.userEditAddress);
 router.delete('/deleteAddress',userAuth,profileController.deleteAddress);
 
 //Shopping Management
@@ -126,8 +119,6 @@ router.delete('/cancelOrder/:itemId', userAuth,orderController.cancelOrder);
 router.delete('/cancelParentOrder/:OrderId',userAuth,orderController.cancelParentOrder);
 router.get('/writeReview',userAuth,orderController.getWriteReview);
 router.post('/submitReview',userAuth,orderController.submitReview);
-router.get('/update-address',userAuth,orderController.getUpdateAddress);
-router.post('/update-address',userAuth,orderController.updateAddress);
 router.post('/returnOrderItem',userAuth,orderController.returnOrder);
 router.post("/retryPayment/:orderId", userAuth,orderController.retryPayment);
 router.post("/verifyRetryPayment", userAuth,orderController.verifyRetryPayment);

@@ -105,9 +105,73 @@ const getOrderDetailsPageAdmin = async (req, res) => {
 };
 
 
+// const updateOrderStatus = async (req, res) => {
+//   try {
+    
+//     console.log("Received request to update order status:", req.body);
+
+//     const { orderId, status } = req.body;
+//     if (!orderId || !status) {
+//       return res.json({ success: false, message: "Invalid request data" });
+//     }
+
+//     const order = await Order.findById(orderId).populate("orderedItems.productId");
+
+//     if (!order) {
+//       return res.json({ success: false, message: "Order not found" });
+//     }
+
+//     if (order.status === "Delivered" || order.status === "Cancelled") {
+//       return res.json({
+//         success: false,
+//         message: "Cannot modify Delivered or Cancelled orders",
+//       });
+//     }
+
+//     let hasStatusChanged = false;
+//     let bulkUpdates = [];
+
+//     for (const item of order.orderedItems) {
+//       if (item.orderStatus !== "Cancelled") {
+//         item.orderStatus = status;
+//         hasStatusChanged = true;
+
+//         if (status === "Cancelled" && item.productId) {
+//           bulkUpdates.push({
+//             updateOne: {
+//               filter: { _id: item.productId._id },
+//               update: { $inc: { quantity: item.quantity } },
+//             },
+//           });
+//         }
+//       }
+//     }
+
+//     if (bulkUpdates.length > 0) {
+//       await Product.bulkWrite(bulkUpdates);
+//     }
+
+//     if (hasStatusChanged) {
+//       const formattedDate = new Date().toISOString();
+//       const lastEntry = order.trackingHistory[order.trackingHistory.length - 1];
+
+//       if (!lastEntry || lastEntry.status !== status) {
+//         order.trackingHistory.push({ date: formattedDate, status });
+//       }
+
+//       order.status = status;
+//       await order.save();
+//     }
+
+//     res.json({ success: true, message: "Order status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating order:", error);
+//     res.json({ success: false, message: "Internal server error" });
+//   }
+// };
+
 const updateOrderStatus = async (req, res) => {
   try {
-    
     console.log("Received request to update order status:", req.body);
 
     const { orderId, status } = req.body;
@@ -169,6 +233,7 @@ const updateOrderStatus = async (req, res) => {
     res.json({ success: false, message: "Internal server error" });
   }
 };
+
 
 const returnRequest = async (req, res) => {
   try {
@@ -243,130 +308,6 @@ const rejectOrder = async (req, res) => {
       res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-
-// const approveOrder = async (req, res) => {
-//   try {
-//       const { orderId, productId } = req.body;
-//       console.log("Approving order:", orderId, productId);
-
-//       if (!orderId || !productId) {
-//           return res.status(400).json({ success: false, message: "Missing orderId or productId" });
-//       }
-
-//       const order = await Order.findById(orderId).populate('orderedItems.productId');;
-//       if (!order) {
-//           return res.status(404).json({ success: false, message: "Order not found" });
-//       }
-//       //console.log("Order:", order);
-   
-//       const orderedItem = order.orderedItems.find(item => 
-//         item.productId.equals(productId) && item.orderStatus === "Return request"
-//       );
-
-//       if (!orderedItem) {
-//           return res.status(404).json({ success: false, message: "Product not found in order" });
-//       }
-//       //console.log("Ordered Item:", orderedItem);
-//       //return true;
-
-//       const user = await User.findById(order.userId);
-//       if (!user) {
-//           return res.status(404).json({ success: false, message: "User not found" });
-//       }
-//       //console.log("User:", user);
-//       //return true;
-
-//       let walletCredit = 0;
-//       // console.log("Order Payment Method:", order.paymentMethod);
-//       // console.log("Order Coupon Applied:", order.couponApplied);
-//       // console.log("Order Applied Coupon:", order.appliedCoupon);
-//       // return true;
-
-//      if (order.paymentMethod !== "Cash on Delivery") {
-    
-//      if (order.couponApplied && order.appliedCoupon) {
-//         const coupon = await Coupon.findById(order.appliedCoupon);
-//        //crossOriginIsolated.log(coupon);
-//       //  console.log("Coupon:", coupon);
-//       //  return true;
-       
-//         if (coupon) {
-
-//             const totalOrderPrice = order.orderedItems.reduce((sum, item) => sum + item.price, 0);
-//             const totalItems = order.orderedItems.length;
-//             const gstAmount = order.gstAmount || 0;
-//             const finalAmount = order.finalAmount;
-//             // console.log("Total Order Price:", totalOrderPrice);
-//             // console.log("Total Items:", totalItems);
-//             // console.log("GST Amount:", gstAmount);
-//             // console.log("Final Amount:", finalAmount);
-//             // return true; 
-
-//             const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
-//             const isReturningAll = returnItemsCount === totalItems;  
-
-//             // console.log("Returning all items:", isReturningAll);
-//             // console.log("Returned Items Count:", returnItemsCount);
-//             // console.log("Total Items:", totalItems);
-
-//            // return true;
-
-
-//             if (isReturningAll) {
-                
-//                 walletCredit += order.discount;
-
-//             } else {
-
-//               const gstRate = 18; 
-
-//               const itemPriceWithGST = orderedItem.price + (orderedItem.price * (gstRate / 100));
-//               const discountContribution = (itemPriceWithGST / finalAmount) * order.discount;
-              
-//               // console.log("Discount Contribution:", discountContribution);
-//               // console.log("Item Price With GST:", itemPriceWithGST);
-              
-//               walletCredit += discountContribution;
-//               //console.log("Wallet Credit:", walletCredit);
-              
-//                // return true;
-//             }
-//             //return true;
-//             await Coupon.updateOne({ _id: order.appliedCoupon }, { $push: { users: user._id } });
-//         }
-//     }
-//     const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
-//             await User.updateOne(
-//                 { _id: user._id },
-//                 { $push: { wallet: { amount: walletCreditRounded, date: new Date() } } }
-//             );
-
-//   }
-//    // return true;
-//     await Product.updateOne({ _id: productId }, { $inc: { quantity: orderedItem.quantity } });
-
-//     await Order.updateOne(
-//         { _id: orderId, "orderedItems.productId": productId },
-//         { $set: { "orderedItems.$.orderStatus": "Returned" } }
-//     );
-
-//     const updatedOrder = await Order.findById(orderId);
-//     const allItemsReturned = updatedOrder.orderedItems.every(item => item.orderStatus === "Returned");
-
-//     if (allItemsReturned) {
-//         await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
-//     }else{
-//       await Order.updateOne({ _id: orderId }, { $set: { status: "Delivered" } });
-//     }
-
-//     return res.status(200).json({ success: true, message: "Order item return request approved successfully!" });
-
-//   } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ success: false, message: "Internal server error" });
-//   }
-// };
 
 
 const approveOrder = async (req, res) => {

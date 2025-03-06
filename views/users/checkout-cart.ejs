@@ -402,7 +402,7 @@ input[type="text"] {
                                                         <%= addr.landMark %>,
                                                         <%= addr.state %>,
                                                     </address>
-                                                    <p><%= addr.pincode %>,
+                                                    <p><%= addr.pincode %>,<br>
                                                     <%= addr.phone %>,
                                                     <%= addr.altPhone%></p>
                             
@@ -434,7 +434,7 @@ input[type="text"] {
                             
                             <div class="col-lg-12 d-flex justify-content-center mt-4">
                                 <a href="/addAddress?redirectTo=checkout">
-                                    <button type="submit" class="btn btn-primary w-100">Add address</button>
+                                    <button type="submit" class="btn btn-primary w-100" style="text-transform: capitalize";><i class="fas fa-map-marker-alt me-2"></i>Add address</button>
                                 </a>                               
                             </div>
                                 
@@ -465,7 +465,7 @@ input[type="text"] {
                     
                             <div class="ml-65 mb-30">
                                 
-                                    <button type="button" class="btn" id="placeorder" onclick="placeOrder('')">Place Order</button>
+                                    <button type="button" class="btn" id="placeorder" style="text-transform: capitalize;" onclick="placeOrder('')"><i class="fas fa-shopping-cart"></i>Place Order</button>
                                
                             </div>
                            

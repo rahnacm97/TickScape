@@ -20,11 +20,13 @@ const getConfirmation = async (req, res) => {
     try {
         const orderId = req.query.orderId; // Sequential number from frontend
         console.log("Received orderId:", orderId);
-        const userId = req.session.user._id;        
+        const userId = req.session.user;        
         //const order = await Order.findOne({ orderId: parseInt(orderId) });
         
         //console.log("Order ID received:", orderId);
         //console.log("User ID from session:", userId);
+
+        const user = await User.findById({_id:userId});
 
         if (!orderId) {
             return res.status(400).json({ error: "Order ID is required" });
@@ -61,7 +63,7 @@ const getConfirmation = async (req, res) => {
 
         res.render("orders", {
             orders: order,
-            user: req.session.user,
+            user: user,
             address: fullAddress, 
         });
 
@@ -75,7 +77,7 @@ const getConfirmation = async (req, res) => {
 const downloadInvoice = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const userId = req.session.user._id;
+        const userId = req.session.user;
 
         const order = await Order.findById(orderId).populate({
             path: "orderedItems.productId",
@@ -207,10 +209,12 @@ const downloadInvoice = async (req, res) => {
 
 const getOrders = async (req, res) => {
     try {
-        const userId = req.session?.user?._id;
+        const userId = req.session?.user;
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized access" });
         }
+
+        const user = await User.findById({_id:userId});
 
         const page = Math.max(1, parseInt(req.query.page, 10) || 1);
         const limit = 4;
@@ -262,7 +266,8 @@ const getOrders = async (req, res) => {
             res.render('get-order', {
                 orders: formattedOrders,
                 totalPages: Math.ceil(totalOrders / limit),
-                currentPage: page
+                currentPage: page,
+                user: user
             });
             //console.log("order",formattedOrders);
 
@@ -276,9 +281,11 @@ const getOrders = async (req, res) => {
 const viewOrder = async(req,res) => {
     try {
 
-        const userId = req.session.user._id;
+        const userId = req.session.user;
         const { orderid } = req.params;
         //console.log("1",orderid,userId);
+
+        const user = await User.findById({_id:userId});
 
         const order = await Order.findById(orderid).populate({
             path: 'orderedItems.productId', 
@@ -313,7 +320,7 @@ const viewOrder = async(req,res) => {
 
         res.render("viewOrder", { 
             order,
-            user:req.session.user,
+            user: user,
             address,
             trackingHistory, 
             expectedDeliveryDate,
@@ -496,12 +503,15 @@ const cancelParentOrder = async (req, res) => {
 const getWriteReview = async(req,res) => {
     try {
         const { productId, orderId } = req.query;
+        const userId = req.session.user;
+
+        const user = await User.findById({_id:userId});
 
         if (!productId && !orderId) {
             return res.status(400).send("Product ID and Order ID is required");
         }
 
-        res.render('writeReview', { productId, orderId }); 
+        res.render('writeReview', { productId, orderId ,user}); 
     } catch (error) {
         console.error("Error processing orders:", error);
         res.status(500).send("Error loading the page");
@@ -510,7 +520,7 @@ const getWriteReview = async(req,res) => {
 
 const submitReview = async (req, res) => {
     const { productId, orderId, rating, comment } = req.body;
-    const userId = req.session.user._id;
+    const userId = req.session.user;
 
     try {
        
@@ -538,102 +548,6 @@ const submitReview = async (req, res) => {
     } catch (error) {
         console.error("Error submitting review:", error);
         res.status(500).send("Error submitting review");
-    }
-};
-
-const getUpdateAddress = async (req, res) => {
-    try {
-        const orderid = req.query.orderid;
-        const userId = req.session.user._id;
-
-        if (!orderid) { 
-            return res.status(400).send("Invalid Order ID");
-        }
-
-        const order = await Order.findById(orderid);
-
-        const restrictedStatuses = ["Shipped", "Out for Delivery", "Delivered", "Cancelled"];
-        if (restrictedStatuses.includes(order.status)) {
-            console.error("Address change not allowed for this order status:", order.status);
-            return res.status(403).send("Shipping address cannot be changed at this stage.");
-        }
-
-        const addressDetails = await Address.findOne({ userId: order.userId }).exec();
-
-        if (!addressDetails || !addressDetails.address) {
-            console.error("Address details not found for the user");
-            return res.redirect("/pageerror");
-        }
-
-        const address = addressDetails.address.find(
-            (addr) => addr._id.toString() === order.address.toString()
-        );
-
-        if (!address) {
-            console.error("Address not found for the given addressId");
-            return res.redirect("/pageerror");
-        }
-
-        if (!order) {
-            return res.status(404).send("Order not found!");
-        }
-        //console.log("address",address);
-
-        res.render('update-address', { 
-            order,
-            address,
-         }); 
-
-    } catch (error) {
-        console.error("Error rendering update address page:", error);
-        res.status(500).send("Internal Server Error");
-    }
-};
-
-
-const updateAddress = async (req, res) => {
-    try {
-        const orderid = req.query.orderid;
-        const userId = req.session.user._id;
-        //console.log("Order ID received:", orderid);
-
-        if (!mongoose.Types.ObjectId.isValid(orderid)) {
-            return res.status(400).json({ error: "Invalid Order ID format" });
-        }
-
-        const order = await Order.findById(orderid);
-        if (!order) {
-            return res.status(404).json({ error: "Order not found!" });
-        }
-
-        const restrictedStatuses = ["Shipped", "Out for Delivery", "Delivered"];
-        if (restrictedStatuses.includes(order.status)) {
-            return res.status(403).json({ error: "Shipping address cannot be changed at this stage." });
-        }
-
-        const { addressType, name, city, landMark, state, pincode, phone, altPhone } = req.body;
-
-        order.address = {
-            addressType,
-            name,
-            city,
-            landMark,
-            state,
-            pincode,
-            phone,
-            altPhone,
-        };
-
-        await order.save();
-
-        res.status(200).json({ 
-            message: "Address updated successfully!", 
-            updatedOrder: order, 
-            redirectUrl
-        });
-    } catch (error) {
-        console.error("Error updating address:", error);
-        res.status(500).json({ error: "Failed to update address." });
     }
 };
 
@@ -683,7 +597,7 @@ const razorpayInstance = new Razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
   
-  const retryPayment = async (req, res) => {
+const retryPayment = async (req, res) => {
     try {
       const { orderId } = req.params;
       const order = await Order.findById(orderId).populate("orderedItems.productId");
@@ -692,8 +606,8 @@ const razorpayInstance = new Razorpay({
         return res.status(400).json({ success: false, message: "Invalid order or status." });
       }
   
-      const finalAmount = order.finalAmount; // Use the stored final amount (1855.4 in your example)
-      const options = { amount: finalAmount * 100, currency: "INR" }; // Razorpay expects amount in paise
+      const finalAmount = order.finalAmount; 
+      const options = { amount: finalAmount * 100, currency: "INR" }; 
       const razorpayOrder = await razorpayInstance.orders.create(options);
   
       if (!razorpayOrder || !razorpayOrder.id) {
@@ -786,8 +700,6 @@ module.exports = {
     cancelParentOrder,
     getWriteReview,
     submitReview,
-    getUpdateAddress,
-    updateAddress,
     returnOrder,
     retryPayment,
     verifyRetryPayment

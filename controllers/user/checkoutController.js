@@ -15,7 +15,7 @@ const mongoose = require('mongoose');
 
 const checkCart = async (req, res) => {
   try {
-      const userId = req.session.user?._id;
+      const userId = req.session.user;
       if (!userId) {
           return res.status(401).json({ success: false, message: "User not logged in" });
       }
@@ -34,7 +34,7 @@ const checkCart = async (req, res) => {
 
 const getCheckout = async (req, res) => {
   try {
-    const userId = req.session.user?._id;
+    const userId = req.session.user;
     //console.log("User ID:", userId);
     if (!userId) {
       return res.status(401).json({ success: false, message: "User not logged in" });
@@ -42,6 +42,7 @@ const getCheckout = async (req, res) => {
 
     const carts = await Cart.findOne({ userId }).populate("items.productId");
     const address = await Address.find({ userId });
+    const user = await User.findById({_id:userId});
 
     //console.log("Address:", address);
 
@@ -50,11 +51,12 @@ const getCheckout = async (req, res) => {
       req.session.save();
       return res.render("cart", {
         cart: [],
-        user: req.session.user,
+        user: user,
         errorMessage: "Your cart is empty. Add items to proceed to checkout."
     });
   }
 
+  console.log("user",user);
     // Calculate total price and GST amount
     let total = 0;
     let gstAmount = 0;
@@ -84,12 +86,25 @@ const getCheckout = async (req, res) => {
     let couponDiscount = 0;
     let appliedCoupon = req.session.appliedCoupon;
 
+    // if (appliedCoupon) {
+    //   if (total >= appliedCoupon.discount) {
+    //     couponDiscount = appliedCoupon.discount;
+    //   } else {
+    //     req.session.appliedCoupon = null;
+    //     req.session.save();
+    //   }
+    // }
+
+
     if (appliedCoupon) {
-      if (total >= appliedCoupon.discount) {
-        couponDiscount = appliedCoupon.discount;
+      // Validate coupon still applies
+      const coupon = await Coupon.findById(appliedCoupon._id);
+      if (coupon && total >= coupon.minimumPrice && today <= new Date(coupon.expireOn)) {
+        couponDiscount = Math.min(appliedCoupon.discount, total); // Ensure discount doesn’t exceed total
       } else {
+        // Invalidate coupon if conditions fail
         req.session.appliedCoupon = null;
-        req.session.save();
+        appliedCoupon = null;
       }
     }
 
@@ -113,9 +128,9 @@ const getCheckout = async (req, res) => {
       sgstRate,
       address,
       cart: carts.items,
-      user: req.session.user,
+      user: user,
       coupons,
-      appliedCoupon: req.session.appliedCoupon || null,
+      appliedCoupon: appliedCoupon || null,
       discount: couponDiscount,
       finalTotal,
       couponSuccess: req.session.couponSuccess || null,
@@ -123,6 +138,11 @@ const getCheckout = async (req, res) => {
       razorpayKey
     });
 
+    req.session.couponSuccess = null;
+    req.session.couponError = null;
+    req.session.save();
+
+    console.log("user",user);
     console.log("Applied Coupon in Session:", req.session.appliedCoupon);
     console.log("Total:", total);
     console.log("GST Amount:", gstAmount);
@@ -140,7 +160,7 @@ const applyCoupon = async (req, res) => {
   try {
     console.log("Coupon request received:", req.body);
     const { couponCode, carts } = req.body;
-    const userId = req.session.user?._id;
+    const userId = req.session.user;
 
     console.log("User ID:", userId);
 
@@ -162,6 +182,7 @@ const applyCoupon = async (req, res) => {
     const gstRate = 18;
     const gstAmount = (subTotal * gstRate) / 100;
     console.log("GST Amount:", gstAmount);
+    const finalAmount = subTotal + gstAmount + 50;
 
     const coupon = await Coupon.findOne({ name: couponCode }).lean();
     if (!coupon) {
@@ -173,7 +194,7 @@ const applyCoupon = async (req, res) => {
       return res.json({ success: false, message: "Coupon expired or not valid yet" });
     }
 
-    if (subTotal < coupon.minimumPrice) {
+    if (finalAmount < coupon.minimumPrice) {
       return res.json({ success: false, message: `Minimum purchase should be ₹${coupon.minimumPrice}` });
     }
 
@@ -218,7 +239,7 @@ const applyCoupon = async (req, res) => {
 
 const removeCoupon = async (req, res) => {
   try {
-    const userId = req.session.user?._id;
+    const userId = req.session.user;
 
     if (!userId) {
       return res.status(401).json({ success: false, message: "User not logged in" });
@@ -282,7 +303,7 @@ const razorpayInstance = new Razorpay({
 
 const razorpayPayment = async (req, res) => {
   try {
-      const userId = req.session.user._id;
+      const userId = req.session.user;
       const addressId = req.body.addressId;
 
       const addressData = await Address.findOne(
@@ -374,7 +395,7 @@ const razorpayPayment = async (req, res) => {
 const verifyRazorpay = async (req, res) => {
   try {
       const { order_id, payment_id, signature } = req.body;
-      const userId = req.session.user._id;
+      const userId = req.session.user;
 
       if (!process.env.RAZORPAY_KEY_SECRET) {
           console.error("Razorpay key secret is missing!");
@@ -481,7 +502,7 @@ const verifyRazorpay = async (req, res) => {
 
 const savePendingOrder = async (req, res) => {
   try {
-    const userId = req.session.user._id;
+    const userId = req.session.user;
     const { addressId } = req.body;
 
     // Fetch address
@@ -586,7 +607,7 @@ const savePendingOrder = async (req, res) => {
 
 const placeOrder = async (req, res) => {
   try {
-      const userId = req.session.user._id;
+      const userId = req.session.user;
       //console.log("Step 1 - User ID:", userId);
       console.log("Request Body:", req.body);
 
@@ -716,7 +737,7 @@ const placeOrder = async (req, res) => {
 const getUserWalletBalance = async (req, res) => {
   //console.log("1")
   try {
-    const userId = req.session.user._id;
+    const userId = req.session.user;
     let user = await User.findById(userId);
     //console.log("user",user);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -737,7 +758,7 @@ const getUserWalletBalance = async (req, res) => {
 
 const deductWalletBalance = async (req, res) => {
   try {
-    const userId = req.session.user._id;
+    const userId = req.session.user;
     let user = await User.findById(userId);
 
     if (!user) return res.status(404).json({ message: "User not found" });

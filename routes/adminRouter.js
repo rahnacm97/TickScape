@@ -40,6 +40,9 @@ router.get('/salesReport',adminAuth,dashboardController.salesReport);
 router.post("/download-sales-data", adminAuth,dashboardController.downloadExcelReport);
 router.post("/download-pdf", adminAuth,dashboardController.downloadPDFReport);
 router.get('/sales-data',adminAuth,dashboardController.Chart);
+router.get('/loadSalesReport',adminAuth,dashboardController.getSalesReport);
+
+//Sales Report Management
 
 //Customer Management
 router.get('/users',adminAuth,customerController.customerInfo);
@@ -84,17 +87,10 @@ router.get('/deleteProduct',adminAuth,productController.deleteProduct);
 // Order Management
 router.get("/orderList", adminAuth, orderController.getOrderListPageAdmin)
 router.get("/orderDetailsAdmin/:id", adminAuth, orderController.getOrderDetailsPageAdmin)
-router.post('/update-order-status',adminAuth,orderController.updateOrderStatus);
+router.put('/update-order-status',adminAuth,orderController.updateOrderStatus);
 router.get('/returnRequest',adminAuth,orderController.returnRequest);
 router.post('/rejectOrder',adminAuth,orderController.rejectOrder);
 router.post('/approveOrder',adminAuth,orderController.approveOrder);
-
-
-//Banner Management
-router.get('/banner',adminAuth,bannerController.getBanner);
-router.get('/addBanner',adminAuth,bannerController.getAddBanner);
-router.post('/addBanner',adminAuth,uploads.single("images"),bannerController.addBanner);
-router.get('/deleteBanner',adminAuth,bannerController.deleteBanner);
 
 //Coupon Management
 router.get('/coupon',adminAuth,couponController.loadCoupon);
@@ -106,14 +102,11 @@ router.get('/deleteCoupon',adminAuth,couponController.deleteCoupon);
 router.get('/listCoupon',adminAuth,couponController.getListCoupon);
 router.get('/unlistCoupon',adminAuth,couponController.getUnlistCoupon);
 
-//Offer Management
-router.get('/offers',adminAuth,offerController.loadOffer);
-router.get('/addOffers',adminAuth,offerController.offerAdd);
-router.post('/offerAdd',adminAuth,offerController.addOffer);
-router.get('/offerList/:id',adminAuth,offerController.offerList);
-router.get('/offerUnList/:id',adminAuth,offerController.offerUnList);
-router.get('/editOffer/:id',adminAuth,offerController.editOffer);
-router.post('/offerEdit/:id',adminAuth,offerController.offerEdit);
+//Banner Management
+router.get('/banner',adminAuth,bannerController.getBanner);
+router.get('/addBanner',adminAuth,bannerController.getAddBanner);
+router.post('/addBanner',adminAuth,uploads.single("images"),bannerController.addBanner);
+router.get('/deleteBanner',adminAuth,bannerController.deleteBanner);
 
 //Page Error
 router.get('/pageerror',adminController.pageerror);
