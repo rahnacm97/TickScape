@@ -86,37 +86,28 @@ const getCheckout = async (req, res) => {
     let couponDiscount = 0;
     let appliedCoupon = req.session.appliedCoupon;
 
-    // if (appliedCoupon) {
-    //   if (total >= appliedCoupon.discount) {
-    //     couponDiscount = appliedCoupon.discount;
-    //   } else {
-    //     req.session.appliedCoupon = null;
-    //     req.session.save();
-    //   }
-    // }
-
 
     if (appliedCoupon) {
-      // Validate coupon still applies
       const coupon = await Coupon.findById(appliedCoupon._id);
       if (coupon && total >= coupon.minimumPrice && today <= new Date(coupon.expireOn)) {
-        couponDiscount = Math.min(appliedCoupon.discount, total); // Ensure discount doesn’t exceed total
+        couponDiscount = Math.min(appliedCoupon.discount, total); // Set discount
       } else {
-        // Invalidate coupon if conditions fail
-        req.session.appliedCoupon = null;
-        appliedCoupon = null;
+        couponDiscount = 0; // Invalid coupon
       }
     }
 
     // Ensure discount does not exceed total price
     couponDiscount = Math.min(couponDiscount, total);
 
-    // Calculate final total including GST
-    let finalTotal = total - couponDiscount + gstAmount;
     const razorpayKey = process.env.RAZORPAY_KEY_ID;
 
+    // Calculate final total including GST
+    let finalTotal = total - couponDiscount + gstAmount;
+
+    req.session.gstAmount = gstAmount;
+    req.session.finalTotal = finalTotal;
     req.session.couponDiscount = couponDiscount;
-    req.session.save();
+    await req.session.save();
 
     res.render("checkout-cart", {
       carts,
@@ -210,6 +201,8 @@ const applyCoupon = async (req, res) => {
       discount: couponDiscount,
     };
 
+    req.session.couponDiscount = couponDiscount;
+
     if (!req.session.cart) {
       req.session.cart = {};
     }
@@ -301,29 +294,121 @@ const razorpayInstance = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// const razorpayPayment = async (req, res) => {
+//   try {
+//       const userId = req.session.user;
+//       const addressId = req.body.addressId;
+
+//       console.log("Session Data:", req.session);
+
+//       const addressData = await Address.findOne(
+//           { userId, "address._id": addressId },
+//           { "address.$": 1 }
+//       );
+//       console.log("Address:", addressData);
+
+//       if (!addressData || !addressData.address || !addressData.address.length) {
+//           return res.status(400).json({ success: false, message: "Address not found." });
+//       }
+
+//       const cart = await Cart.findOne({ userId }).populate("items.productId");
+//       console.log("Cart:", cart);
+
+//       if (!cart || !cart.items || cart.items.length === 0) {
+//           return res.status(400).json({ success: false, message: "Cart is empty." });
+//       }
+
+//       let totalOriginalPrice = 0;
+//       let totalOfferPrice = 0;
+//       let orderItems = [];
+
+//       cart.items.forEach(item => {
+//           if (!item.productId) {
+//               throw new Error("Invalid cart item: Product ID missing.");
+//           }
+//           totalOriginalPrice += (item.productId.regularPrice || 0) * item.quantity;
+//           totalOfferPrice += (item.productId.salePrice || 0) * item.quantity;
+//           orderItems.push({
+//               productId: item.productId._id,
+//               quantity: item.quantity,
+//               price: item.productId.salePrice || item.productId.regularPrice,
+//               productName: item.productId.productName,
+//               productImage: item.productId.productImage ? item.productId.productImage[0] : null,
+//               orderStatus: "Order Placed"
+//           });
+//       });
+
+//       let couponDiscount = req.session.couponDiscount || 0;
+//       let couponApplied = couponDiscount > 0;
+//       let appliedCoupon = req.session.appliedCoupon ? req.session.appliedCoupon._id : null;
+
+//       console.log("Coupon Discount:", couponDiscount);
+
+//       let shippingCharge = 50;
+//       let gstAmount = req.session.gstAmount || (totalOfferPrice * 0.18);
+//       let totalPrice = orderItems.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)), 0);
+//       let finalAmount = Math.max(totalOfferPrice - couponDiscount + shippingCharge + gstAmount, 0);
+
+//       console.log("Final Amount:", finalAmount);
+
+//       if (finalAmount === 0) {
+//           return res.status(400).json({ success: false, message: "Order amount must be greater than zero." });
+//       }
+
+//       const options = { amount: finalAmount * 100, currency: "INR" };
+//       const razorpayOrder = await razorpayInstance.orders.create(options);
+
+//       if (!razorpayOrder || !razorpayOrder.id) {
+//           throw new Error("Failed to create Razorpay order: Invalid response from Razorpay.");
+//       }
+
+//       // Store order details in session instead of saving to DB
+//       req.session.orderDetails = {
+//           userId,
+//           orderedItems: orderItems,
+//           totalPrice,
+//           gstAmount,
+//           discount: couponDiscount,
+//           shipping: shippingCharge,
+//           finalAmount,
+//           address: addressData.address[0]._id,
+//           paymentMethod: "Online Payment",
+//           paymentInfo: { transactionId: razorpayOrder.id },
+//           couponApplied: couponApplied,       
+//           appliedCoupon: appliedCoupon
+//       };
+
+//       res.status(200).json({
+//           success: true,
+//           order: razorpayOrder
+//       });
+
+//   } catch (error) {
+//       console.error("Razorpay Payment Error:", error.message, error.stack);
+//       res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 const razorpayPayment = async (req, res) => {
   try {
       const userId = req.session.user;
       const addressId = req.body.addressId;
 
+      console.log("Session Data:", req.session);
+
       const addressData = await Address.findOne(
           { userId, "address._id": addressId },
           { "address.$": 1 }
       );
-      console.log("Address:", addressData);
-
       if (!addressData || !addressData.address || !addressData.address.length) {
           return res.status(400).json({ success: false, message: "Address not found." });
       }
 
       const cart = await Cart.findOne({ userId }).populate("items.productId");
-      console.log("Cart:", cart);
-
       if (!cart || !cart.items || cart.items.length === 0) {
           return res.status(400).json({ success: false, message: "Cart is empty." });
       }
 
-      let totalOriginalPrice = 0;
       let totalOfferPrice = 0;
       let orderItems = [];
 
@@ -331,8 +416,7 @@ const razorpayPayment = async (req, res) => {
           if (!item.productId) {
               throw new Error("Invalid cart item: Product ID missing.");
           }
-          totalOriginalPrice += (item.productId.regularPrice || 0) * item.quantity;
-          totalOfferPrice += (item.productId.salePrice || 0) * item.quantity;
+          totalOfferPrice += (item.productId.salePrice || item.productId.regularPrice || 0) * item.quantity;
           orderItems.push({
               productId: item.productId._id,
               quantity: item.quantity,
@@ -343,33 +427,57 @@ const razorpayPayment = async (req, res) => {
           });
       });
 
+      // Always recalculate finalAmount to ensure consistency
       let couponDiscount = req.session.couponDiscount || 0;
-      let couponApplied = couponDiscount > 0;
       let appliedCoupon = req.session.appliedCoupon ? req.session.appliedCoupon._id : null;
+
+      // Revalidate coupon if applied
+      if (req.session.appliedCoupon) {
+          const coupon = await Coupon.findById(req.session.appliedCoupon._id);
+          const today = new Date();
+          if (coupon && totalOfferPrice >= coupon.minimumPrice && today <= new Date(coupon.expireOn)) {
+              couponDiscount = Math.min(req.session.appliedCoupon.discount, totalOfferPrice);
+          } else {
+              couponDiscount = 0; // Coupon invalid
+          }
+      }
 
       let shippingCharge = 50;
       let gstAmount = req.session.gstAmount || (totalOfferPrice * 0.18);
-      let totalPrice = orderItems.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)), 0);
       let finalAmount = Math.max(totalOfferPrice - couponDiscount + shippingCharge + gstAmount, 0);
 
+      let couponApplied = couponDiscount > 0;
+
+      console.log("Coupon Discount:", couponDiscount);
       console.log("Final Amount:", finalAmount);
 
       if (finalAmount === 0) {
           return res.status(400).json({ success: false, message: "Order amount must be greater than zero." });
       }
 
-      const options = { amount: finalAmount * 100, currency: "INR" };
-      const razorpayOrder = await razorpayInstance.orders.create(options);
+      const options = { 
+          amount: Math.round(finalAmount * 100), 
+          currency: "INR",
+          receipt: `order_${Date.now()}`
+      };
+
+      let razorpayOrder;
+      try {
+          razorpayOrder = await razorpayInstance.orders.create(options);
+          console.log("Razorpay Order Response:", razorpayOrder);
+      } catch (razorpayError) {
+          console.error("Razorpay API Error:", razorpayError);
+          throw new Error(`Failed to create Razorpay order: ${razorpayError.message || 'Unknown error'}`);
+      }
 
       if (!razorpayOrder || !razorpayOrder.id) {
           throw new Error("Failed to create Razorpay order: Invalid response from Razorpay.");
       }
 
-      // Store order details in session instead of saving to DB
       req.session.orderDetails = {
           userId,
           orderedItems: orderItems,
-          totalPrice,
+          totalPrice: totalOfferPrice,
           gstAmount,
           discount: couponDiscount,
           shipping: shippingCharge,
@@ -377,9 +485,13 @@ const razorpayPayment = async (req, res) => {
           address: addressData.address[0]._id,
           paymentMethod: "Online Payment",
           paymentInfo: { transactionId: razorpayOrder.id },
-          couponApplied: couponApplied,       
-          appliedCoupon: appliedCoupon
+          couponApplied,
+          appliedCoupon
       };
+
+      // Update session finalTotal to reflect the correct amount
+      req.session.finalTotal = finalAmount;
+      await req.session.save();
 
       res.status(200).json({
           success: true,

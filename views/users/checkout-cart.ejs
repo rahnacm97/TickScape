@@ -283,16 +283,24 @@ input[type="text"] {
                             </button>
                         </div>
                     
-                        <% if (coupons && coupons.length > 0) { %>
-                            <div class="d-flex justify-content-center align-items-center">
-                                
-                                <input type="text" id="couponCode" class="form-control w-200 p-3" placeholder="Enter Coupon Code" style="height: 50px; padding: 4px 8px;" />
-                                
-                                <button id="applyCoupon" class="btn btn-success btn-sm ml-3" style="width: 150px; height: 35px; display: flex; justify-content: center; align-items: center;">
-                                    <i class="fas fa-tags"></i> Apply Coupon
-                                </button>
+                        <% if (appliedCoupon) { %>
+                            <div class="applied-coupon mt-3 text-center">
+                              <p class="<%= discount > 0 ? 'text-success' : 'text-danger' %>">
+                                Coupon applied: <%= appliedCoupon.name %>
+                                <span class="<%= discount > 0 ? 'text-success' : 'text-danger' %> font-weight-bold">
+                                  <%= discount > 0 ? `-₹${discount}` : ' (Invalid)' %>
+                                </span>
+                              </p>
+                              <button id="removeCoupon" class="btn btn-danger btn-sm">Remove Coupon</button>
                             </div>
-                        <% } %>
+                            <% } else { %>
+                            <div class="d-flex justify-content-center align-items-center">
+                              <input type="text" id="couponCode" class="form-control w-200 p-3" placeholder="Enter Coupon Code" style="height: 50px; padding: 4px 8px;" />
+                              <button id="applyCoupon" class="btn btn-success btn-sm ml-3" style="width: 150px; height: 35px; display: flex; justify-content: center; align-items: center;">
+                                <i class="fas fa-tags"></i> Apply Coupon
+                              </button>
+                            </div>
+                          <% } %>
                     
                     </div>
                     
