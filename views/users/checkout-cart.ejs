@@ -757,7 +757,7 @@ function initiatePayment(orderedItems, totalPrice, gstAmount, discount, shipping
                                     Swal.fire({
                                         icon: "success",
                                         title: "Order Placed!",
-                                        text: "Your order has been placed with payment pending.",
+                                        html: '<span style="color: #ff5733;">Your order has been placed with payment pending.</span>'
                                     }).then(() => {
                                         const orderId = data.order.orderId; // Assuming _id is returned
                                         window.location.href = `/orders`;

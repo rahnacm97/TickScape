@@ -129,6 +129,8 @@ router.post('/submitReview',userAuth,orderController.submitReview);
 router.get('/update-address',userAuth,orderController.getUpdateAddress);
 router.post('/update-address',userAuth,orderController.updateAddress);
 router.post('/returnOrderItem',userAuth,orderController.returnOrder);
+router.post("/retryPayment/:orderId", userAuth,orderController.retryPayment);
+router.post("/verifyRetryPayment", userAuth,orderController.verifyRetryPayment);
 
 //Wishlist Management
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);

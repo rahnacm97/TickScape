@@ -132,13 +132,14 @@ const downloadInvoice = async (req, res) => {
         // === Table ===
         const table = {
             title: "Order Details",
-            headers: ["#", "Product Name", "Quantity", "Price", "Total"],
+            headers: ["#", "Product Name", "Quantity", "Price", "Total" ,"Status"],
             rows: order.orderedItems.map((item, index) => [
                 index + 1, // # (Index)
                 item.productId.productName, // Product Name
                 item.quantity.toString(), // Quantity
                 `₹${item.price}`, // Price
-                `₹${(item.quantity * item.price * 1.18).toFixed(2)}`, // Total
+                `₹${(item.quantity * item.price * 1.18).toFixed(2)}`,
+                item.orderStatus, // Total
             ]), 
         };
 
@@ -149,7 +150,7 @@ const downloadInvoice = async (req, res) => {
         
         // Add the table to the PDF
         await doc.table(table, {
-            columnsSize: [50, 200, 80, 100, 100],
+            columnsSize: [50, 150, 80, 80, 80, 100],
             prepareHeader: () => doc.font("NotoSans").fontSize(12),
             prepareRow: (row, indexColumn, indexRow, rectRow) => {
                 doc.font("NotoSans");
@@ -677,6 +678,103 @@ const returnOrder = async (req, res) => {
     }
 };
 
+const razorpayInstance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+  
+  const retryPayment = async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await Order.findById(orderId).populate("orderedItems.productId");
+  
+      if (!order || order.status !== "Payment Pending") {
+        return res.status(400).json({ success: false, message: "Invalid order or status." });
+      }
+  
+      const finalAmount = order.finalAmount; // Use the stored final amount (1855.4 in your example)
+      const options = { amount: finalAmount * 100, currency: "INR" }; // Razorpay expects amount in paise
+      const razorpayOrder = await razorpayInstance.orders.create(options);
+  
+      if (!razorpayOrder || !razorpayOrder.id) {
+        throw new Error("Failed to create Razorpay order.");
+      }
+  
+      // Optionally update paymentInfo with the new transactionId
+      order.paymentInfo.transactionId = razorpayOrder.id;
+      await order.save();
+  
+      res.status(200).json({
+        success: true,
+        order: razorpayOrder,
+      });
+    } catch (error) {
+      console.error("Retry Payment Error:", error.message, error.stack);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+
+const verifyRetryPayment = async (req, res) => {
+  try {
+    const { order_id, payment_id, signature, orderId } = req.body;
+
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ success: false, message: "Server error: Payment configuration missing." });
+    }
+
+    // Verify payment signature
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(order_id + "|" + payment_id)
+      .digest("hex");
+
+    if (generatedSignature !== signature) {
+      return res.status(400).json({ success: false, message: "Payment verification failed." });
+    }
+
+    // Fetch the order
+    const order = await Order.findById(orderId).populate("orderedItems.productId");
+    if (!order || order.status !== "Payment Pending") {
+      return res.status(400).json({ success: false, message: "Invalid order or status." });
+    }
+
+    // Deduct product quantities
+    for (const item of order.orderedItems) {
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        throw new Error(`Product with ID ${item.productId} not found.`);
+      }
+      if (product.quantity < item.quantity) {
+        throw new Error(`Insufficient stock for product ${product.productName}.`);
+      }
+      await Product.findByIdAndUpdate(
+        item.productId,
+        { $inc: { quantity: -item.quantity } },
+        { new: true }
+      );
+    }
+
+    // Update payment and order status
+    order.paymentInfo.status = "Success";
+    order.paymentInfo.paymentId = payment_id;
+    order.paymentInfo.lastAttempted = new Date();
+    order.status = "Order Placed"; // Update order status
+    order.trackingHistory.push({ status: "Order Placed", date: new Date() }); // Update tracking history
+
+    // Save the updated order
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment verified successfully",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Verify Retry Payment Error:", error.message, error.stack);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 
 module.exports = {
@@ -691,5 +789,6 @@ module.exports = {
     getUpdateAddress,
     updateAddress,
     returnOrder,
-
+    retryPayment,
+    verifyRetryPayment
 }

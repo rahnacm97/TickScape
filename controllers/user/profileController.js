@@ -200,7 +200,7 @@ const userProfile = async (req, res) => {
 
         // Pagination logic
         const page = parseInt(req.query.page) || 1;
-        const limit = 10; 
+        const limit = 5; 
         const skip = (page - 1) * limit;
 
         const totalEntries = userData.wallet.length;

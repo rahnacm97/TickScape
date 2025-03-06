@@ -61,7 +61,7 @@ const getCartPage = async (req, res, next) => {
       data: carts.items.slice(skip, skip + limit),
       itemTotal: Math.round(itemTotal),
       gstAmount: parseFloat(gstAmount).toFixed(2),
-      total: Math.round(totalAmount),
+      total: totalAmount.toFixed(2),
       cart: carts,
       currentPage: currentPage,
       totalPages: Math.ceil(carts.items.length / limit),

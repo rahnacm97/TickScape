@@ -443,14 +443,17 @@
             });
          }
       },
-      error: (error) => {
+      error: (xhr) => {
+         const errorResponse = xhr.responseJSON || {};
+         const errorMessage = errorResponse.error || errorResponse.message || 'There was an error adding to cart';
+         //console.error("Error details:", errorResponse);
          Swal.fire({
             title: 'Error',
-            text: 'There was an error adding cart',
+            text: errorMessage,
             icon: 'error',
             timer: 2000,
             customClass: {
-               popup: 'swal-popup-custom',  // Custom class for popup
+               popup: 'swal-popup-custom',  
             }
          });
       }

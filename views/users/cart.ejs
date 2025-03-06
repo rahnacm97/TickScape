@@ -499,7 +499,7 @@ function confirmRemove(productId, productPrice, quantity, gstRate) {
 
                         
                         itemTotalElement.textContent = newItemTotal;
-                        gstElement.textContent = newGstAmount;
+                        gstElement.textContent = newGstAmount.toFixed(2);
                         totalElement.textContent = newTotal;
                     }
 

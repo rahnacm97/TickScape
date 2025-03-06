@@ -409,7 +409,23 @@ hr {
   margin: 5px;
   text-decoration: none;
 }
+.btn1 {
+  background-color: #0e944f;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  max-width: 150px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.btn1:hover {
+  background-color: #03490f;
+  color: white;
+
+}
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -563,6 +579,9 @@ hr {
                     <p class="no-address">No address available for this order.</p>
                 <% } %>
             </div> 
+            <% if (order.paymentMethod !== "Cash on Delivery" || order.status === "Delivered") { %>
+              <a href="/download-invoice/<%= order._id %>" class="btn1 btn-sm">Download Invoice</a>
+            <% } %>
 
     <h3 style="margin-left: 20px;margin-top: 20px;">Products in this Order:</h3>
     <div class="otherItem">
@@ -597,8 +616,8 @@ hr {
       
                 <% if (item.orderStatus === 'Delivered') { %>
                   <div class="review-section">
-                    <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary" style="text-transform: capitalize;">Write Review</a>
-                    <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')" style="text-transform: capitalize;">Return</button>
+                    <a href="/writeReview?productId=<%= item.productId._id %>&orderId=<%= order._id %>" class="btn btn-primary" style="text-transform: capitalize;"><i class="fas fa-star"></i>Write Review</a>
+                    <button class="btn btn-notify" onclick="requestReturnItem('<%= order._id %>','<%= item.productId._id %>')" style="text-transform: capitalize;"><i class="fas fa-undo-alt"></i>Return</button>
                   </div>
                 <% } else if (item.orderStatus === 'Return request') { %>              
                   <div class="btn1-container">
@@ -653,6 +672,7 @@ hr {
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 function confirmCancel(element, itemId) { 
     console.log("Item ID to cancel:", itemId);
@@ -698,12 +718,9 @@ function confirmCancel(element, itemId) {
 
                     Swal.fire("Cancelled!", successMessage, "success")
                         .then(() => {
-                            let itemElement = element.closest("li");
-                            if (itemElement) {
-                                itemElement.style.transition = "opacity 0.5s";
-                                itemElement.style.opacity = 0;
-                                setTimeout(() => itemElement.remove(), 500);
-                            }
+                          document.body.style.transition = 'opacity 0.3s';
+                          document.body.style.opacity = '0';
+                          setTimeout(() => window.location.reload(false), 100);
                         });
                 } else {
                     Swal.fire({
@@ -765,15 +782,9 @@ function confirmOrderCancel(element, OrderId) {
                             : "Your order has been cancelled.",
                         icon: "success"
                     }).then(() => {
-                        const mainContainer = document.querySelector(".main-container");
-                        if (mainContainer) {
-                            mainContainer.innerHTML = `
-                                <p style="color: red; font-weight: bold; text-align: center;">
-                                    This order has been cancelled.
-                                </p>
-                            `;
-                        }
-                        element.closest(".order-item").remove();
+                      document.body.style.transition = 'opacity 0.3s';
+                      document.body.style.opacity = '0';
+                      setTimeout(() => window.location.reload(false), 100);
                     });
                 } else {
                     Swal.fire({
@@ -790,6 +801,126 @@ function confirmOrderCancel(element, OrderId) {
         }
     });
 }
+
+
+// function confirmCancel(element, itemId) {
+//   Swal.fire({
+//     title: "Are you sure?",
+//     text: "Please select a reason for cancellation",
+//     icon: "warning",
+//     input: "select",
+//     inputOptions: {
+//       "Changed My Mind": "Changed My Mind",
+//       "Found a Better Price": "Found a Better Price",
+//       "Item No Longer Needed": "Item No Longer Needed",
+//       "Ordered by Mistake": "Ordered by Mistake",
+//       "Other": "Other"
+//     },
+//     inputPlaceholder: "Select a reason ⏷",
+//     showCancelButton: true,
+//     confirmButtonText: "Yes, Cancel it",
+//     cancelButtonText: "No, Keep it",
+//     preConfirm: (reason) => {
+//       if (!reason) {
+//         Swal.showValidationMessage("Please select a reason");
+//         return false;
+//       }
+//       return reason;
+//     }
+//   }).then((result) => {
+//     if (result.isConfirmed) {
+//       fetch(`/cancelOrder/${itemId}`, {
+//         method: "DELETE",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ reason: result.value })
+//       })
+//       .then(response => response.json())
+//       .then(data => {
+//         if (data.success) {
+//           let successMessage = "Your order has been cancelled.";
+//           if (data.walletCredit) {
+//             successMessage += ` ₹${data.walletCredit} has been credited to your wallet.`;
+//           }
+//           Swal.fire("Cancelled!", successMessage, "success").then(() => {
+//             // Update UI without reload
+//             const itemElement = element.closest('li');
+//             itemElement.querySelector('.text-default').textContent = 'Cancelled';
+//             itemElement.querySelector('.text-default').classList.add('text-danger');
+//             itemElement.querySelector('.btn1-container').innerHTML = ''; // Remove cancel button
+//           });
+//         } else {
+//           Swal.fire("Error", data.message || "Unable to cancel the order.", "error");
+//         }
+//       })
+//       .catch(error => {
+//         console.error("Error cancelling order:", error);
+//         Swal.fire("Error", "Something went wrong.", "error");
+//       });
+//     }
+//   });
+// }
+
+// function confirmOrderCancel(element, OrderId) {
+//   Swal.fire({
+//     title: "Are you sure?",
+//     text: "Please select a reason for cancellation",
+//     icon: "warning",
+//     input: "select",
+//     inputOptions: {
+//       "Changed My Mind": "Changed My Mind",
+//       "Found a Better Price": "Found a Better Price",
+//       "Item No Longer Needed": "Item No Longer Needed",
+//       "Ordered by Mistake": "Ordered by Mistake",
+//       "Other": "Other"
+//     },
+//     inputPlaceholder: "Select a reason ⏷",
+//     showCancelButton: true,
+//     confirmButtonText: "Yes, Cancel it",
+//     cancelButtonText: "No, Keep it",
+//     preConfirm: (reason) => {
+//       if (!reason) {
+//         Swal.showValidationMessage("Please select a reason");
+//         return false;
+//       }
+//       return reason;
+//     }
+//   }).then((result) => {
+//     if (result.isConfirmed) {
+//       fetch(`/cancelParentOrder/${OrderId}`, {
+//         method: "DELETE",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ reason: result.value })
+//       })
+//       .then(response => response.json())
+//       .then(data => {
+//         if (data.success) {
+//           const message = data.refundAmount > 0
+//             ? `Your order has been cancelled. ₹${data.refundAmount} has been credited to your wallet.`
+//             : "Your order has been cancelled.";
+//           Swal.fire("Cancelled!", message, "success").then(() => {
+//             // Update UI without reload
+//             document.querySelector('.order-status p').textContent = "Your order has been Cancelled!";
+//             document.querySelector('.order-status p').style.color = "rgb(241, 8, 8)";
+//             if (!document.querySelector('.tracking-step.cancelled')) {
+//               document.querySelector('.tracking-progress').innerHTML = 
+//                 `<div class="tracking-step completed cancelled">
+//                   <div class="circle cancelled">X</div>
+//                   <p>Cancelled</p>
+//                 </div>`;
+//             }
+//             document.querySelector('.btn1-container .btn-sm')?.remove(); // Remove cancel button
+//           });
+//         } else {
+//           Swal.fire("Error", data.message || "Something went wrong.", "error");
+//         }
+//       })
+//       .catch(error => {
+//         console.error("Error cancelling order:", error);
+//         Swal.fire("Error", "Something went wrong.", "error");
+//       });
+//     }
+//   });
+// }
 
 function requestReturnItem(orderId, productId) {
     Swal.fire({
@@ -887,6 +1018,89 @@ function sendReturnItemRequest(orderId, productId, returnReason) {
     });
 }
 
+const key = "rzp_test_YFWFrvVk0xexkK"; 
+
+function retryPayment(orderId) {
+  fetch(`/retryPayment/${orderId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.success) {
+        Swal.fire({ icon: "error", title: "Error", text: data.message });
+        return;
+      }
+
+      const razorpayOrder = data.order;
+
+      let options = {
+        key: key, 
+        amount: razorpayOrder.amount,
+        currency: "INR",
+        name: "TickScape",
+        description: "Order Payment Retry",
+        order_id: razorpayOrder.id,
+        handler: function (response) {
+          verifyRetryPayment(response, orderId); 
+        },
+        prefill: {
+          name: "TickScape",
+          email: "tickscapeSupport@gmail.com",
+          contact: "+91 7034316981",
+        },
+        theme: { color: "#088178" }, 
+        modal: {
+          ondismiss: function () {
+            Swal.fire({
+              icon: "warning",
+              title: "Payment Cancelled",
+              text: "You can retry payment later from the orders page.",
+            });
+          },
+        },
+      };
+
+      let rzp = new window.Razorpay(options);
+      rzp.open();
+    })
+    .catch((error) => {
+      console.error("Retry Payment Error:", error);
+      Swal.fire({ icon: "error", title: "Error", text: "Failed to retry payment." });
+    });
+}
+
+function verifyRetryPayment(response, orderId) {
+  fetch("/verifyRetryPayment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      order_id: response.razorpay_order_id,
+      payment_id: response.razorpay_payment_id,
+      signature: response.razorpay_signature,
+      orderId: orderId, 
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Payment Successful!",
+          text: "Your order has been confirmed.",
+        }).then(() => {
+            const customOrderId = data.order.orderId;
+            window.location.href = `/orderDetails?orderId=${customOrderId}`;
+        });
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: data.message });
+      }
+    })
+    .catch((error) => {
+      console.error("Payment Verification Error:", error);
+      Swal.fire({ icon: "error", title: "Error", text: "Payment verification failed." });
+    });
+}
 
 </script>
 <%- include("../../views/partials/user/footer") %>

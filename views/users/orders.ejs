@@ -90,6 +90,10 @@ body {
   padding: 8px 16px;
   border-radius: 4px;
   text-decoration: none;
+  max-width: 150px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn1:hover {
@@ -174,7 +178,11 @@ body {
           <p></p>
           <!-- Success Message -->
           <div class="success-message">
-            <p>Your order has been successfully placed!</p>
+            <% if (orders.status === "Order Placed" && orders.paymentInfo.status === "Success") { %>
+              <p>Payment completed, your order is now confirmed!</p>
+            <% } else { %>
+              <p>Your order has been successfully placed!</p>
+            <% } %>
           </div>
         </div>
       </div>
@@ -236,6 +244,7 @@ body {
               </div>
             </article>
           </div>
+          <a href="/orders" class="btn1 btn-sm">Go to Orders</a>
         </div>
   
         <!-- Order Details Table -->
