@@ -398,7 +398,7 @@ const cancelOrder = async (req, res) => {
                 const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
                 await User.updateOne(
                     { _id: order.userId },
-                    { $push: { wallet: { amount: walletCreditRounded, date: new Date() } } }
+                    { $push: { wallet: { amount: walletCreditRounded, date: new Date(), reason: "Refund" } } }
                 );
             }
         }
@@ -470,7 +470,7 @@ const cancelParentOrder = async (req, res) => {
         if (refundAmount > 0) {
             await User.updateOne(
                 { _id: user._id },
-                { $push: { wallet: { amount: parseFloat(refundAmount.toFixed(2)), date: new Date() } } }
+                { $push: { wallet: { amount: parseFloat(refundAmount.toFixed(2)), date: new Date(), reason: "Refund" } } }
             );
         }
 
@@ -577,6 +577,7 @@ const returnOrder = async (req, res) => {
 
         productItem.orderStatus = "Return request";
         productItem.returnReason = returnReason;
+        productItem.returnRequestedDate = new Date();
         order.status = "Return request";
 
         await order.save();
@@ -600,15 +601,23 @@ const razorpayInstance = new Razorpay({
 const retryPayment = async (req, res) => {
     try {
       const { orderId } = req.params;
+      console.log("1",orderId);
       const order = await Order.findById(orderId).populate("orderedItems.productId");
+      console.log("order",order);
   
       if (!order || order.status !== "Payment Pending") {
         return res.status(400).json({ success: false, message: "Invalid order or status." });
       }
+
+      const finalAmount = order.finalAmount;
+      console.log("final", finalAmount);
   
-      const finalAmount = order.finalAmount; 
-      const options = { amount: finalAmount * 100, currency: "INR" }; 
+      const finalAmountPaise = Math.round(finalAmount * 100);      
+      const options = { amount: finalAmountPaise, currency: "INR" }; 
+      console.log("options",options);
+      console.log("final",finalAmount);
       const razorpayOrder = await razorpayInstance.orders.create(options);
+      console.log("razorpay",razorpayOrder);
   
       if (!razorpayOrder || !razorpayOrder.id) {
         throw new Error("Failed to create Razorpay order.");
@@ -617,12 +626,16 @@ const retryPayment = async (req, res) => {
       // Optionally update paymentInfo with the new transactionId
       order.paymentInfo.transactionId = razorpayOrder.id;
       await order.save();
+
+      console.log("Order updated with payment info");
   
       res.status(200).json({
         success: true,
         order: razorpayOrder,
       });
     } catch (error) {
+        const errorMessage = error.message || 'Unknown error occurred';
+        const errorStack = error.stack || new Error().stack;
       console.error("Retry Payment Error:", error.message, error.stack);
       res.status(500).json({ success: false, message: error.message });
     }

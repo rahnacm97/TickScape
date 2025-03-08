@@ -84,7 +84,7 @@
     }
 
     .btn {
-      background-color: #007bff;
+      background-color: #218cff;
       color: white;
       padding: 8px 12px;
       font-size: 14px;
@@ -125,7 +125,7 @@
     }
 
     .btn-danger{
-        background-color: rgb(220, 11, 11);
+        background-color: rgb(220, 11, 11,0.8);
     }
     .btn-danger:hover{
         background-color: rgb(160, 11, 11);
@@ -146,6 +146,7 @@
             <th>Order ID</th>
             <th>Amount</th>
             <th>Reason</th>
+            <th>Requested Date</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -162,6 +163,13 @@
               </td>
               <td>
                 <%= order.orderedItems.length > 0 ? order.orderedItems[0].returnReason : 'N/A' %>
+              </td>
+              <td>
+                <% if (order.orderedItems.length > 0 && order.orderedItems[0].returnRequestedDate) { %>
+                  <%= new Date(order.orderedItems[0].returnRequestedDate).toLocaleDateString() %>
+                <% } else { %>
+                  N/A
+                <% } %>
               </td>
               <td><strong><%= order.status %></strong></td>
               <!-- <td>₹<%= order.totalPrice.toFixed(2) %></td> -->

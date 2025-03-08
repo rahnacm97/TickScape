@@ -39,6 +39,10 @@ const orderSchema = new Schema({
     returnReason: {
         type: String,
         default: null
+    },
+    returnRequestedDate: {  
+        type: Date,
+        default: null
     }
     }],
     totalPrice: {

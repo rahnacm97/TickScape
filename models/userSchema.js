@@ -49,7 +49,12 @@ const userSchema = new Schema({
     },
     wallet: [{
         amount: { type: Number, required: true },
-        date: { type: Date, default: Date.now }
+        date: { type: Date, default: Date.now },
+        reason: { 
+            type: String, 
+            enum: ["Order Payment", "Refund", "Referral"],
+            required: true 
+        },
     }],
     wishlist:[{
         type:Schema.Types.ObjectId,

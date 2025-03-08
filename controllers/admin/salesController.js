@@ -326,7 +326,7 @@ const salesReport = async (req, res) => {
       ).moveDown();
   
       // Order Details Table
-      doc.fontSize(14).text("Order Details", { align: "center" }).moveDown();
+      doc.fontSize(12).text("Order Details", { align: "center" }).moveDown();
   
       const formatDate = (isoDate) => {
         const date = new Date(isoDate);
@@ -342,8 +342,8 @@ const salesReport = async (req, res) => {
           "Final Amount", "Status", "Payment Method", "Order Date",
         ],
         rows: salesData.order.map((order) => [
-          order.orderId || order._id, order.userId, order.totalPrice, order.gstAmount,
-          order.discount, order.shipping, order.finalAmount, order.status,
+          order.orderId || order._id, order.userId.toString().slice(-8), order.totalPrice.toFixed(2), order.gstAmount.toFixed(2),
+          order.discount.toFixed(2), order.shipping.toFixed(2), order.finalAmount.toFixed(2), order.status,
           order.paymentMethod, formatDate(order.invoiceDate),
         ]),
       };
@@ -352,6 +352,7 @@ const salesReport = async (req, res) => {
         prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
         prepareRow: (row, indexColumn, indexRow, rectRow) => doc.font("Helvetica").fontSize(8),
         width: 500,
+        padding: 2,
       });
   
       // Summary Table

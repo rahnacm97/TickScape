@@ -227,7 +227,7 @@ const verifyOtp = async (req, res) => {
 
             if (referrer) {
                 const referralBonus = 100; 
-                referrer.wallet.push({ amount: referralBonus, date: new Date() });
+                referrer.wallet.push({ amount: referralBonus, date: new Date(), reason: "Referral" });
 
                 let totalBonus = referrer.wallet.reduce((sum, entry) => sum + entry.amount, 0);
 

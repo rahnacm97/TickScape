@@ -268,7 +268,7 @@ input[type="text"] {
                                             <p class="mb-0 text-dark text-uppercase py-1">Sub Total</p>
                                         </td>
                                         <td class="py-1 border-bottom border-top">
-                                            <p class="mb-0 text-dark">₹<%= total + 50 + gstAmount - discount %></p>
+                                            <p class="mb-0 text-dark">₹<%= (total + 50 + gstAmount - discount).toFixed(2) %></p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -312,7 +312,7 @@ input[type="text"] {
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span>&times;</span>
                                     </button>
-                                </div>
+                                </div>                              
                                 <div class="modal-body">
                                     <% if (coupons.length > 0) { %>
                                     <table class="table table-bordered text-center">
@@ -346,36 +346,33 @@ input[type="text"] {
                             </div>
                         </div>
                     </div>
-                    
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".copy-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            let couponCode = this.getAttribute("data-code");
-
-
-            navigator.clipboard.writeText(couponCode).then(() => {
-                let modal = document.getElementById("couponPopup");
-                let bootstrapModal = bootstrap.Modal.getInstance(modal);
-                if (bootstrapModal) {
-                    bootstrapModal.hide();
-                } else {
-                    $("#couponPopup").modal("hide"); 
-                }
-
-              
-                   alert(`Your coupon code "${couponCode}" has been copied.`)
-                   
-
-                // Remove applied coupon from the list
-                
-            }).catch(err => {
-                console.error("Failed to copy coupon code:", err);
-            });
-        });
-    });
-});
- </script>       
+                                
+                                <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    document.querySelectorAll(".copy-btn").forEach(button => {
+                                        button.addEventListener("click", function () {
+                                            const couponCode = this.getAttribute("data-code");
+                                
+                                            navigator.clipboard.writeText(couponCode)
+                                                .then(() => {
+                                                    const modalElement = document.getElementById("couponPopup");
+                                                    const bootstrapModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                                
+                                                    bootstrapModal.hide();
+                                
+                                                    // Show success alert after modal closes
+                                                    setTimeout(() => {
+                                                        alert(`Your coupon code "${couponCode}" has been copied.`);
+                                                    }, 300); // Delay to ensure modal closes first
+                                                })
+                                                .catch(err => {
+                                                    console.error("Failed to copy coupon code:", err);
+                                                    alert("Failed to copy the coupon code.");
+                                                });
+                                        });
+                                    });
+                                });
+                                </script> 
                     
                            
                     <div class="col-12 justify-content-center container address">
@@ -763,7 +760,7 @@ function initiatePayment(orderedItems, totalPrice, gstAmount, discount, shipping
                                         title: "Order Placed!",
                                         html: '<span style="color: #ff5733;">Your order has been placed with payment pending.</span>'
                                     }).then(() => {
-                                        const orderId = data.order.orderId; // Assuming _id is returned
+                                        const orderId = data.order.orderId; 
                                         window.location.href = `/orders`;
                                     });
                                 } else {

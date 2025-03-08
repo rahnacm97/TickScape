@@ -889,7 +889,7 @@ const deductWalletBalance = async (req, res) => {
     }
 
     // Deduct amount by adding a negative transaction
-    user.wallet.push({ amount: -req.body.amount, date: new Date() });
+    user.wallet.push({ amount: -req.body.amount, date: new Date(), reason: "Order Payment" });
 
     // Save updated user data
     await user.save();

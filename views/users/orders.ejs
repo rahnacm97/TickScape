@@ -216,7 +216,7 @@ body {
                   GST: ₹<%= orders.gstAmount %> <br />
                   Shipping Charge: ₹<%= orders.shipping %><br />
                   Discount: ₹<%= orders.discount %><br />
-                  Grand Total: ₹<%= orders.finalAmount %>
+                  Grand Total: ₹<%= (orders.finalAmount).toFixed(2) %>
                 </p>
               </div>
             </article>

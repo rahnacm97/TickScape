@@ -212,7 +212,7 @@ const walletHistory = async(req,res) => {
         const userData = await User.findById(userId);
     
         const sortedWallet = userData.wallet.sort((a, b) => {
-          return new Date(b.date) - new Date(a.date); // Descending order
+          return new Date(b.date) - new Date(a.date); 
         });
     
         const page = parseInt(req.query.page) || 1;

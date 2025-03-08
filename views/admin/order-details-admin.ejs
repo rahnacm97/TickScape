@@ -134,7 +134,7 @@
                                 <td><%= item.productId.brand ? item.productId.brand.brandName : "N/A"  %></td>
                                 <td><%= item.quantity %></td>
                                 <td><%= item.price %></td>
-                                <td>₹<%= order.finalAmount %></td>
+                                <td>₹<%= (order.finalAmount).toFixed(2) %></td>
                                 <% if (order.orderedItems.indexOf(item) === 0) { %>
                                     <td rowspan="<%= order.orderedItems.length %>">
                                       <select class="order-status-dropdown" 
@@ -175,7 +175,7 @@
               <div class="order-summary mb-4">
                   <h5>Payment Details</h5>
                   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                  <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %></p>
+                  <p><strong>Total Amount:</strong> ₹<%= (order.finalAmount).toFixed(2) %></p>
               </div>
 
               <hr>

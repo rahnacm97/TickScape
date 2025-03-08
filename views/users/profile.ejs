@@ -345,6 +345,7 @@
                           <thead>
                             <tr>
                               <th>Date</th>
+                              <th>Reason</th>
                               <th>Status</th>
                               <th>Amount</th>
                             </tr>
@@ -353,6 +354,7 @@
                             <% walletHistory.forEach(entry => { %>
                               <tr>
                                 <td><%= new Date(entry.date).toDateString() %></td>
+                                <td><%= entry.reason %></td>
                                 <td>
                                   <% if (entry.amount > 0) { %>
                                     <span class="badge bg-success">Credit</span>
@@ -611,6 +613,17 @@
       });
     }
   });
+
+  function copyToClipboard(text) {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                alert("Referral code copied to clipboard: " + text);
+            })
+            .catch(err => {
+                console.error("Failed to copy: ", err);
+                alert("Failed to copy referral code.");
+            });
+    }
   
 </script>
 <%- include("../../views/partials/user/footer") %>

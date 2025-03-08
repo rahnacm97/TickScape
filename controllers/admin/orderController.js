@@ -338,7 +338,8 @@ const approveOrder = async (req, res) => {
     }
 
     let walletCredit = 0;
-    const gstRate = 18; // GST rate (modify if needed)
+    const shipping = 50;
+    const gstRate = 18; 
     const itemPriceWithGST = orderedItem.price + (orderedItem.price * (gstRate / 100));
 
     if (order.paymentMethod !== "Cash on Delivery") {
@@ -351,23 +352,22 @@ const approveOrder = async (req, res) => {
           const isReturningAll = returnItemsCount === totalItems;
 
           if (isReturningAll) {
-            walletCredit += order.discount; // Full discount refund if all items are returned
+            walletCredit += order.discount; 
           } else {
             const discountContribution = (itemPriceWithGST / finalAmount) * order.discount;
-            walletCredit += itemPriceWithGST - discountContribution; // Price with GST minus discount share
+            walletCredit += itemPriceWithGST - discountContribution + shipping; 
           }
 
           await Coupon.updateOne({ _id: order.appliedCoupon }, { $push: { users: user._id } });
         }
       } else {
-        // No coupon applied → Refund full price including GST
-        walletCredit += itemPriceWithGST;
+        walletCredit += itemPriceWithGST + shipping;
       }
 
       const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
       await User.updateOne(
         { _id: user._id },
-        { $push: { wallet: { amount: walletCreditRounded, date: new Date() } } }
+        { $push: { wallet: { amount: walletCreditRounded, date: new Date(), reason: "Refund" } } }
       );
     }
 
@@ -380,7 +380,7 @@ const approveOrder = async (req, res) => {
       { $set: { "orderedItems.$.orderStatus": "Returned" } }
     );
 
-    // Check if all items are returned
+    // Check all items are returned
     const updatedOrder = await Order.findById(orderId);
     const allItemsReturned = updatedOrder.orderedItems.every(item => item.orderStatus === "Returned");
 
