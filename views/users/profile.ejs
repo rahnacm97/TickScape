@@ -335,68 +335,65 @@
                 
 
                 <div class="tab-pane fade" id="wallet-history" role="tabpanel" aria-labelledby="orders-tab">
-                 <div class="card">
-                   <div class="card-header">
-                     <h5 class="mb-0">Wallet History</h5>
-                   </div>
-                   <div class="card-body">
-                     <div class="table-responsive">
-                       <table class="table">
-                         <thead>
-                           <tr>
-                             <th>Date</th>
-                             <th>Status</th>
-                             <th>Amount</th>
-                           </tr>
-                         </thead>
-                         <tbody>
-                           <% user.wallet.forEach(entry => { %>
-                             <tr>
-                               <td><%= new Date(entry.date).toDateString() %></td>
-                               <td>
-                                 <% if (entry.amount > 0) { %>
-                                   <span class="badge bg-success">Credit</span>
-                                 <% } else { %>
-                                   <span class="badge bg-danger">Debit</span>
-                                 <% } %>
-                               </td>
-                               <td class="<%= entry.amount > 0 ? 'credit' : 'debit' %>">
-                                 <%= entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount) %>
-                               </td>
-                             </tr>
-                           <% }) %>
-                         </tbody>
-                       </table>
-                     </div>
-                     <nav>
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Wallet History</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Status</th>
+                              <th>Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody id="wallet-history-tbody">
+                            <% walletHistory.forEach(entry => { %>
+                              <tr>
+                                <td><%= new Date(entry.date).toDateString() %></td>
+                                <td>
+                                  <% if (entry.amount > 0) { %>
+                                    <span class="badge bg-success">Credit</span>
+                                  <% } else { %>
+                                    <span class="badge bg-danger">Debit</span>
+                                  <% } %>
+                                </td>
+                                <td class="<%= entry.amount > 0 ? 'credit' : 'debit' %>">
+                                  <%= entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount) %>
+                                </td>
+                              </tr>
+                            <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
                       <nav aria-label="Wallet History Pagination" style="margin-top: 40px;">
-                        <ul class="pagination justify-content-center">
+                        <ul class="pagination justify-content-center" id="wallet-pagination">
                           <% if (currentPage > 1) { %>
                             <li class="page-item">
-                              <a class="page-link" href="?page=<%= currentPage - 1 %>#wallet-history" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
+                              <a class="page-link" href="#" data-page="<%= currentPage - 1 %>" aria-label="Previous">
+                                <span aria-hidden="true">«</span>
                               </a>
                             </li>
                           <% } %>
-                      
                           <% for (let i = 1; i <= totalPages; i++) { %>
                             <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                              <a class="page-link" href="?page=<%= i %>#wallet-history"><%= i %></a>
+                              <a class="page-link" href="#" data-page="<%= i %>"><%= i %></a>
                             </li>
                           <% } %>
-                      
                           <% if (currentPage < totalPages) { %>
                             <li class="page-item">
-                              <a class="page-link" href="?page=<%= currentPage + 1 %>#wallet-history" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
+                              <a class="page-link" href="#" data-page="<%= currentPage + 1 %>" aria-label="Next">
+                                <span aria-hidden="true">»</span>
                               </a>
                             </li>
                           <% } %>
                         </ul>
-                      </nav>                      
-                   </div>
-                 </div>
-               </div>              
+                      </nav>
+                    </div>
+                  </div>
+                </div>              
 
                 <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
                  <div class="card">
@@ -461,7 +458,7 @@
     </div>
   </section>
 </main>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -495,5 +492,125 @@
             }
         });
     }
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const paginationLinks = document.querySelectorAll('#wallet-pagination .page-link');
+    const tbody = document.querySelector('#wallet-history-tbody');
+    const pagination = document.querySelector('#wallet-pagination');
+
+    paginationLinks.forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent page reload
+        const page = link.getAttribute('data-page');
+
+        try {
+          const response = await fetch(`/wallet-history?page=${page}`);
+          const data = await response.json();
+
+          // Update table body
+          tbody.innerHTML = data.walletHistory.map(entry => `
+            <tr>
+              <td>${new Date(entry.date).toDateString()}</td>
+              <td>
+                ${entry.amount > 0 
+                  ? '<span class="badge bg-success">Credit</span>' 
+                  : '<span class="badge bg-danger">Debit</span>'}
+              </td>
+              <td class="${entry.amount > 0 ? 'credit' : 'debit'}">
+                ${entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount)}
+              </td>
+            </tr>
+          `).join('');
+
+          // Update pagination
+          pagination.innerHTML = generatePagination(data.currentPage, data.totalPages);
+          
+          // Re-attach event listeners to new pagination links
+          attachPaginationListeners();
+        } catch (error) {
+          console.error('Error fetching wallet history:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to load wallet history!',
+          });
+        }
+      });
+    });
+
+    // Function to generate pagination HTML
+    function generatePagination(currentPage, totalPages) {
+      let html = '';
+      if (currentPage > 1) {
+        html += `
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+              <span aria-hidden="true">«</span>
+            </a>
+          </li>
+        `;
+      }
+      for (let i = 1; i <= totalPages; i++) {
+        html += `
+          <li class="page-item ${currentPage === i ? 'active' : ''}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+          </li>
+        `;
+      }
+      if (currentPage < totalPages) {
+        html += `
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
+              <span aria-hidden="true">»</span>
+            </a>
+          </li>
+        `;
+      }
+      return html;
+    }
+
+    // Function to re-attach event listeners to new pagination links
+    function attachPaginationListeners() {
+      const newPaginationLinks = document.querySelectorAll('#wallet-pagination .page-link');
+      newPaginationLinks.forEach(link => {
+        link.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const page = link.getAttribute('data-page');
+
+          try {
+            const response = await fetch(`/wallet-history?page=${page}`);
+            const data = await response.json();
+
+            tbody.innerHTML = data.walletHistory.map(entry => `
+              <tr>
+                <td>${new Date(entry.date).toDateString()}</td>
+                <td>
+                  ${entry.amount > 0 
+                    ? '<span class="badge bg-success">Credit</span>' 
+                    : '<span class="badge bg-danger">Debit</span>'}
+                </td>
+                <td class="${entry.amount > 0 ? 'credit' : 'debit'}">
+                  ${entry.amount > 0 ? '₹' + entry.amount : '-₹' + Math.abs(entry.amount)}
+                </td>
+              </tr>
+            `).join('');
+
+            pagination.innerHTML = generatePagination(data.currentPage, data.totalPages);
+            attachPaginationListeners(); // Re-attach listeners again
+          } catch (error) {
+            console.error('Error fetching wallet history:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Failed to load wallet history!',
+            });
+          }
+        });
+      });
+    }
+  });
+  
 </script>
 <%- include("../../views/partials/user/footer") %>

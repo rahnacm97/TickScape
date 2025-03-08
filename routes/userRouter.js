@@ -35,9 +35,10 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
             return res.redirect('/signup');
         }
         
-        req.session.user = user; 
-        res.locals.user = req.session.user;
+        // req.session.user = user; 
+        // res.locals.user = req.session.user;
         
+        req.session.user = user._id;
         console.log("User logged in:", user);
         res.redirect('/');
     } catch (err) {
@@ -70,6 +71,7 @@ router.post('/change-password',userAuth,profileController.changePasswordValid);
 router.post('/verify-changepassword-otp',userAuth,profileController.verifyChangePassOtp);
 router.get('/edit-profile',userAuth,profileController.geteditProfile);
 router.put('/edit-profile',userAuth,profileController.editProfile);
+router.get('/wallet-history',userAuth,profileController.walletHistory);
 
 // Address Management
 router.get('/address',userAuth,profileController.getAddress); 

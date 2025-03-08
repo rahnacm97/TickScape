@@ -180,13 +180,17 @@ const userProfile = async (req, res) => {
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({ userId: userId });
 
+        const sortedWallet = userData.wallet.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date); // Descending order
+          });
+
         // Pagination logic
         const page = parseInt(req.query.page) || 1;
         const limit = 5; 
         const skip = (page - 1) * limit;
 
-        const totalEntries = userData.wallet.length;
-        const paginatedWallet = userData.wallet.slice(skip, skip + limit);
+        const totalEntries = sortedWallet.length;
+        const paginatedWallet = sortedWallet.slice(skip, skip + limit);
 
         res.render('profile', {
             user: userData,
@@ -201,6 +205,33 @@ const userProfile = async (req, res) => {
         res.redirect('/pageNotFound');
     }
 };
+
+const walletHistory = async(req,res) => {
+    try {
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+    
+        const sortedWallet = userData.wallet.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date); // Descending order
+        });
+    
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const skip = (page - 1) * limit;
+    
+        const totalEntries = sortedWallet.length;
+        const paginatedWallet = sortedWallet.slice(skip, skip + limit);
+    
+        res.json({
+          walletHistory: paginatedWallet,
+          currentPage: page,
+          totalPages: Math.ceil(totalEntries / limit),
+        });
+      } catch (error) {
+        console.error("Error retrieving wallet history", error);
+        res.status(500).json({ error: "Failed to load wallet history" });
+      }
+}
 
 
 
@@ -598,5 +629,6 @@ module.exports = {
     userEditAddress,
     deleteAddress,
     geteditProfile,
-    editProfile
+    editProfile,
+    walletHistory
 }

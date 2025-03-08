@@ -215,7 +215,7 @@ input[type="text"] {
                                         <td><%= index + 1 %></td>
                                         <td scope="row">
                                             <div class="d-flex align-items-center mt-2">
-                                                <img src="<%= item.productId.productImage[0] %>" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                                <img src="<%= item.productId.productImage[0] %>" class="img-fluid rounded-circle" style="width: 90px; height: 90px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" alt="">
                                             </div>
                                         </td>
                                         <td class="py-5"><%=item.productId.productName %></td>
@@ -363,13 +363,9 @@ input[type="text"] {
                     $("#couponPopup").modal("hide"); 
                 }
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Coupon Copied!',
-                    text: `Your coupon code "${couponCode}" has been copied.`,
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+              
+                   alert(`Your coupon code "${couponCode}" has been copied.`)
+                   
 
                 // Remove applied coupon from the list
                 

@@ -4,6 +4,9 @@ const Product = require('../../models/productSchema');
 const CustomError = require('../../utils/customError');
 
 const getBrandsPage = async (req, res) => {
+    if(!req.session.admin){
+        res.redirect('/admin/login');
+    }
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
@@ -45,6 +48,9 @@ const getBrandsPage = async (req, res) => {
 
 
 const getAddBrand = async(req,res) => {
+    if(!req.session.admin){
+        res.redirect('/admin/login');
+    }
     try {
         res.render('add-Brand');
     } catch (error) {
@@ -113,6 +119,9 @@ const deleteBrand = async (req, res) => {
 };
 
 const getEditBrand = async (req, res) => {
+    if(!req.session.admin){
+        res.redirect('/admin/login');
+    }
     try {
         const id = req.query.id;
         if (!id) {

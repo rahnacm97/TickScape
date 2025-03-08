@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 
 
 const loadCoupon = async (req, res) => {
+  if(!req.session.admin){
+    res.redirect('/admin/login');
+  }
     try {
       const currentPage = parseInt(req.query.page) || 1;
       const searchQuery = req.query.search || '';  

@@ -3,6 +3,9 @@ const Product = require('../../models/productSchema');
 const CustomError = require('../../utils/customError');
 
 const categoryInfo = async (req,res) => {
+    if(!req.session.admin){
+        res.redirect('/admin/login');
+    }
     try{
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
@@ -32,6 +35,9 @@ const categoryInfo = async (req,res) => {
 }
 
 const getAddCategory = async (req,res) => {
+    if(!req.session.admin){
+        res.redirect('/admin/login');
+    }
     try {
         
         res.render('add-category');
@@ -176,6 +182,9 @@ const getUnlistCategory = async(req,res,next) => {
 }
 
 const getEditCategory = async (req,res,next) => {
+    if(!req.session.admin){
+        res.redirect('/admin/login');
+    }
     try {
         const id = req.query.id;
         const category = await Category.findOne({_id:id});

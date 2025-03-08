@@ -1,0 +1,504 @@
+const User = require('../../models/userSchema');
+const Product = require("../../models/productSchema");
+const Address = require("../../models/addressSchema");
+const Order = require("../../models/orderSchema");
+const Coupon=require("../../models/couponSchema");
+const CustomError = require('../../utils/customError');
+const mongodb = require("mongodb");
+const env = require("dotenv").config();
+const crypto = require("crypto");
+const { v4: uuidv4 } = require('uuid');
+const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
+const ExcelJS = require("exceljs");
+//const PDFDocument = require("pdfkit");
+const PDFDocument = require('pdfkit-table');
+const path = require("path");
+const sharp = require("sharp");
+const fs = require("fs");
+
+
+const fetchSalesData = async (filterType = "custom", startDate, endDate, page = 1, limit = null) => {
+    let queryStartDate, queryEndDate;
+  
+    // Set date range based on filterType
+    switch (filterType) {
+      case "daily":
+        queryStartDate = new Date();
+        queryStartDate.setHours(0, 0, 0, 0);
+        queryEndDate = new Date();
+        queryEndDate.setHours(23, 59, 59, 999);
+        break;
+      case "weekly":
+        queryStartDate = new Date();
+        queryStartDate.setDate(queryStartDate.getDate() - queryStartDate.getDay());
+        queryStartDate.setHours(0, 0, 0, 0);
+        queryEndDate = new Date();
+        queryEndDate.setHours(23, 59, 59, 999);
+        break;
+      case "monthly":
+        queryStartDate = new Date();
+        queryStartDate.setDate(1);
+        queryStartDate.setHours(0, 0, 0, 0);
+        queryEndDate = new Date();
+        queryEndDate.setHours(23, 59, 59, 999);
+        break;
+      case "custom":
+        if (!startDate || !endDate) {
+          throw new Error("Both start and end dates are required for custom filter");
+        }
+        queryStartDate = new Date(startDate);
+        queryEndDate = new Date(endDate);
+        queryEndDate.setHours(23, 59, 59, 999);
+        break;
+      default:
+        throw new Error("Invalid filter type");
+    }
+  
+    const query = {
+      createdOn: { $gte: queryStartDate, $lte: queryEndDate },
+    };
+  
+    // Fetch all data
+    const userCount = await User.countDocuments({ isAdmin: false });
+  
+    const totalSales = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$finalAmount" },
+          totalOrder: { $sum: 1 },
+          totalDiscountPrice: { $sum: "$discount" },
+          itemSold: { $sum: "$orderedItems.quantity" },
+          totalCouponDiscount: { $sum: "$couponDiscount" },
+        },
+      },
+    ]);
+  
+    const salesData = totalSales.length
+      ? totalSales[0]
+      : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
+  
+    const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
+  
+    const totalCouponUsers = await Order.aggregate([
+      { $match: { couponApplied: true, ...query } },
+      { $count: "totalCouponApplied" },
+    ]);
+  
+    const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+  
+    const count = await Order.countDocuments(query);
+    const totalPage = limit ? Math.max(Math.ceil(count / limit), 1) : 1;
+    const skip = limit ? (page - 1) * limit : 0;
+  
+    const order = await Order.find(query)
+      .sort({ createdOn: -1 })
+      .limit(limit) // Null for no limit (downloads), set for UI
+      .skip(skip);
+  
+    return {
+      ...salesData,
+      userCount,
+      processingOrders,
+      order,
+      totalCouponUsers: totalCouponCount,
+      totalPage,
+      currentPage: page,
+      startDate: queryStartDate.toISOString().split("T")[0],
+      endDate: queryEndDate.toISOString().split("T")[0],
+      filterType,
+    };
+};
+
+
+const getSalesReport = async (req, res) => {
+    console.log("Session admin:", req.session.admin); // Log session state
+    if (req.session.admin) {
+      try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const filterType = req.query.filterType || "custom";
+        const startDatee = req.query.startDatee;
+        const endDatee = req.query.endDatee;
+  
+        const result = await fetchSalesData(filterType, startDatee, endDatee, page, limit);
+  
+        if (req.xhr) {
+          return res.json({ orders: result, totalPage: result.totalPage, currentPage: page });
+        }
+  
+        console.log("Rendering salesReport with data:", result); // Log data before render
+        res.render("salesReport", {
+          ...result,
+          startDatee: req.query.startDatee || "",
+          endDatee: req.query.endDatee || "",
+          limit,
+        });
+      } catch (error) {
+        console.error("Error in getSalesReport:", error.message);
+        res.redirect("/pageerror");
+      }
+    } else {
+      console.log("Redirecting to /admin - No admin session");
+      res.redirect("/admin");
+    }
+};
+
+
+const salesReport = async (req, res) => {
+  try {
+    let page = parseInt(req.query.page) || 1;
+    let limit = 20;
+    let skip = (page - 1) * limit;
+    const filterType = req.query.filterType || "custom";
+
+    let startDate, endDate;
+
+    // Setting date range 
+    switch (filterType) {
+      case "daily":
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0); 
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); 
+        break;
+      case "weekly":
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - startDate.getDay()); 
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); 
+        break;
+      case "monthly":
+        startDate = new Date();
+        startDate.setDate(1); 
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); 
+        break;
+      case "custom":
+        startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
+        endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
+        if (!startDate || !endDate) {
+          return res.status(400).json({ error: "Both start and end dates are required for custom filter" });
+        }
+        endDate.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid filter type" });
+    }
+
+    let query = {};
+    if (startDate && endDate) {
+      query.createdOn = { $gte: startDate, $lte: endDate };
+    }
+
+    const userCount = await User.countDocuments({ isAdmin: false });
+
+    const totalSales = await Order.aggregate([
+      { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+      { $unwind: "$orderedItems" },
+      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$finalAmount" },
+          totalOrder: { $sum: 1 },
+          totalDiscountPrice: { $sum: "$discount" },
+          itemSold: { $sum: "$orderedItems.quantity" },
+          totalCouponDiscount: { $sum: "$couponDiscount" },
+        },
+      },
+    ]);
+
+    const salesData = totalSales.length
+      ? totalSales[0]
+      : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
+
+    const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
+
+    const count = await Order.countDocuments(query);
+    const totalPage = Math.max(Math.ceil(count / limit), 1);
+
+    const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
+
+    const totalCouponUsers = await Order.aggregate([
+      { $match: { couponApplied: true, ...query } }, 
+      { $count: "totalCouponApplied" },
+    ]);
+
+    const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+
+    const result = {
+      ...salesData,
+      userCount,
+      processingOrders,
+      order,
+      totalCouponUsers: totalCouponCount,
+      totalPage,
+      currentPage: page,
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
+      filterType,
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error("Sales report error:", error);
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
+};
+
+const downloadExcelReport = async (req, res) => {
+  try {
+    //console.log(req.body);
+
+    const { startDate, endDate, filterType = "custom" } = req.body; 
+
+    const salesData = await fetchSalesData(filterType, startDate, endDate, 1, null);
+    //const { startDate, endDate, salesData } = req.body;
+
+    if (!startDate || !endDate || !salesData) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sales Report");
+
+    const totalColumns = 10;
+
+    worksheet.mergeCells("A1:J1");
+    const headerCell = worksheet.getCell("A1");
+    headerCell.value = `Sales Report from ${startDate} to ${endDate}`;
+    headerCell.font = { bold: true, size: 20, color: { argb: "FFFFFF" } };
+    headerCell.alignment = { horizontal: "center", vertical: "middle" };
+    headerCell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "4F81BD" }, 
+    };
+
+    worksheet.getRow(1).height = 30;
+
+    worksheet.addRow([]);
+
+    const orderDetailsHeaderRow = worksheet.addRow([
+      "Order ID",
+      "User ID",
+      "Total Price",
+      "GST Amount",
+      "Discount",
+      "Shipping",
+      "Final Amount",
+      "Status",
+      "Payment Method",
+      "Order Date",
+    ]);
+
+    orderDetailsHeaderRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFC000" },
+      };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+  
+    worksheet.columns = [
+      { key: 'orderId', width: 15 },
+      { key: 'userId', width: 15 },
+      { key: 'totalPrice', width: 15 },
+      { key: 'gstAmount', width: 15 },
+      { key: 'discount', width: 15 },
+      { key: 'shipping', width: 15 },
+      { key: 'finalAmount', width: 15 },
+      { key: 'status', width: 15 },
+      { key: 'paymentMethod', width: 15 },
+      { key: 'invoiceDate', width: 20 },
+    ];
+
+    salesData.order.forEach((order) => {
+      const row = worksheet.addRow([
+        order.orderId || order._id,
+        order.userId,
+        order.totalPrice,
+        order.gstAmount,
+        order.discount,
+        order.shipping,
+        order.finalAmount,
+        order.status,
+        order.paymentMethod,
+        new Date(order.invoiceDate),
+      ]);
+
+      const dateCell = row.getCell(10);
+      dateCell.numFmt = 'dd-mm-yyyy';  
+    });
+
+    worksheet.addRow([]);
+
+    worksheet.addRow(["Summary"]).font = { bold: true, size: 14 };
+
+    const summaryHeaderRow = worksheet.addRow([
+      "Total Amount",
+      "Total Orders",
+      "Total Coupon Discount",
+      "Total Discount Price",
+      "Items Sold",
+    ]);
+
+    summaryHeaderRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFF" } };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "70AD47" },
+      };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+    worksheet.addRow([
+      salesData.totalAmount.toFixed(2),
+      salesData.totalOrder,
+      salesData.totalCouponDiscount,
+      salesData.totalDiscountPrice,
+      salesData.itemSold,
+    ]);
+
+    const reportsDir = "D:\\BROTOTYPE\\TICKSCAPE\\public\\sales_reports";
+
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir, { recursive: true });
+    }
+
+    const filePath = path.join(
+      reportsDir,
+      `TickScape-sales-report-${startDate}-${endDate}.xlsx`
+    );
+
+    await workbook.xlsx.writeFile(filePath);
+
+    res.download(filePath, `TickScape-sales-report-${startDate}-${endDate}.xlsx`);
+  } catch (error) {
+    console.error("Error generating Excel report:", error);
+    res.status(500).json({ error: "Failed to generate Excel report" });
+  }
+};
+
+
+const downloadPDFReport = async (req, res) => {
+  try {
+    
+    const { startDate, endDate, filterType = "custom" } = req.body; // Match frontend names
+
+    const salesData = await fetchSalesData(filterType, startDate, endDate, 1, null);
+    
+    //const { startDate, endDate, salesData } = req.body;
+
+
+    if (!startDate || !endDate || !salesData) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    const reportsDir = "D:\\BROTOTYPE\\TICKSCAPE\\public\\sales_reports";
+
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir, { recursive: true });
+    }
+
+    const filePath = path.join(reportsDir, `TickScape-sales-report-${startDate}-${endDate}.pdf`);
+
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
+
+    doc.fontSize(20).text(`Sales Report from ${startDate} to ${endDate}`, { align: "center" }).moveDown();
+
+    doc.fontSize(14).text("Order Details", { align: "center" }).moveDown();
+
+    const formatDate = (isoDate) => {
+      const date = new Date(isoDate);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    };
+
+    const table = {
+      headers: [
+        "Order ID",
+        "User ID",
+        "Total Price",
+        "GST Amount",
+        "Discount",
+        "Shipping",
+        "Final Amount",
+        "Status",
+        "Payment Method",
+        "Order Date",
+      ],
+      rows: salesData.order.map((order) => [
+        order.orderId || order._id,
+        order.userId,
+        order.totalPrice,
+        order.gstAmount,
+        order.discount,
+        order.shipping,
+        order.finalAmount,
+        order.status,
+        order.paymentMethod,
+        formatDate(order.invoiceDate),
+      ]),
+    };
+
+    await doc.table(table, {
+      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
+      prepareRow: (row, indexColumn, indexRow, rectRow) => doc.font("Helvetica").fontSize(8),
+      width: 500,
+    });
+
+    doc.moveDown().fontSize(14).text("Summary", { align: "center" }).moveDown();
+    doc.fontSize(12);
+    doc.text(`Total Amount: ${salesData.totalAmount.toFixed(2)}`);
+    doc.text(`Total Orders: ${salesData.totalOrder}`);
+    doc.text(`Total Coupon Discount: ${salesData.totalCouponDiscount}`);
+    doc.text(`Total Discount Price: ${salesData.totalDiscountPrice}`);
+    doc.text(`Items Sold: ${salesData.itemSold}`);   
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      res.download(filePath, `TickScape-sales-report-${startDate}-${endDate}.pdf`, (err) => {
+        if (err) {
+          console.error("Error sending file:", err);
+          res.status(500).json({ error: "Failed to download PDF report" });
+        }
+      });
+    });
+
+    writeStream.on("error", (err) => {
+      console.error("Error writing PDF file:", err);
+      res.status(500).json({ error: "Failed to generate PDF report" });
+    });
+
+  } catch (error) {
+    console.error("Error generating PDF report:", error);
+    res.status(500).json({ error: "Failed to generate PDF report" });
+  }
+};
+
+
+
+module.exports = {
+    salesReport,
+    downloadExcelReport,
+    downloadPDFReport,
+    getSalesReport
+}
+

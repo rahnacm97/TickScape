@@ -12,6 +12,7 @@ const brandController = require('../controllers/admin/brandController');
 const couponController = require('../controllers/admin/couponController');
 const offerController = require('../controllers/admin/offerController');
 const dashboardController = require('../controllers/admin/dashboardController');
+const salesController = require('../controllers/admin/salesController');
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
@@ -37,12 +38,14 @@ router.get('/logout',adminAuth,adminController.logout);
 //Dashboard Management
 router.get('/dashboard',adminAuth,dashboardController.loadDashboard);
 router.get('/salesReport',adminAuth,dashboardController.salesReport);
-router.post("/download-sales-data", adminAuth,dashboardController.downloadExcelReport);
-router.post("/download-pdf", adminAuth,dashboardController.downloadPDFReport);
 router.get('/sales-data',adminAuth,dashboardController.Chart);
-router.get('/loadSalesReport',adminAuth,dashboardController.getSalesReport);
 
 //Sales Report Management
+router.get('/loadSalesReport',adminAuth,salesController.getSalesReport);
+router.get('/salesReports',adminAuth,salesController.salesReport);
+router.post("/download-sales-data", adminAuth,salesController.downloadExcelReport);
+router.post("/download-pdf", adminAuth,salesController.downloadPDFReport);
+
 
 //Customer Management
 router.get('/users',adminAuth,customerController.customerInfo);

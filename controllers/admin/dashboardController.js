@@ -325,258 +325,144 @@ const salesReport = async (req, res) => {
   }
 };
 
-const downloadExcelReport = async (req, res) => {
-  try {
-    //console.log(req.body);
-    const { startDate, endDate, salesData } = req.body;
+// const Chart = async (req, res) => {
+//   try {
+//     let { filter, startDate, endDate } = req.query;
 
-    if (!startDate || !endDate || !salesData) {
-      return res.status(400).json({ error: "Missing required parameters" });
-    }
+//     if (!filter) filter = "monthly";
 
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Sales Report");
+//     let matchStage = {};
 
-    const totalColumns = 10;
+//     switch (filter) {
+//       case "yearly":
+//         matchStage = { createdOn: { $gte: new Date(new Date().getFullYear(), 0, 1) } };
+//         break;
+//       case "monthly":
+//         matchStage = {
+//           createdOn: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }
+//         };
+//         break;
+//       case "weekly":
+//         let startOfWeek = new Date();
+//         startOfWeek.setDate(startOfWeek.getDate() - 7);
+//         matchStage = { createdOn: { $gte: startOfWeek } };
+//         break;
+//       case "daily":
+//         let startOfDay = new Date();
+//         startOfDay.setHours(0, 0, 0, 0);
+//         matchStage = { createdOn: { $gte: startOfDay, $lte: new Date() } };
+//         break;
+//       case "custom":
+//         if (!startDate || !endDate) {
+//           return res.status(400).json({ error: "Start and end dates are required for custom filter" });
+//         }
+//         matchStage = {
+//           createdOn: {
+//             $gte: new Date(startDate),
+//             $lte: new Date(endDate).setHours(23, 59, 59, 999)
+//           }
+//         };
+//         break;
+//       default:
+//         return res.status(400).json({ error: "Invalid filter type" });
+//     }
 
-    worksheet.mergeCells("A1:J1");
-    const headerCell = worksheet.getCell("A1");
-    headerCell.value = `Sales Report from ${startDate} to ${endDate}`;
-    headerCell.font = { bold: true, size: 20, color: { argb: "FFFFFF" } };
-    headerCell.alignment = { horizontal: "center", vertical: "middle" };
-    headerCell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "4F81BD" }, 
-    };
+//     console.log('Match stage:', matchStage);
 
-    worksheet.getRow(1).height = 30;
+//     const salesData = await Order.aggregate([
+//       { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...matchStage } },
+//       { $unwind: "$orderedItems" },
+//       { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+//       {
+//         $group: {
+//           _id: "$_id",
+//           createdOn: { $first: "$createdOn" },
+//           finalAmount: { $first: "$finalAmount" }
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             $dateToString: {
+//               format: filter === "yearly" ? "%Y" : filter === "monthly" ? "%Y-%m" : "%Y-%m-%d",
+//               date: "$createdOn"
+//             }
+//           },
+//           totalSales: { $sum: "$finalAmount" }
+//         }
+//       },
+//       { $sort: { _id: 1 } }
+//     ]);
 
-    worksheet.addRow([]);
+//     console.log('Sales data:', salesData);
 
-    const orderDetailsHeaderRow = worksheet.addRow([
-      "Order ID",
-      "User ID",
-      "Total Price",
-      "GST Amount",
-      "Discount",
-      "Shipping",
-      "Final Amount",
-      "Status",
-      "Payment Method",
-      "Order Date",
-    ]);
+//     if (!salesData || salesData.length === 0) {
+//       return res.json({ labels: [], values: [], message: "No data found for the selected period" });
+//     }
 
-    orderDetailsHeaderRow.eachCell((cell) => {
-      cell.font = { bold: true, color: { argb: "FFFFFF" } };
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFC000" },
-      };
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-    });
+//     const labels = salesData.map((data) => data._id);
+//     const values = salesData.map((data) => data.totalSales);
 
-  
-    worksheet.columns = [
-      { key: 'orderId', width: 15 },
-      { key: 'userId', width: 15 },
-      { key: 'totalPrice', width: 15 },
-      { key: 'gstAmount', width: 15 },
-      { key: 'discount', width: 15 },
-      { key: 'shipping', width: 15 },
-      { key: 'finalAmount', width: 15 },
-      { key: 'status', width: 15 },
-      { key: 'paymentMethod', width: 15 },
-      { key: 'invoiceDate', width: 20 },
-    ];
+//     console.log('Labels:', labels);
+//     console.log('Values:', values);
 
-    salesData.order.forEach((order) => {
-      const row = worksheet.addRow([
-        order.orderId || order._id,
-        order.userId,
-        order.totalPrice,
-        order.gstAmount,
-        order.discount,
-        order.shipping,
-        order.finalAmount,
-        order.status,
-        order.paymentMethod,
-        new Date(order.invoiceDate),
-      ]);
-
-      const dateCell = row.getCell(10);
-      dateCell.numFmt = 'dd-mm-yyyy';  
-    });
-
-    worksheet.addRow([]);
-
-    worksheet.addRow(["Summary"]).font = { bold: true, size: 14 };
-
-    const summaryHeaderRow = worksheet.addRow([
-      "Total Amount",
-      "Total Orders",
-      "Total Coupon Discount",
-      "Total Discount Price",
-      "Items Sold",
-    ]);
-
-    summaryHeaderRow.eachCell((cell) => {
-      cell.font = { bold: true, color: { argb: "FFFFFF" } };
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "70AD47" },
-      };
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-    });
-
-    worksheet.addRow([
-      salesData.totalAmount.toFixed(2),
-      salesData.totalOrder,
-      salesData.totalCouponDiscount,
-      salesData.totalDiscountPrice,
-      salesData.itemSold,
-    ]);
-
-    const reportsDir = "D:\\BROTOTYPE\\TICKSCAPE\\public\\sales_reports";
-
-    if (!fs.existsSync(reportsDir)) {
-      fs.mkdirSync(reportsDir, { recursive: true });
-    }
-
-    const filePath = path.join(
-      reportsDir,
-      `TickScape-sales-report-${startDate}-${endDate}.xlsx`
-    );
-
-    await workbook.xlsx.writeFile(filePath);
-
-    res.download(filePath, `TickScape-sales-report-${startDate}-${endDate}.xlsx`);
-  } catch (error) {
-    console.error("Error generating Excel report:", error);
-    res.status(500).json({ error: "Failed to generate Excel report" });
-  }
-};
-
-
-const downloadPDFReport = async (req, res) => {
-  try {
-    const { startDate, endDate, salesData } = req.body;
-
-    if (!startDate || !endDate || !salesData) {
-      return res.status(400).json({ error: "Missing required parameters" });
-    }
-
-    const reportsDir = "D:\\BROTOTYPE\\TICKSCAPE\\public\\sales_reports";
-
-    if (!fs.existsSync(reportsDir)) {
-      fs.mkdirSync(reportsDir, { recursive: true });
-    }
-
-    const filePath = path.join(reportsDir, `TickScape-sales-report-${startDate}-${endDate}.pdf`);
-
-    const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream(filePath);
-    doc.pipe(writeStream);
-
-    doc.fontSize(20).text(`Sales Report from ${startDate} to ${endDate}`, { align: "center" }).moveDown();
-
-    doc.fontSize(14).text("Order Details", { align: "center" }).moveDown();
-
-    const formatDate = (isoDate) => {
-      const date = new Date(isoDate);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`;
-    };
-
-    const table = {
-      headers: [
-        "Order ID",
-        "User ID",
-        "Total Price",
-        "GST Amount",
-        "Discount",
-        "Shipping",
-        "Final Amount",
-        "Status",
-        "Payment Method",
-        "Order Date",
-      ],
-      rows: salesData.order.map((order) => [
-        order.orderId || order._id,
-        order.userId,
-        order.totalPrice,
-        order.gstAmount,
-        order.discount,
-        order.shipping,
-        order.finalAmount,
-        order.status,
-        order.paymentMethod,
-        formatDate(order.invoiceDate),
-      ]),
-    };
-
-    await doc.table(table, {
-      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
-      prepareRow: (row, indexColumn, indexRow, rectRow) => doc.font("Helvetica").fontSize(8),
-      width: 500,
-    });
-
-    doc.moveDown().fontSize(14).text("Summary", { align: "center" }).moveDown();
-    doc.fontSize(12);
-    doc.text(`Total Amount: ${salesData.totalAmount.toFixed(2)}`);
-    doc.text(`Total Orders: ${salesData.totalOrder}`);
-    doc.text(`Total Coupon Discount: ${salesData.totalCouponDiscount}`);
-    doc.text(`Total Discount Price: ${salesData.totalDiscountPrice}`);
-    doc.text(`Items Sold: ${salesData.itemSold}`);   
-
-    doc.end();
-
-    writeStream.on("finish", () => {
-      res.download(filePath, `TickScape-sales-report-${startDate}-${endDate}.pdf`, (err) => {
-        if (err) {
-          console.error("Error sending file:", err);
-          res.status(500).json({ error: "Failed to download PDF report" });
-        }
-      });
-    });
-
-    writeStream.on("error", (err) => {
-      console.error("Error writing PDF file:", err);
-      res.status(500).json({ error: "Failed to generate PDF report" });
-    });
-
-  } catch (error) {
-    console.error("Error generating PDF report:", error);
-    res.status(500).json({ error: "Failed to generate PDF report" });
-  }
-};
+//     res.json({ labels, values });
+//   } catch (error) {
+//     console.error("Chart aggregation error:", error);
+//     res.status(500).json({ error: "Internal Server Error", message: error.message });
+//   }
+// };
 
 const Chart = async (req, res) => {
   try {
-    let { filter } = req.query;
-    //console.log('filter:', filter);
+    let { filter, startDate, endDate } = req.query;
+
+    if (!filter) filter = "monthly";
 
     let matchStage = {};
 
-    // Default to "monthly" if no filter is provided
-    if (!filter) filter = "monthly";
-
-    if (filter === "yearly") {
-      matchStage = { createdOn: { $gte: new Date(new Date().getFullYear(), 0, 1) } };
-    } else if (filter === "monthly") {
-      let startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      matchStage = { createdOn: { $gte: startOfMonth } };
-    } else if (filter === "weekly") {
-      let startOfWeek = new Date();
-      startOfWeek.setDate(startOfWeek.getDate() - 7);
-      matchStage = { createdOn: { $gte: startOfWeek } };
+    switch (filter) {
+      case "yearly":
+        const currentYear = new Date().getFullYear();
+        matchStage = {
+          createdOn: {
+            $gte: new Date(currentYear, 0, 1),
+            $lte: new Date(currentYear, 11, 31, 23, 59, 59, 999)
+          }
+        };
+        break;
+      case "monthly":
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        matchStage = { createdOn: { $gte: startOfMonth, $lte: endOfMonth } };
+        break;
+      case "weekly":
+        let startOfWeek = new Date();
+        startOfWeek.setDate(startOfWeek.getDate() - 7);
+        matchStage = { createdOn: { $gte: startOfWeek } };
+        break;
+      case "daily":
+        let startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        matchStage = { createdOn: { $gte: startOfDay, $lte: new Date() } };
+        break;
+      case "custom":
+        if (!startDate || !endDate) {
+          return res.status(400).json({ error: "Start and end dates are required for custom filter" });
+        }
+        matchStage = {
+          createdOn: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate).setHours(23, 59, 59, 999)
+          }
+        };
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid filter type" });
     }
 
-    //console.log('Match stage:', matchStage);
+    console.log('Match stage:', matchStage);
 
     const salesData = await Order.aggregate([
       { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...matchStage } },
@@ -591,24 +477,66 @@ const Chart = async (req, res) => {
       },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdOn" } },
+          _id: {
+            $dateToString: {
+              format: filter === "yearly" ? "%Y-%m" : "%Y-%m-%d", // Use daily format for all except yearly
+              date: "$createdOn"
+            }
+          },
           totalSales: { $sum: "$finalAmount" }
         }
       },
       { $sort: { _id: 1 } }
     ]);
 
-    //console.log('Sales data:', salesData);
+    console.log('Sales data:', salesData);
 
-    if (!salesData || salesData.length === 0) {
-      return res.json({ labels: [], values: [], message: "No data found for the selected period" });
+    let labels, values;
+
+    if (filter === "yearly") {
+      const currentYear = new Date().getFullYear();
+      const allMonths = Array.from(
+        { length: 12 },
+        (_, i) => `${currentYear}-${String(i + 1).padStart(2, '0')}`
+      );
+      const salesMap = new Map(salesData.map(item => [item._id, item.totalSales]));
+      labels = allMonths;
+      values = allMonths.map(month => salesMap.get(month) || 0);
+    } else if (filter === "monthly") {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const startOfMonth = new Date(year, now.getMonth(), 1);
+
+      // Define 4 week ranges (7 days each, last week covers remaining days)
+      const weekRanges = [
+        { start: 1, end: 7 },
+        { start: 8, end: 14 },
+        { start: 15, end: 21 },
+        { start: 22, end: new Date(year, now.getMonth() + 1, 0).getDate() } 
+      ];
+
+      labels = weekRanges.map(range => `${year}-${month}-${range.start}-${range.end}`);
+      const salesMap = new Map(salesData.map(item => [item._id, item.totalSales]));
+
+      values = weekRanges.map(range => {
+        let total = 0;
+        for (let day = range.start; day <= range.end; day++) {
+          const dateStr = `${year}-${month}-${String(day).padStart(2, '0')}`;
+          total += salesMap.get(dateStr) || 0;
+        }
+        return total;
+      });
+    } else {
+      if (!salesData || salesData.length === 0) {
+        return res.json({ labels: [], values: [], message: "No data found for the selected period" });
+      }
+      labels = salesData.map((data) => data._id);
+      values = salesData.map((data) => data.totalSales);
     }
 
-    const labels = salesData.map((data) => data._id);
-    const values = salesData.map((data) => data.totalSales);
-
-    //console.log('labels:', labels);
-    //console.log('values:', values);
+    console.log('Labels:', labels);
+    console.log('Values:', values);
 
     res.json({ labels, values });
   } catch (error) {
@@ -618,97 +546,9 @@ const Chart = async (req, res) => {
 };
 
 
-const getSalesReport = async(req,res) => {
-  if (req.session.admin) {
-    try {
-        let page = parseInt(req.query.page) || 1;
-        let limit = 10;
-        let skip = (page - 1) * limit;
-
-        const startDate = req.query.startDatee ? new Date(req.query.startDatee) : null;
-        const endDate = req.query.endDatee ? new Date(req.query.endDatee) : null;
-        // console.log("1",startDate);
-        // console.log("2",endDate)
-
-        let query = {};
-        if (startDate && endDate) {
-            query.createdOn = { $gte: startDate, $lte: endDate };
-        }
-
-        const userCount = await User.countDocuments({ isAdmin: false });
-        const totalSales = await Order.aggregate([
-          { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
-          { $unwind: "$orderedItems" },
-          { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },  
-          {
-            $group: {
-              _id: null,
-              totalAmount: { $sum: "$finalAmount" },
-              totalOrder: { $sum: 1 },
-              totalDiscountPrice: { $sum: "$discount" },
-              itemSold: { $sum: "$orderedItems.quantity" }  
-            }
-          }
-        ]);
-
-        const orders = await Order.countDocuments();
-        //console.log(orders);
-
-        //console.log("Sales",itemSold);
-
-        const salesData = totalSales[0] || {
-            totalAmount: 0,
-            totalOrder: 0,
-            totalDiscountPrice: 0,
-            itemSold: 0,
-        };
-
-        const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
-        const count = await Order.countDocuments(query);
-        const totalPage = Math.ceil(count / limit);
-
-        const processingOrders = await Order.countDocuments({ status: 'Order Placed', ...query });
-
-        const totalCouponUsers = await Order.aggregate([
-          { $match: { couponApplied: true } },
-          { $count: "totalCouponApplied" }
-      ]);
-
-      //console.log("Coupon", totalCouponUsers)
-
-      const totalCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
-      //console.log("Total Coupons Applied:", totalCount);
-      
-      //console.log(topBrands);        
-
-        if (req.xhr) {
-            return res.json({ orders: salesData, totalPage, currentPage: page });
-        }
-
-        res.render('salesReport', {
-            userCount,
-            orders: salesData,
-            processingOrders,
-            totalCouponUsers: totalCount,
-            totalPage,
-            currentPage: page,
-            limit,
-            order: order,
-            startDate: req.query.startDatee || '',
-            endDate: req.query.endDatee || ''
-        });
-    } catch (error) {
-        res.redirect('/pageerror');
-    }
-}
-}
-
 module.exports = {
     loadDashboard,
     salesReport,
-    downloadExcelReport,
-    downloadPDFReport,
     Chart,
-    getSalesReport
 }
 
