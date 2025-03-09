@@ -11,6 +11,7 @@ const env = require("dotenv").config();
 const crypto = require("crypto");
 const { v4: uuidv4 } = require('uuid');
 
+//Order listing
 const getOrderListPageAdmin = async (req, res) => {
   try {
     let searchQuery = req.query.search || "";
@@ -58,7 +59,7 @@ const getOrderListPageAdmin = async (req, res) => {
   }
 };
 
-
+//Order details page
 const getOrderDetailsPageAdmin = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -104,72 +105,7 @@ const getOrderDetailsPageAdmin = async (req, res) => {
   }
 };
 
-
-// const updateOrderStatus = async (req, res) => {
-//   try {
-    
-//     console.log("Received request to update order status:", req.body);
-
-//     const { orderId, status } = req.body;
-//     if (!orderId || !status) {
-//       return res.json({ success: false, message: "Invalid request data" });
-//     }
-
-//     const order = await Order.findById(orderId).populate("orderedItems.productId");
-
-//     if (!order) {
-//       return res.json({ success: false, message: "Order not found" });
-//     }
-
-//     if (order.status === "Delivered" || order.status === "Cancelled") {
-//       return res.json({
-//         success: false,
-//         message: "Cannot modify Delivered or Cancelled orders",
-//       });
-//     }
-
-//     let hasStatusChanged = false;
-//     let bulkUpdates = [];
-
-//     for (const item of order.orderedItems) {
-//       if (item.orderStatus !== "Cancelled") {
-//         item.orderStatus = status;
-//         hasStatusChanged = true;
-
-//         if (status === "Cancelled" && item.productId) {
-//           bulkUpdates.push({
-//             updateOne: {
-//               filter: { _id: item.productId._id },
-//               update: { $inc: { quantity: item.quantity } },
-//             },
-//           });
-//         }
-//       }
-//     }
-
-//     if (bulkUpdates.length > 0) {
-//       await Product.bulkWrite(bulkUpdates);
-//     }
-
-//     if (hasStatusChanged) {
-//       const formattedDate = new Date().toISOString();
-//       const lastEntry = order.trackingHistory[order.trackingHistory.length - 1];
-
-//       if (!lastEntry || lastEntry.status !== status) {
-//         order.trackingHistory.push({ date: formattedDate, status });
-//       }
-
-//       order.status = status;
-//       await order.save();
-//     }
-
-//     res.json({ success: true, message: "Order status updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating order:", error);
-//     res.json({ success: false, message: "Internal server error" });
-//   }
-// };
-
+//Updating order status
 const updateOrderStatus = async (req, res) => {
   try {
     console.log("Received request to update order status:", req.body);
@@ -234,7 +170,7 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-
+//Return request loading
 const returnRequest = async (req, res) => {
   try {
 
@@ -270,6 +206,7 @@ const returnRequest = async (req, res) => {
   }
 }
 
+//Reject return request
 const rejectOrder = async (req, res) => {
   try {
       const { orderId, productId } = req.body;
@@ -309,11 +246,10 @@ const rejectOrder = async (req, res) => {
   }
 };
 
-
+//Approving return request
 const approveOrder = async (req, res) => {
   try {
     const { orderId, productId } = req.body;
-    console.log("Approving order:", orderId, productId);
 
     if (!orderId || !productId) {
       return res.status(400).json({ success: false, message: "Missing orderId or productId" });
@@ -329,7 +265,7 @@ const approveOrder = async (req, res) => {
     );
 
     if (!orderedItem) {
-      return res.status(404).json({ success: false, message: "Product not found in order" });
+      return res.status(404).json({ success: false, message: "Product not found in order or not in Return request status" });
     }
 
     const user = await User.findById(order.userId);
@@ -338,66 +274,87 @@ const approveOrder = async (req, res) => {
     }
 
     let walletCredit = 0;
-    const shipping = 50;
-    const gstRate = 18; 
-    const itemPriceWithGST = orderedItem.price + (orderedItem.price * (gstRate / 100));
+    let walletCreditRounded = 0;
+    const originalShipping = 50;
+    const currentShipping = order.shipping;
+    const gstRate = 18;
+    const itemBasePrice = orderedItem.price * orderedItem.quantity;
+    const itemPriceWithGST = itemBasePrice + (itemBasePrice * (gstRate / 100));
+    const totalItems = order.orderedItems.length;
+    const activeTotalPrice = order.orderedItems
+      .filter(item => item.orderStatus !== "Cancelled")
+      .reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
+    const isReturningAllActive = returnItemsCount === order.orderedItems.filter(item => item.orderStatus !== "Cancelled").length;
 
     if (order.paymentMethod !== "Cash on Delivery") {
-      if (order.couponApplied && order.appliedCoupon) {
-        const coupon = await Coupon.findById(order.appliedCoupon);
-        if (coupon) {
-          const totalItems = order.orderedItems.length;
-          const finalAmount = order.finalAmount;
-          const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
-          const isReturningAll = returnItemsCount === totalItems;
+      walletCredit = itemPriceWithGST;
 
-          if (isReturningAll) {
-            walletCredit += order.discount; 
-          } else {
-            const discountContribution = (itemPriceWithGST / finalAmount) * order.discount;
-            walletCredit += itemPriceWithGST - discountContribution + shipping; 
-          }
-
-          await Coupon.updateOne({ _id: order.appliedCoupon }, { $push: { users: user._id } });
-        }
-      } else {
-        walletCredit += itemPriceWithGST + shipping;
+      if (order.couponApplied && order.discount > 0) {
+        const discountPerItem = (itemBasePrice / activeTotalPrice) * order.discount;
+        walletCredit -= discountPerItem;
+        order.discount = parseFloat((order.discount - discountPerItem).toFixed(2)); // Fix: numeric
       }
 
-      const walletCreditRounded = parseFloat(walletCredit.toFixed(2));
-      await User.updateOne(
-        { _id: user._id },
-        { $push: { wallet: { amount: walletCreditRounded, date: new Date(), reason: "Refund" } } }
-      );
+      const shippingShare = originalShipping / totalItems;
+      walletCredit += shippingShare;
+      order.shipping = parseFloat((Math.max(0, currentShipping - shippingShare)).toFixed(2)); // Fix: numeric
+
+      walletCreditRounded = parseFloat(walletCredit.toFixed(2));
+      if (walletCreditRounded > 0) {
+        const userUpdateResult = await User.updateOne(
+          { _id: user._id },
+          { $push: { wallet: { amount: walletCreditRounded, date: new Date(), reason: "Refund" } } }
+        );
+        console.log("User update result:", userUpdateResult);
+      }
     }
 
-    // Update product stock
-    await Product.updateOne({ _id: productId }, { $inc: { quantity: orderedItem.quantity } });
+    const productUpdateResult = await Product.updateOne(
+      { _id: productId },
+      { $inc: { quantity: orderedItem.quantity } }
+    );
+    console.log("Product update result:", productUpdateResult);
 
-    // Update order status
-    await Order.updateOne(
+    const orderItemUpdateResult = await Order.updateOne(
       { _id: orderId, "orderedItems.productId": productId },
       { $set: { "orderedItems.$.orderStatus": "Returned" } }
     );
+    console.log("Order item update result:", orderItemUpdateResult);
 
-    // Check all items are returned
+    // Fix: Update top-level fields and save
+    order.totalPrice -= itemBasePrice;
+    order.gstAmount = order.totalPrice * (gstRate / 100);
+    order.finalAmount = order.totalPrice + order.gstAmount - order.discount + order.shipping;
+    const orderSaveResult = await order.save();
+    console.log("Order save result:", orderSaveResult);
+
     const updatedOrder = await Order.findById(orderId);
-    const allItemsReturned = updatedOrder.orderedItems.every(item => item.orderStatus === "Returned");
+    const allItemsReturned = updatedOrder.orderedItems
+      .filter(item => item.orderStatus !== "Cancelled")
+      .every(item => item.orderStatus === "Returned");
+    const anyPendingReturns = updatedOrder.orderedItems.some(item => item.orderStatus === "Return request");
 
+    let statusUpdateResult;
     if (allItemsReturned) {
-      await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
+      statusUpdateResult = await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
+    } else if (anyPendingReturns) {
+      statusUpdateResult = await Order.updateOne({ _id: orderId }, { $set: { status: "Return request" } });
     } else {
-      await Order.updateOne({ _id: orderId }, { $set: { status: "Delivered" } });
+      statusUpdateResult = await Order.updateOne({ _id: orderId }, { $set: { status: "Delivered" } });
     }
+    console.log("Status update result:", statusUpdateResult);
 
-    return res.status(200).json({ success: true, message: "Order item return request approved successfully!" });
-
+    return res.status(200).json({
+      success: true,
+      message: "Order item return request approved successfully!",
+      walletCredit: walletCreditRounded
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Error approving order:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 module.exports = {
   getOrderListPageAdmin,

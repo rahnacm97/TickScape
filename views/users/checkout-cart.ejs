@@ -869,7 +869,7 @@ $(document).on('click', '#applyCoupon', function() {
 
                     let finalAmount = subTotal + shippingCharge + gstAmount - discount;
 
-                    $('.border-bottom.border-top p').text(`₹${finalAmount}`);
+                    $('.border-bottom.border-top p').text(`₹${finalAmount.toFixed(2)}`);
 
 
                         $('#couponMessage').text(response.message).css('color', 'green');

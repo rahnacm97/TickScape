@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const CryptoJS = require("crypto-js");
 
+//404 page
 const pageNotFound = async(req,res) => {
     try{
         await res.status(404).render("404page", 
@@ -21,6 +22,7 @@ const pageNotFound = async(req,res) => {
         }
 }
 
+//Home page
 const loadHomePage = async(req,res,next) => {
     try{
         const today = new Date().toISOString();
@@ -56,6 +58,7 @@ const loadHomePage = async(req,res,next) => {
     }
 }
 
+//Login page 
 const loadLoginPage = async(req,res,next) => {
     try{
         return res.render('login',{
@@ -66,6 +69,7 @@ const loadLoginPage = async(req,res,next) => {
     }
 }
 
+//Login 
 const login = async(req,res,next) => {
     try{
         
@@ -96,11 +100,12 @@ const login = async(req,res,next) => {
     }
 }
 
-
+//Otp generation
 function generateOtp(){
     return Math.floor(100000 + Math.random()*900000).toString();
 }
 
+//Verification otp to email
 async function sentVerification(email,otp){
     try{
         const transporter = nodemailer.createTransport({
@@ -130,6 +135,7 @@ async function sentVerification(email,otp){
     }
 }
 
+//Signup page
 const loadSignupPage = async(req,res) => {
     try{
         await res.render("signup");
@@ -139,6 +145,7 @@ const loadSignupPage = async(req,res) => {
     }
 }
 
+//Signing up
 const signup = async (req, res) => {
     try {
         const { fname, lname, phone, email, password, cpassword, referralCode } = req.body;
@@ -186,6 +193,7 @@ const signup = async (req, res) => {
     }
 };
 
+//Password securing
 const securePassword = async (password) => {
     try{
         const passwordHash = await bcrypt.hash(password,10);
@@ -196,7 +204,7 @@ const securePassword = async (password) => {
     }
 }
 
-
+//Verify otp
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
@@ -249,6 +257,7 @@ const verifyOtp = async (req, res) => {
     }
 };
 
+//Otp resend
 const resendOtp = async (req,res) =>{
     try{
         const {email} = req.session.userData;
@@ -271,7 +280,7 @@ const resendOtp = async (req,res) =>{
     }
 }
 
-
+//User logout
 const logout = async (req, res) => {
     try {
         // Clear user-specific session data
@@ -287,7 +296,7 @@ const logout = async (req, res) => {
     }
 };
 
-
+//Shopping page
 const loadShoppingPage = async (req, res, next) => {
     try {
         const user = req.session.user;
@@ -388,6 +397,7 @@ const loadShoppingPage = async (req, res, next) => {
     }
 };
 
+//Filtering
 const filterProducts = async (req, res) => {
     try {
         const user = req.session.user;

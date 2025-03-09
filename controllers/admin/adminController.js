@@ -6,6 +6,7 @@ const pageerror = async (req,res) => {
     res.render('admin-error');
 }
 
+//Login Loading
 const adminLoadLogin = async (req,res) => {
     if(req.session.admin){
         return res.redirect('/admin/dashboard')
@@ -13,6 +14,7 @@ const adminLoadLogin = async (req,res) => {
     res.render("admin-login",{message:null});
 }
 
+//Admin login data
 const adminLogin = async(req,res) => {
     try {
         const {email,password} = req.body;
@@ -35,7 +37,6 @@ const adminLogin = async(req,res) => {
         
     }
 }
-
 
 // Admin Logout
 const logout = async (req, res) => {

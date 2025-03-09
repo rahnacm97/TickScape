@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 
-
+//Otp generation
 function generateOtp(){
     const digits = "1234567890";
     let otp = "";
@@ -17,6 +17,7 @@ function generateOtp(){
     return otp;
 }
 
+//Otp to email
 const sendVerificationEmail = async(email,otp) => {
     try {
         const transporter = nodemailer.createTransport({
@@ -60,6 +61,7 @@ await isUser.save();
     }
 }
 
+//hashing password
 const securePassword = async(password) => {
     try {
         const passwordHash = await bcrypt.hash(password,10);
@@ -69,6 +71,7 @@ const securePassword = async(password) => {
     }
 }
 
+//Forgot password
 const getForgotPassword = async(req,res) => {
     try {
        res.render('forgot-password'); 
@@ -77,6 +80,7 @@ const getForgotPassword = async(req,res) => {
     }
 }
 
+//Email validation
 const forgotEmailValid = async(req,res) => {
     try {
         const {email} = req.body;
@@ -115,6 +119,7 @@ const forgotEmailValid = async(req,res) => {
     }
 }
 
+//Forgot password otp
 const verifyForgotPassOtp = async(req,res) => {
     try {
         const enteredOtp = req.body.otp;
@@ -130,6 +135,7 @@ const verifyForgotPassOtp = async(req,res) => {
     }
 }
 
+//Reset password
 const getResetPassword = async(req,res) => {
     try {
         res.render('reset-password');
@@ -138,6 +144,7 @@ const getResetPassword = async(req,res) => {
     }
 }
 
+//Resend otp
 const resendForgotOtp = async(req,res) => {
     try {
         const otp = generateOtp();
@@ -155,6 +162,7 @@ const resendForgotOtp = async(req,res) => {
     }
 }
 
+//New password
 const postNewPassword = async(req,res) => {
     try {
         const {newPass1,newPass2} = req.body;
@@ -174,6 +182,7 @@ const postNewPassword = async(req,res) => {
     }
 }
 
+//User profile loading
 const userProfile = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -206,6 +215,7 @@ const userProfile = async (req, res) => {
     }
 };
 
+//Wallet history
 const walletHistory = async(req,res) => {
     try {
         const userId = req.session.user;
@@ -233,8 +243,7 @@ const walletHistory = async(req,res) => {
       }
 }
 
-
-
+//Email changing
 const changeEmail = async(req,res) => {
     try {
         const userId = req.session.user;
@@ -248,6 +257,7 @@ const changeEmail = async(req,res) => {
     }
 }
 
+//Email change otp
 const changeEmailValid = async(req,res) => {
     try {
         const {email} = req.body;
@@ -286,6 +296,7 @@ const changeEmailValid = async(req,res) => {
     }
 }
 
+//Verify email otp
 const verifyEmailOtp = async(req,res) => {
     try {
         const enteredOtp = req.body.otp;
@@ -304,6 +315,7 @@ const verifyEmailOtp = async(req,res) => {
     }
 }
 
+//Email otp
 const updateEmail = async(req,res) => {
     try {
         const newEmail = req.body.newEmail;
@@ -315,6 +327,7 @@ const updateEmail = async(req,res) => {
     }
 }
 
+//Password change
 const changePassword = async(req,res) =>{
     try {
         const userId = req.session.user;
@@ -327,6 +340,7 @@ const changePassword = async(req,res) =>{
     }
 }
 
+//Password change otp
 const changePasswordValid = async(req,res) => {
     try {
         const {email} = req.body;
@@ -368,6 +382,7 @@ const changePasswordValid = async(req,res) => {
     }
 }
 
+//Change password otp verification
 const verifyChangePassOtp = async(req,res,next) => {    
     try {
         const enteredOtp = req.body.otp;
@@ -383,7 +398,7 @@ const verifyChangePassOtp = async(req,res,next) => {
     }
 }
 
-
+//Address page
 const getAddress = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -421,6 +436,7 @@ const getAddress = async (req, res) => {
     }
 };
 
+//Adding new address
 const addAddress = async(req,res) => {
     try {
         const redirectTo = req.query.redirectTo || "address";
@@ -435,6 +451,7 @@ const addAddress = async(req,res) => {
     }
 }
 
+//Adding new address
 const userAddAddress = async(req,res) => {
     try {
         const { redirectTo } = req.body; 
@@ -466,6 +483,7 @@ const userAddAddress = async(req,res) => {
     }
 }
 
+//Edit address page
 const editAddress = async(req,res) => {
     try {
         console.log("query",req.query);
@@ -504,7 +522,7 @@ const editAddress = async(req,res) => {
     }
 }
 
-
+//Editing address
 const userEditAddress = async (req, res) => {
     try {
         const data = req.body;
@@ -545,6 +563,7 @@ const userEditAddress = async (req, res) => {
     }
 };
 
+//Deleting address
 const deleteAddress = async (req, res, next) => {
     try {
         const addressId = req.query.id;
@@ -568,6 +587,7 @@ const deleteAddress = async (req, res, next) => {
     }
 };
 
+//Editing profile page
 const geteditProfile = async (req, res,next) => {
     try {
         const userId = req.query.id;
@@ -589,7 +609,7 @@ const geteditProfile = async (req, res,next) => {
     }
 };
 
-
+//Editing user profile
 const editProfile = async (req, res) => {
     try {
         const { newFname, newLname, newPhone } = req.body;
@@ -605,7 +625,6 @@ const editProfile = async (req, res) => {
         res.status(500).json({ success: false }); 
     }
 };
-
 
 module.exports = {
     getForgotPassword,

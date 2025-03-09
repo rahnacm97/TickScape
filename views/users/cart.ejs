@@ -423,7 +423,7 @@ function changeQuantity(productId, cartQuantity, count, productPrice, i, product
     subtotalElement.innerHTML = newSubTotal;
 
     const updatedItemTotal = currentItemTotal + (newSubTotal - currentSubTotal);
-    const updatedGstAmount = (updatedItemTotal * validGstRate) / 100;
+    const updatedGstAmount = (updatedItemTotal * validGstRate).toFixed(2) / 100;
     const updatedTotal = updatedItemTotal + updatedGstAmount;
 
     console.log("After update:");

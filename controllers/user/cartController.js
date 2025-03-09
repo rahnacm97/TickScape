@@ -9,6 +9,7 @@ const env = require("dotenv").config();
 const session = require("express-session");
 const { default: mongoose } = require("mongoose");
 
+//Cart page
 const getCartPage = async (req, res, next) => {
   try {
     if (!req.session.user) {
@@ -75,8 +76,7 @@ const getCartPage = async (req, res, next) => {
   }
 };
 
-
-
+//Add to cart functionality
 const addToCart = async (req, res,next) => {
   try {
     const { productId } = req.body;
@@ -157,6 +157,7 @@ const addToCart = async (req, res,next) => {
   }
 };
 
+//Quantity changing
 const changeQuantity = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
@@ -213,6 +214,7 @@ const changeQuantity = async (req, res) => {
   }
 };
 
+//Delete product from cart
 const deleteProduct = async (req, res) => {
   try {
       const user = req.session.user;

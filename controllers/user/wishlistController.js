@@ -1,6 +1,7 @@
 const User = require('../../models/userSchema');
 const Product = require('../../models/productSchema');
 
+//Wishlist page
 const loadWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -34,7 +35,7 @@ const loadWishlist = async (req, res) => {
     }
 };
 
-
+//Adding product to wishlist
 const addToWishlist = async (req, res) => {
     try {
         const productId = req.body.productId;
@@ -63,7 +64,7 @@ const addToWishlist = async (req, res) => {
     }
 }
 
-
+//Remove product from wishlist
 const removeProduct = async (req, res) => {
     try {
         const productId = req.query.productId;

@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 
-
+//Product page
 const getProductAddPage = async(req,res,next) => {
     try {
         const category = await Category.find({isListed:true});
@@ -22,6 +22,7 @@ const getProductAddPage = async(req,res,next) => {
     }
 }
 
+//Product add page
 const addProducts = async (req, res , next) => {
     try {
         const products = req.body;
@@ -95,7 +96,7 @@ const addProducts = async (req, res , next) => {
     }
 };
 
-
+//All products loading
 const getAllProducts = async (req, res, next) => {
     try {
         const search = req.query.search || "";
@@ -140,7 +141,7 @@ const getAllProducts = async (req, res, next) => {
     }
 };
 
-
+//adding product offer
 const addProductOffer = async (req, res, next) => {
     try {
         const { productId, offerAmount } = req.body;
@@ -174,7 +175,7 @@ const addProductOffer = async (req, res, next) => {
     }
 };
 
-
+//Remove product offer
 const removeProductOffer = async (req, res, next) => {
     try {
         const { productId } = req.body;
@@ -200,7 +201,7 @@ const removeProductOffer = async (req, res, next) => {
     }
 };
 
-
+//Block product
 const blockProduct = async (req, res,next) => {
     try {
         let id = req.query.id.trim();
@@ -214,6 +215,7 @@ const blockProduct = async (req, res,next) => {
     }
 };
 
+//Unblock product
 const unblockProduct = async (req, res,next) => {
     try {
         let id = req.query.id.trim();
@@ -227,6 +229,7 @@ const unblockProduct = async (req, res,next) => {
     }
 };
 
+//Edit product page
 const getEditProduct = async (req,res,next) => {
     try {
         const id = req.params.id.trim();
@@ -249,11 +252,10 @@ const getEditProduct = async (req,res,next) => {
     }
 }
 
-
+//Product editing
 const editProduct = async (req, res,next) => {
 
-    try {
-       
+    try {       
         const id = req.params.id.trim();
 
         // console.log(req.params)
@@ -333,7 +335,7 @@ const editProduct = async (req, res,next) => {
     }
 };
 
-
+//Delete single image from the images
 const deleteSingleImage = async (req, res) => {
     try {
         console.log('halooo');
@@ -364,8 +366,9 @@ const deleteSingleImage = async (req, res) => {
     }
 }
 
-console.log("Exited");
+//console.log("Exited");
 
+//Product deleting
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.query;

@@ -535,8 +535,8 @@ hr {
               <div class="order-detail"><span>Total Items: <%= order.orderedItems.length %></span></div>
               <div class="order-detail"><span>Total Price:</span> ₹<%= order.totalPrice %></div>
               <div class="order-detail"><span>GST:</span> ₹<%= order.gstAmount %></div>
-              <div class="order-detail"><span>Discount:</span> ₹<%= order.discount %></div>
-              <div class="order-detail"><span>Shipping:</span> ₹<%= order.shipping %></div>
+              <div class="order-detail"><span>Discount:</span> ₹<%= (order.discount).toFixed(2) %></div>
+              <div class="order-detail"><span>Shipping:</span> ₹<%= (order.shipping).toFixed(2) %></div>
               <div class="order-detail"><span>Final Amount:</span> ₹<%= (order.finalAmount).toFixed(2) %></div>
               <div class="order-detail">
                 <span>Invoice Date:</span> 

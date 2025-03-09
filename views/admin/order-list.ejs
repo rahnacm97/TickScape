@@ -164,7 +164,10 @@
                 ₹<%= order.finalAmount.toFixed(2) %>
               </td>
               <td>
-                <%= order.orderedItems.length %>
+                <% 
+                  const activeItems = order.orderedItems.filter(item => item.orderStatus !== "Cancelled").length;
+                %>
+                <%= activeItems %>
               </td>
               <td><strong><%= order.status %></strong></td>
               <!-- <td>₹<%= order.totalPrice.toFixed(2) %></td> -->

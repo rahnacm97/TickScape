@@ -17,111 +17,115 @@ const path = require("path");
 const sharp = require("sharp");
 const fs = require("fs");
 
+//Function to calculate the order Details
+const fetchSalesData = async (filterType = "daily", startDatee, endDatee, page = 1, limit = null) => {
+  let queryStartDate, queryEndDate;
+  const now = new Date();
 
-const fetchSalesData = async (filterType = "custom", startDatee, endDatee, page = 1, limit = null) => {
-    let queryStartDate, queryEndDate;
-  
-    // Set date range based on filterType
-    switch (filterType) {
-      case "daily":
-        queryStartDate = new Date();
-        queryStartDate.setHours(0, 0, 0, 0);
-        queryEndDate = new Date();
-        queryEndDate.setHours(23, 59, 59, 999);
-        break;
-      case "weekly":
-        queryStartDate = new Date();
-        queryStartDate.setDate(queryStartDate.getDate() - queryStartDate.getDay());
-        queryStartDate.setHours(0, 0, 0, 0);
-        queryEndDate = new Date();
-        queryEndDate.setHours(23, 59, 59, 999);
-        break;
-      case "monthly":
-        queryStartDate = new Date();
-        queryStartDate.setDate(1);
-        queryStartDate.setHours(0, 0, 0, 0);
-        queryEndDate = new Date();
-        queryEndDate.setHours(23, 59, 59, 999);
-        break;
-      case "custom":
-        if (!startDatee || !endDatee) {
-          throw new Error("Both start and end dates are required for custom filter");
-        }
-        queryStartDate = new Date(startDatee);
-        queryEndDate = new Date(endDatee);
-        queryEndDate.setHours(23, 59, 59, 999);
-        break;
-      default:
-        throw new Error("Invalid filter type");
+  switch (filterType) {
+    case "daily":
+      queryStartDate = new Date(now);
+      queryStartDate.setHours(0, 0, 0, 0);
+      queryEndDate = new Date(now);
+      queryEndDate.setHours(23, 59, 59, 999);
+      break;
+    case "weekly":
+      queryStartDate = new Date(now);
+      queryStartDate.setDate(now.getDate() - 6);
+      queryStartDate.setHours(0, 0, 0, 0);
+      queryEndDate = new Date(now);
+      queryEndDate.setHours(23, 59, 59, 999);
+      break;
+    case "monthly":
+      queryStartDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      queryEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      break;
+    case "custom":
+      if (!startDatee || !endDatee) throw new Error("Both start and end dates are required for custom filter");
+      queryStartDate = new Date(startDatee);
+      queryEndDate = new Date(endDatee);
+      queryEndDate.setHours(23, 59, 59, 999);
+      break;
+    default:
+      throw new Error("Invalid filter type");
+  }
+
+  const query = { createdOn: { $gte: queryStartDate, $lte: queryEndDate } };
+  console.log("fetchSalesData Query:", JSON.stringify(query, null, 2));
+
+  const userCount = await User.countDocuments({ isAdmin: false });
+
+  const totalSales = await Order.aggregate([
+    { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
+    { $unwind: "$orderedItems" },
+    { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+    {
+      $group: {
+        _id: "$_id", // Group by order first
+        finalAmount: { $first: "$finalAmount" },
+        discount: { $first: "$discount" },
+        quantity: { $sum: "$orderedItems.quantity" },
+        couponDiscount: { $first: "$couponDiscount" || 0 }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$finalAmount" },
+        totalOrder: { $sum: 1 },
+        totalDiscountPrice: { $sum: "$discount" },
+        itemSold: { $sum: "$quantity" },
+        totalCouponDiscount: { $sum: "$couponDiscount" }
+      }
     }
-  
-    const query = {
-      createdOn: { $gte: queryStartDate, $lte: queryEndDate },
-    };
-  
-    // Fetch all data
-    const userCount = await User.countDocuments({ isAdmin: false });
-  
-    const totalSales = await Order.aggregate([
-      { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
-      { $unwind: "$orderedItems" },
-      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
-      {
-        $group: {
-          _id: null,
-          totalAmount: { $sum: "$finalAmount" },
-          totalOrder: { $sum: 1 },
-          totalDiscountPrice: { $sum: "$discount" },
-          itemSold: { $sum: "$orderedItems.quantity" },
-          totalCouponDiscount: { $sum: "$couponDiscount" },
-        },
-      },
-    ]);
-  
-    const salesData = totalSales.length
-      ? totalSales[0]
-      : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
-  
-    const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
-  
-    const totalCouponUsers = await Order.aggregate([
-      { $match: { couponApplied: true, ...query } },
-      { $count: "totalCouponApplied" },
-    ]);
-  
-    const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+  ]);
 
-    const totalAllOrders = await Order.countDocuments(query);
-    const totalCancelledOrders = await Order.countDocuments({ status: "Cancelled", ...query });
-    const totalReturnedOrders = await Order.countDocuments({ status: "Returned", ...query });
-  
-    const count = await Order.countDocuments(query);
-    const totalPage = limit ? Math.max(Math.ceil(count / limit), 1) : 1;
-    const skip = limit ? (page - 1) * limit : 0;
-  
-    const order = await Order.find(query)
-      .sort({ createdOn: -1 })
-      .limit(limit) 
-      .skip(skip);
-  
-    return {
-      ...salesData,
-      userCount,
-      processingOrders,
-      order,
-      totalCouponUsers: totalCouponCount,
-      totalPage,
-      currentPage: page,
-      startDatee: queryStartDate.toISOString().split("T")[0], 
-      endDatee: queryEndDate.toISOString().split("T")[0], 
-      filterType,
-      totalAllOrders,      
-      totalCancelledOrders, 
-      totalReturnedOrders,
-    };
+  const salesData = totalSales[0] || {
+    totalAmount: 0,
+    totalOrder: 0,
+    totalDiscountPrice: 0,
+    itemSold: 0,
+    totalCouponDiscount: 0
   };
 
+  const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
 
+  const totalCouponUsers = await Order.aggregate([
+    { $match: { couponApplied: true, ...query } },
+    { $count: "totalCouponApplied" }
+  ]);
+
+  const totalCouponCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
+
+  const totalAllOrders = await Order.countDocuments(query);
+  const totalCancelledOrders = await Order.countDocuments({ status: "Cancelled", ...query });
+  const totalReturnedOrders = await Order.countDocuments({ status: "Returned", ...query });
+
+  const count = await Order.countDocuments(query);
+  const totalPage = limit ? Math.max(Math.ceil(count / limit), 1) : 1;
+  const skip = limit ? (page - 1) * limit : 0;
+
+  const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
+
+  return {
+    ...salesData,
+    userCount,
+    processingOrders,
+    order,
+    totalCouponUsers: totalCouponCount,
+    totalPage,
+    currentPage: page,
+    startDatee: queryStartDate.toISOString().split("T")[0],
+    endDatee: queryEndDate.toISOString().split("T")[0],
+    filterType,
+    totalAllOrders,
+    totalCancelledOrders,
+    totalReturnedOrders
+  };
+};
+
+
+//Load sales data in tables
 const getSalesReport = async (req, res) => {
     try {
       const page = Math.max(parseInt(req.query.page) || 1, 1);
@@ -163,9 +167,9 @@ const getSalesReport = async (req, res) => {
       }
       res.redirect("/pageerror");
     }
-  };
+};
 
-
+//SalesReport
 const salesReport = async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -180,9 +184,10 @@ const salesReport = async (req, res) => {
       console.error("Sales report error:", error);
       res.status(500).json({ error: "Server error", details: error.message });
     }
-  };
+};
 
-  const downloadExcelReport = async (req, res) => {
+//Excel Details
+const downloadExcelReport = async (req, res) => {
     try {
       const { startDate, endDate, filterType = "custom" } = req.body; 
        
@@ -275,7 +280,7 @@ const salesReport = async (req, res) => {
         salesData.totalOrder,
         salesData.totalAmount.toFixed(2),    
         salesData.totalCouponDiscount,
-        salesData.totalDiscountPrice,
+        salesData.totalDiscountPrice.toFixed(2),
         salesData.itemSold,
       ]);
   
@@ -295,14 +300,14 @@ const salesReport = async (req, res) => {
       console.error("Error generating Excel report:", error);
       res.status(500).json({ error: "Failed to generate Excel report" });
     }
-  };
+};
 
-
-  const downloadPDFReport = async (req, res) => {
+//Pdf download and details
+const downloadPDFReport = async (req, res) => {
     try {
       const { startDate, endDate, filterType = "custom" } = req.body;
   
-      // Fetch all data (no limit)
+      // Fetch all data
       const salesData = await fetchSalesData(filterType, startDate, endDate, 1, null);
   
       const reportsDir = "D:\\BROTOTYPE\\TICKSCAPE\\public\\sales_reports";
@@ -367,7 +372,7 @@ const salesReport = async (req, res) => {
           ["Total Orders (Non-Cancelled/Returned)", salesData.totalOrder],
           ["Total Sales Amount", salesData.totalAmount.toFixed(2)],
           ["Total Coupon Discount", salesData.totalCouponDiscount],
-          ["Total Discount Price", salesData.totalDiscountPrice],
+          ["Total Discount Price", salesData.totalDiscountPrice.toFixed(2)],
           ["Items Sold", salesData.itemSold],
         ],
       };
@@ -403,7 +408,7 @@ const salesReport = async (req, res) => {
       console.error("Error generating PDF report:", error.stack);
       res.status(500).json({ error: "Failed to generate PDF report" });
     }
-  };
+};
 
 
 

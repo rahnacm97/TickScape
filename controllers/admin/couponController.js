@@ -1,7 +1,7 @@
 const Coupon = require('../../models/couponSchema');
 const mongoose = require('mongoose');
 
-
+//Coupon loading
 const loadCoupon = async (req, res) => {
   if(!req.session.admin){
     res.redirect('/admin/login');
@@ -40,7 +40,7 @@ const loadCoupon = async (req, res) => {
     }
   };
   
-
+//Create coupon page
 const loadCreateCoupon = async(req,res) => {
     try {
         return res.render('add-coupon');
@@ -49,6 +49,7 @@ const loadCreateCoupon = async(req,res) => {
     }
 }
 
+//Creating coupon
 const createCoupon = async(req,res) => {
     try {
         const data = {
@@ -75,6 +76,7 @@ const createCoupon = async(req,res) => {
     }
 }
 
+//Edit coupon page
 const editCoupon = async(req,res) => {
     try {
         const id = req.query.id;
@@ -87,35 +89,7 @@ const editCoupon = async(req,res) => {
     }
 }
 
-// const updateCoupon = async(req,res) => {
-//     try {
-//         const couponId = req.body.couponId;
-//         const oid = new mongoose.Types.ObjectId(couponId);
-//         const selectedCoupon = await Coupon.findOne({_id:oid});
-//         if(selectedCoupon){
-//             const startDate = new Date(req.body.startDate);
-//             const endDate = new Date(req.body.endDate);
-//             const updatedCoupon = await Coupon.updateOne({_id:oid},
-//                 {$set: {
-//                     name: req.body.couponName,
-//                     createdOn: startDate,
-//                     expireOn: endDate,
-//                     offerPrice: parseInt(req.body.offerPrice),
-//                     minimumPrice: parseInt(req.body.minimumPrice),
-//                 }
-//             }, {new:true}
-//             );
-//             if(updatedCoupon !== null){
-//                 res.send("Coupon updated successfully");
-//             }else{
-//                 res.status(500).send("Coupon update failed");
-//             }
-//         }
-//     } catch (error) {
-//         res.redirect('/pageerror');
-//     }
-// }
-
+//Editing coupon
 const updateCoupon = async (req, res) => {
   try {
       const couponId = req.body.couponId;
@@ -167,6 +141,7 @@ const updateCoupon = async (req, res) => {
   }
 };
 
+//Listing coupon
 const getListCoupon = async(req,res,next) => {
   try {
       let id = req.query.id;
@@ -177,6 +152,7 @@ const getListCoupon = async(req,res,next) => {
   }
 }
 
+//Unlisting coupon
 const getUnlistCoupon = async(req,res,next) => {
   try {
       let id = req.query.id;
@@ -187,6 +163,7 @@ const getUnlistCoupon = async(req,res,next) => {
   }
 }
 
+//delete coupon
 const deleteCoupon = async (req, res) => {
     try {
       const id = req.query.id; 

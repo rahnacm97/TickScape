@@ -369,7 +369,7 @@ function updateTable(result) {
           <td class="px-4 py-3 text-center font-medium">${(result.currentPage - 1) * limit + index + 1}</td>
           <td class="px-4 py-3 font-semibold">${ordr.orderId}</td>
           <td class="px-4 py-3 text-center">${quantity}</td>
-          <td class="px-4 py-3 text-sm">₹${ordr.finalAmount || "0"}</td>
+          <td class="px-4 py-3 text-sm">₹${(ordr.finalAmount || 0).toFixed(2)}</td>
           <td class="px-4 py-3 text-sm">${ordr.paymentMethod || "N/A"}</td>
           <td class="px-4 py-3 text-xs">
             <span class="px-2 py-1 font-semibold leading-tight rounded-full ${getStatusClass(ordr.status)}">

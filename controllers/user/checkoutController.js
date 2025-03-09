@@ -12,7 +12,7 @@ const session = require("express-session");
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
 
-
+//Checking cart
 const checkCart = async (req, res) => {
   try {
       const userId = req.session.user;
@@ -32,6 +32,7 @@ const checkCart = async (req, res) => {
   }
 };
 
+//Checkout page
 const getCheckout = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -146,7 +147,7 @@ const getCheckout = async (req, res) => {
   }
 };
 
-
+//Coupon applying
 const applyCoupon = async (req, res) => {
   try {
     console.log("Coupon request received:", req.body);
@@ -229,7 +230,7 @@ const applyCoupon = async (req, res) => {
   }
 };
 
-
+//Coupon removing
 const removeCoupon = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -294,101 +295,7 @@ const razorpayInstance = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// const razorpayPayment = async (req, res) => {
-//   try {
-//       const userId = req.session.user;
-//       const addressId = req.body.addressId;
-
-//       console.log("Session Data:", req.session);
-
-//       const addressData = await Address.findOne(
-//           { userId, "address._id": addressId },
-//           { "address.$": 1 }
-//       );
-//       console.log("Address:", addressData);
-
-//       if (!addressData || !addressData.address || !addressData.address.length) {
-//           return res.status(400).json({ success: false, message: "Address not found." });
-//       }
-
-//       const cart = await Cart.findOne({ userId }).populate("items.productId");
-//       console.log("Cart:", cart);
-
-//       if (!cart || !cart.items || cart.items.length === 0) {
-//           return res.status(400).json({ success: false, message: "Cart is empty." });
-//       }
-
-//       let totalOriginalPrice = 0;
-//       let totalOfferPrice = 0;
-//       let orderItems = [];
-
-//       cart.items.forEach(item => {
-//           if (!item.productId) {
-//               throw new Error("Invalid cart item: Product ID missing.");
-//           }
-//           totalOriginalPrice += (item.productId.regularPrice || 0) * item.quantity;
-//           totalOfferPrice += (item.productId.salePrice || 0) * item.quantity;
-//           orderItems.push({
-//               productId: item.productId._id,
-//               quantity: item.quantity,
-//               price: item.productId.salePrice || item.productId.regularPrice,
-//               productName: item.productId.productName,
-//               productImage: item.productId.productImage ? item.productId.productImage[0] : null,
-//               orderStatus: "Order Placed"
-//           });
-//       });
-
-//       let couponDiscount = req.session.couponDiscount || 0;
-//       let couponApplied = couponDiscount > 0;
-//       let appliedCoupon = req.session.appliedCoupon ? req.session.appliedCoupon._id : null;
-
-//       console.log("Coupon Discount:", couponDiscount);
-
-//       let shippingCharge = 50;
-//       let gstAmount = req.session.gstAmount || (totalOfferPrice * 0.18);
-//       let totalPrice = orderItems.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)), 0);
-//       let finalAmount = Math.max(totalOfferPrice - couponDiscount + shippingCharge + gstAmount, 0);
-
-//       console.log("Final Amount:", finalAmount);
-
-//       if (finalAmount === 0) {
-//           return res.status(400).json({ success: false, message: "Order amount must be greater than zero." });
-//       }
-
-//       const options = { amount: finalAmount * 100, currency: "INR" };
-//       const razorpayOrder = await razorpayInstance.orders.create(options);
-
-//       if (!razorpayOrder || !razorpayOrder.id) {
-//           throw new Error("Failed to create Razorpay order: Invalid response from Razorpay.");
-//       }
-
-//       // Store order details in session instead of saving to DB
-//       req.session.orderDetails = {
-//           userId,
-//           orderedItems: orderItems,
-//           totalPrice,
-//           gstAmount,
-//           discount: couponDiscount,
-//           shipping: shippingCharge,
-//           finalAmount,
-//           address: addressData.address[0]._id,
-//           paymentMethod: "Online Payment",
-//           paymentInfo: { transactionId: razorpayOrder.id },
-//           couponApplied: couponApplied,       
-//           appliedCoupon: appliedCoupon
-//       };
-
-//       res.status(200).json({
-//           success: true,
-//           order: razorpayOrder
-//       });
-
-//   } catch (error) {
-//       console.error("Razorpay Payment Error:", error.message, error.stack);
-//       res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
+//Payment integration
 const razorpayPayment = async (req, res) => {
   try {
       const userId = req.session.user;
@@ -438,7 +345,7 @@ const razorpayPayment = async (req, res) => {
           if (coupon && totalOfferPrice >= coupon.minimumPrice && today <= new Date(coupon.expireOn)) {
               couponDiscount = Math.min(req.session.appliedCoupon.discount, totalOfferPrice);
           } else {
-              couponDiscount = 0; // Coupon invalid
+              couponDiscount = 0;
           }
       }
 
@@ -504,6 +411,7 @@ const razorpayPayment = async (req, res) => {
   }
 };
 
+//Razorpay verification
 const verifyRazorpay = async (req, res) => {
   try {
       const { order_id, payment_id, signature } = req.body;
@@ -611,7 +519,7 @@ const verifyRazorpay = async (req, res) => {
   }
 };
 
-
+//Pending order
 const savePendingOrder = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -716,7 +624,7 @@ const savePendingOrder = async (req, res) => {
   }
 };
 
-
+//Placing order
 const placeOrder = async (req, res) => {
   try {
       const userId = req.session.user;
@@ -845,7 +753,7 @@ const placeOrder = async (req, res) => {
   }
 };
 
-
+//User wallet
 const getUserWalletBalance = async (req, res) => {
   //console.log("1")
   try {
@@ -868,6 +776,7 @@ const getUserWalletBalance = async (req, res) => {
   }
 };
 
+//Wallet amount deduction
 const deductWalletBalance = async (req, res) => {
   try {
     const userId = req.session.user;

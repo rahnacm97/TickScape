@@ -152,52 +152,47 @@
           </tr>
         </thead>
         <tbody>
-          <% if(orders.length > 0){%>
-          <% orders.forEach((order,index) => { %>
-            <tr id="order-<%= order._id %>">
-              <td class="text-center"><%= (currentPage - 1) * limit + index + 1 %></td>
-              <td><%= order.userId.fname %> <%= order.userId.lname %></td>
-              <td><%= order.orderId %></td>
-              <td>
-                <%= order.totalPrice %>
-              </td>
-              <td>
-                <%= order.orderedItems.length > 0 ? order.orderedItems[0].returnReason : 'N/A' %>
-              </td>
-              <td>
-                <% if (order.orderedItems.length > 0 && order.orderedItems[0].returnRequestedDate) { %>
-                  <%= new Date(order.orderedItems[0].returnRequestedDate).toLocaleDateString() %>
-                <% } else { %>
-                  N/A
+          <% if (orders.length > 0) { %>
+            <% orders.forEach((order, index) => { %>
+              <% order.orderedItems.forEach((item) => { %>
+                <% if (item.orderStatus === "Return request") { %>
+                  <tr id="order-<%= order._id %>-item-<%= item._id %>">
+                    <% 
+                      let productId = String(item.productId._id).replace(/'/g, "\\'");
+                      let orderId = String(order._id).replace(/'/g, "\\'"); 
+                    %>
+                    <td class="text-center"><%= (currentPage - 1) * limit + index + 1 %></td>
+                    <td><%= order.userId.fname %> <%= order.userId.lname %></td>
+                    <td><%= order.orderId %></td>
+                    <td><%= item.price %></td>
+                    <td><%= item.returnReason || 'N/A' %></td>
+                    <td>
+                      <% if (item.returnRequestedDate) { %>
+                        <%= new Date(item.returnRequestedDate).toLocaleDateString() %>
+                      <% } else { %>
+                        N/A
+                      <% } %>
+                    </td>
+                    <td><strong><%= order.status %></strong></td>
+                    <td>
+                      <button class="btn btn-success approve-order mb-2"
+                          onclick="confirmApprove('<%= orderId %>', '<%= productId %>')">
+                          Approve
+                      </button>
+                      <button class="btn btn-danger reject-order mb-2" 
+                          onclick="confirmReject('<%= orderId %>', '<%= productId %>')">
+                          Reject
+                      </button>
+                    </td>
+                  </tr>
                 <% } %>
-              </td>
-              <td><strong><%= order.status %></strong></td>
-              <!-- <td>₹<%= order.totalPrice.toFixed(2) %></td> -->
-              <td>
-                <% let productId = (order.orderedItems.length > 0 && order.orderedItems[0].productId._id) ? String(order.orderedItems[0].productId._id).replace(/'/g, "\\'") : ''; %>
-                <% let orderId = String(order._id).replace(/'/g, "\\'"); %>
-                
-                    <button class="btn btn-success approve-order mb-2"
-                        onclick="confirmApprove('<%= orderId %>', '<%= productId %>')">
-                        Approve
-                    </button>          
-
-                <button class="btn btn-danger reject-order mb-2" 
-                    onclick="confirmReject('<%= orderId %>', '<%= productId %>')">
-                    Reject
-                </button>
-
-            </td>
+              <% }) %>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="8"><p>No request found</p></td> 
             </tr>
-        <% }) %>
-
-        <% } else { %>
-          <tr>
-            <p>No request found</p>
-          </tr>
-           
-        <%}%>
-
+          <% } %>
         </tbody>
       </table>
 

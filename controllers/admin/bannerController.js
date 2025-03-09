@@ -2,7 +2,7 @@ const Banner = require('../../models/bannerSchema');
 const path = require('path');
 const fs = require('fs');
 
-
+//Banner loading
 const getBanner = async (req, res) => {
     try {
         

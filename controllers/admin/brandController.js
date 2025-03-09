@@ -3,6 +3,8 @@ const Brand = require('../../models/brandSchema');
 const Product = require('../../models/productSchema');
 const CustomError = require('../../utils/customError');
 
+
+//brand page loading
 const getBrandsPage = async (req, res) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
@@ -46,7 +48,7 @@ const getBrandsPage = async (req, res) => {
     }
 };
 
-
+//Add brand page get
 const getAddBrand = async(req,res) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
@@ -58,6 +60,7 @@ const getAddBrand = async(req,res) => {
     }
 }
 
+//Brand adding
 const addBrand = async(req,res) => {
     try {
         const brand = req.body.name;
@@ -76,6 +79,7 @@ const addBrand = async(req,res) => {
     }
 }
 
+//Block the brand
 const blockBrand = async (req, res) => {
     try {
         const { id } = req.query;
@@ -90,6 +94,7 @@ const blockBrand = async (req, res) => {
     }
 };
 
+//Unbloak brand
 const unBlockBrand = async (req, res) => {
     try {
         const { id } = req.query;
@@ -104,6 +109,7 @@ const unBlockBrand = async (req, res) => {
     }
 };
 
+//Delete brand
 const deleteBrand = async (req, res) => {
     try {
         const { id } = req.query;
@@ -118,6 +124,8 @@ const deleteBrand = async (req, res) => {
     }
 };
 
+
+//Edit brand page loading
 const getEditBrand = async (req, res) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
@@ -137,6 +145,7 @@ const getEditBrand = async (req, res) => {
     }
 };
 
+//brand edit
 const editBrand = async (req, res, next) => {
     try {
         const id = req.params.id.trim(); 
@@ -186,8 +195,7 @@ const editBrand = async (req, res, next) => {
     }
 };
 
-
-
+//Delete image of brand
 const deleteSingleImage = async(req,res) => {
     try {
         console.log('halooo');

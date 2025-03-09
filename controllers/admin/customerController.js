@@ -1,5 +1,6 @@
 const User = require('../../models/userSchema');
 
+//Load user details
 const customerInfo = async (req, res) => {
     try {
         const search = req.query.search || "";
@@ -34,6 +35,7 @@ const customerInfo = async (req, res) => {
     }
 };
 
+//Block customer
 const customerBlocked = async (req,res) => {
     try {
         let id = req.query.id;
@@ -44,6 +46,7 @@ const customerBlocked = async (req,res) => {
     }
 }
 
+//Unblock user
 const customerunBlocked = async (req,res) => {
     try {
         let id = req.query.id;

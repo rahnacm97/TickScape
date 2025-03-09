@@ -2,6 +2,7 @@ const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const CustomError = require('../../utils/customError');
 
+//Load category list
 const categoryInfo = async (req,res) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
@@ -34,6 +35,7 @@ const categoryInfo = async (req,res) => {
     }
 }
 
+//Add category page
 const getAddCategory = async (req,res) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
@@ -46,6 +48,7 @@ const getAddCategory = async (req,res) => {
     }
 }
 
+//Category adding
 const addCategory = async (req, res,next) => {
     try {
         const { name, description } = req.body;
@@ -69,7 +72,7 @@ const addCategory = async (req, res,next) => {
     }
 };
 
-
+//Adding category offer
 const addCategoryOffer = async (req, res, next) => {
     try {
         const percentage = parseInt(req.body.percentage);
@@ -116,11 +119,11 @@ const addCategoryOffer = async (req, res, next) => {
     }
 };
 
+//Removing category offer
 const removeCategoryOffer = async (req, res, next) => {
     try {
         const { categoryId } = req.body;
 
-  
         if (!categoryId) {
             return res.status(400).json({ status: false, message: "Category ID is required." });
         }
@@ -161,6 +164,7 @@ const removeCategoryOffer = async (req, res, next) => {
     }
 };
 
+//Listing category
 const getListCategory = async(req,res,next) => {
     try {
         let id = req.query.id;
@@ -171,6 +175,7 @@ const getListCategory = async(req,res,next) => {
     }
 }
 
+//Unlisting category
 const getUnlistCategory = async(req,res,next) => {
     try {
         let id = req.query.id;
@@ -181,6 +186,7 @@ const getUnlistCategory = async(req,res,next) => {
     }
 }
 
+//Edit category page
 const getEditCategory = async (req,res,next) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
@@ -194,6 +200,7 @@ const getEditCategory = async (req,res,next) => {
     }
 }
 
+//Editing category
 const editCategory = async (req, res,next) => {
     try {
         const id = req.params.id;

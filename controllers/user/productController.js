@@ -4,6 +4,7 @@ const Category = require('../../models/categorySchema');
 const Review = require('../../models/reviewSchema');
 const Offer = require('../../models/offerSchema');
 
+//Product details
 const productDetails = async (req, res) => {
     try {
         const userId = req.session.user;

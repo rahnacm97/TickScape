@@ -205,7 +205,7 @@ button:hover {
                 </svg>
               </div>
               <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Discount Price: <span class="user-count" id="totalDiscount">₹<%= orders.totalDiscountPrice %></span>
+                Total Discount Price: <span class="user-count" id="totalDiscount">₹<%= orders.totalDiscountPrice.toFixed(2) %></span>
               </p>
             </div>
           
@@ -581,7 +581,7 @@ function updateCardForm(result) {
     document.getElementById('totalOrder').textContent = result.totalOrder || 0;
     document.getElementById('itemSold').textContent = result.itemSold || 0;
     document.getElementById('totalCouponUsers').textContent = result.totalCouponUsers || 0;
-    document.getElementById('totalDiscount').textContent = `₹${result.totalDiscountPrice || 0}`;
+    document.getElementById('totalDiscount').textContent = `₹${result.totalDiscountPrice.toFixed(2) || 0}`;
     document.getElementById('processingOrders').textContent = result.processingOrders || 0;
 
 }
