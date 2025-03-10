@@ -10,8 +10,10 @@ const cartController = require("../controllers/user/cartController");
 const checkoutController = require("../controllers/user/checkoutController");
 const orderController = require("../controllers/user/orderController");
 const wishlistController = require('../controllers/user/wishlistController');
+const walletController = require("../controllers/user/walletController");
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
+const { profile } = require('console');
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -70,7 +72,12 @@ router.post('/change-password',userAuth,profileController.changePasswordValid);
 router.post('/verify-changepassword-otp',userAuth,profileController.verifyChangePassOtp);
 router.get('/edit-profile',userAuth,profileController.geteditProfile);
 router.put('/edit-profile',userAuth,profileController.editProfile);
-router.get('/wallet-history',userAuth,profileController.walletHistory);
+
+//Wallet Management
+router.post('/add-money', userAuth,walletController.addMoney);
+router.post('/verify-payment', userAuth,walletController.verifyWalletPayment);
+router.get('/get-user-profile', userAuth,walletController.getUserProfile);
+router.get('/wallet-history',userAuth,walletController.walletHistory);
 
 // Address Management
 router.get('/address',userAuth,profileController.getAddress); 

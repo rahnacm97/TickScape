@@ -52,7 +52,7 @@ const userSchema = new Schema({
         date: { type: Date, default: Date.now },
         reason: { 
             type: String, 
-            enum: ["Order Payment", "Refund", "Referral"],
+            enum: ["Order Payment", "Refund", "Referral","User Added"],
             required: true 
         },
     }],

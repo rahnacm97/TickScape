@@ -6,6 +6,10 @@ const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const crypto = require('crypto');
+const Razorpay = require("razorpay");
+const fs = require("fs");
+const path = require("path");
 
 //Otp generation
 function generateOtp(){
@@ -215,33 +219,7 @@ const userProfile = async (req, res) => {
     }
 };
 
-//Wallet history
-const walletHistory = async(req,res) => {
-    try {
-        const userId = req.session.user;
-        const userData = await User.findById(userId);
-    
-        const sortedWallet = userData.wallet.sort((a, b) => {
-          return new Date(b.date) - new Date(a.date); 
-        });
-    
-        const page = parseInt(req.query.page) || 1;
-        const limit = 5;
-        const skip = (page - 1) * limit;
-    
-        const totalEntries = sortedWallet.length;
-        const paginatedWallet = sortedWallet.slice(skip, skip + limit);
-    
-        res.json({
-          walletHistory: paginatedWallet,
-          currentPage: page,
-          totalPages: Math.ceil(totalEntries / limit),
-        });
-      } catch (error) {
-        console.error("Error retrieving wallet history", error);
-        res.status(500).json({ error: "Failed to load wallet history" });
-      }
-}
+
 
 //Email changing
 const changeEmail = async(req,res) => {
@@ -649,5 +627,4 @@ module.exports = {
     deleteAddress,
     geteditProfile,
     editProfile,
-    walletHistory
 }

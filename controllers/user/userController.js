@@ -54,7 +54,8 @@ const loadHomePage = async(req,res,next) => {
     }catch(err){
         console.log("Home Page Not Found");
         //res.status(500).send("Server Error");
-        next(new CustomError(500, "Internal Server Error"))
+        //next(new CustomError(500, "Internal Server Error"))
+        res.render('login');
     }
 }
 
