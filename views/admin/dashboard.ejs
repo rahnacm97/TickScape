@@ -393,7 +393,7 @@ button:hover {
     <input type="date" id="endDate" name="endDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
   </div>
 
-  <div class="grid mb-8">
+  <div class="grid mb-8 gap-6 mt-4">
     <!-- Line Chart -->
     <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden mb-4">
       <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Trend</h4>
@@ -401,12 +401,20 @@ button:hover {
         <canvas id="lineChart"></canvas>
       </div>
     </div>
+</div>
 
+    <div class="grid mb-8 gap-6 md:grid-cols-2 mt-4">
     <!-- Pie Chart -->
     <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
       <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Distribution</h4>
       <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
         <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
+      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales by Period</h4>
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="barChart"></canvas>
       </div>
     </div>
   </div>
@@ -602,11 +610,13 @@ function getStatusClass(status) {
 
 
 let lineChart = null;
-    let pieChart = null;
+let pieChart = null;
+let barChart = null;
 
     async function updateCharts() {
       const lineCtx = document.getElementById('lineChart').getContext('2d');
       const pieCtx = document.getElementById('pieChart').getContext('2d');
+      const barCtx = document.getElementById('barChart').getContext('2d');
       const filter = document.getElementById('filter').value;
       let url = `/admin/sales-data?filter=${filter}`;
 
@@ -633,6 +643,7 @@ let lineChart = null;
 
         if (lineChart) lineChart.destroy();
         if (pieChart) pieChart.destroy();
+        if (barChart) barChart.destroy();
 
         lineChart = new Chart(lineCtx, {
           type: 'line',
@@ -699,11 +710,45 @@ let lineChart = null;
             }
           }
         });
-      } catch (error) {
-        console.error("Error loading chart data:", error);
-        alert("Failed to load chart data. Please try again.");
+
+    barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Sales Amount',
+          data: data.values,
+          backgroundColor: 'rgba(75, 192, 192, 0.8)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Sales Amount (₹)' } },
+          x: { title: { display: true, text: 'Period' } }
+        },
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function(context) {
+                return `₹${context.raw.toFixed(2)}`;
+              }
+            }
+          }
+        }
       }
-    }
+    });
+
+  } catch (error) {
+    console.error("Error loading chart data:", error);
+    alert("Failed to load chart data. Please try again.");
+  }
+}
 
     const debounce = (func, wait) => {
       let timeout;

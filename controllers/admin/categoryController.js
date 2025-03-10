@@ -31,7 +31,8 @@ const categoryInfo = async (req,res) => {
         }); 
     }catch(error){
         console.error(error);
-        res.redirect('/pageerror');
+        // res.redirect('/pageerror');
+        next(error instanceof CustomError ? error : new CustomError(500, 'Failed to load categories'));
     }
 }
 
@@ -40,11 +41,11 @@ const getAddCategory = async (req,res) => {
     if(!req.session.admin){
         res.redirect('/admin/login');
     }
-    try {
-        
+    try {      
         res.render('add-category');
     } catch (error) {
-        res.redirect('/pageerror');
+        //res.redirect('/pageerror');
+        next(error instanceof CustomError ? error : new CustomError(500, 'Failed to load add category page'));
     }
 }
 
@@ -52,9 +53,15 @@ const getAddCategory = async (req,res) => {
 const addCategory = async (req, res,next) => {
     try {
         const { name, description } = req.body;
+
+        if (!name || !description) {
+            throw new CustomError(400, 'Name and description are required');
+        }
+
         const trimmedName = name.trim().toUpperCase();
         
         const existingCategory = await Category.findOne({ name: trimmedName });
+
         if (existingCategory) {
             next(new CustomError(400, "Category already exists"))
         }
@@ -68,7 +75,8 @@ const addCategory = async (req, res,next) => {
 
         return res.json({ message: "Category added successfully" });
     } catch (err) {
-        next(new CustomError(err.statusCode, err.message))
+        //next(new CustomError(err.statusCode, err.message))
+        next(err instanceof CustomError ? err : new CustomError(500, 'Failed to add category'));
     }
 };
 
@@ -78,11 +86,16 @@ const addCategoryOffer = async (req, res, next) => {
         const percentage = parseInt(req.body.percentage);
         const categoryId = req.body.categoryId;
 
+        if (percentage < 0 || percentage > 100) {
+            throw new CustomError(400, 'Percentage must be between 0 and 100');
+        }
+        
         //console.log("Received request:", { categoryId, percentage });
 
         const category = await Category.findById(categoryId);
         if (!category) {
-            return res.status(404).json({ status: false, message: "Category Not Found" });
+            //return res.status(404).json({ status: false, message: "Category Not Found" });
+            throw new CustomError(404, 'Category not found');
         }
 
         console.log("Updating category with offer...");
@@ -115,7 +128,8 @@ const addCategoryOffer = async (req, res, next) => {
 
     } catch (error) {
         console.error("Error in addCategoryOffer:", error);
-        res.status(500).json({ status: false, message: "Internal Server Error" });
+        //res.status(500).json({ status: false, message: "Internal Server Error" });
+        next(error instanceof CustomError ? error : new CustomError(500, 'Failed to apply category offer'));
     }
 };
 
@@ -125,18 +139,21 @@ const removeCategoryOffer = async (req, res, next) => {
         const { categoryId } = req.body;
 
         if (!categoryId) {
-            return res.status(400).json({ status: false, message: "Category ID is required." });
+           // return res.status(400).json({ status: false, message: "Category ID is required." });
+           throw new CustomError(400, 'Category ID is required');
         }
 
         const category = await Category.findById(categoryId);
 
         if (!category) {
-            return res.status(404).json({ status: false, message: "Category not found." });
+            //return res.status(404).json({ status: false, message: "Category not found." });
+            throw new CustomError(404, 'Category not found');
         }
 
         
         if (category.categoryOffer === 0) {
-            return res.json({ status: false, message: "No active offer to remove." });
+            //return res.json({ status: false, message: "No active offer to remove." });
+            throw new CustomError(400, 'No active offer to remove');
         }
 
         const offerAmount = category.categoryOffer; 
@@ -160,7 +177,8 @@ const removeCategoryOffer = async (req, res, next) => {
 
     } catch (error) {
         console.error("Error removing category offer:", error);
-        res.status(500).json({ status: false, message: "Internal Server Error" });
+        //res.status(500).json({ status: false, message: "Internal Server Error" });
+        next(error instanceof CustomError ? error : new CustomError(500, 'Failed to remove category offer'));
     }
 };
 
@@ -168,6 +186,9 @@ const removeCategoryOffer = async (req, res, next) => {
 const getListCategory = async(req,res,next) => {
     try {
         let id = req.query.id;
+        if (!id) {
+            throw new CustomError(400, 'Category ID is required');
+        }
         await Category.updateOne({_id:id},{$set:{isListed:false}});
         res.redirect('/admin/category');
     } catch (error) {
@@ -179,6 +200,9 @@ const getListCategory = async(req,res,next) => {
 const getUnlistCategory = async(req,res,next) => {
     try {
         let id = req.query.id;
+        if (!id) {
+            throw new CustomError(400, 'Category ID is required');
+        }
         await Category.updateOne({_id:id},{$set:{isListed:true}});
         res.redirect('/admin/category');
     } catch (error) {
@@ -196,7 +220,8 @@ const getEditCategory = async (req,res,next) => {
         const category = await Category.findOne({_id:id});
         res.render('edit-category',{category:category});
     } catch (error) {
-        res.redirect('/pageerror');
+        //res.redirect('/pageerror');
+        next(error instanceof CustomError ? error : new CustomError(500, 'Failed to load edit category page'));
     }
 }
 

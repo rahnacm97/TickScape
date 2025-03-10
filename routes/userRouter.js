@@ -21,7 +21,6 @@ const razorpay = new Razorpay({
 router.get('/pageNotFound',userController.pageNotFound);
 
 //SignUp Management
-
 router.get('/signup',userController.loadSignupPage);
 router.post('/signup',userController.signup);
 router.post('/verify-otp',userController.verifyOtp);

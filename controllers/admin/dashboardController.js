@@ -24,7 +24,7 @@ const loadDashboard = async (req, res) => {
       let page = parseInt(req.query.page) || 1;
       let limit = 10;
       let skip = (page - 1) * limit;
-      const filterType = req.query.filterType || "daily"; 
+      const filterType = req.query.filterType || "daily";
 
       let startDate, endDate;
       const now = new Date();
@@ -38,7 +38,7 @@ const loadDashboard = async (req, res) => {
           break;
         case "weekly":
           startDate = new Date(now);
-          startDate.setDate(now.getDate() - 6); 
+          startDate.setDate(now.getDate() - 6);
           startDate.setHours(0, 0, 0, 0);
           endDate = new Date(now);
           endDate.setHours(23, 59, 59, 999);
@@ -64,11 +64,12 @@ const loadDashboard = async (req, res) => {
       const totalSales = await Order.aggregate([
         { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
         { $unwind: "$orderedItems" },
-        { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+        { $match: { "orderedItems.orderStatus": { $nin: ["Cancelled", "Returned"] } } }, // Exclude cancelled/returned items
         {
           $group: {
             _id: "$_id",
-            finalAmount: { $first: "$finalAmount" },
+            activeAmount: { $sum: { $multiply: ["$orderedItems.price", "$orderedItems.quantity"] } },
+            shipping: { $first: "$shipping" },
             discount: { $first: "$discount" },
             quantity: { $sum: "$orderedItems.quantity" }
           }
@@ -76,10 +77,26 @@ const loadDashboard = async (req, res) => {
         {
           $group: {
             _id: null,
-            totalAmount: { $sum: "$finalAmount" },
+            totalBaseAmount: { $sum: "$activeAmount" },
+            totalShipping: { $sum: "$shipping" },
+            totalDiscount: { $sum: "$discount" },
             totalOrder: { $sum: 1 },
-            totalDiscountPrice: { $sum: "$discount" },
             itemSold: { $sum: "$quantity" }
+          }
+        },
+        {
+          $project: {
+            totalAmount: {
+              $add: [
+                "$totalBaseAmount",
+                { $multiply: ["$totalBaseAmount", 0.18] }, // 18% GST
+                "$totalShipping",
+                { $multiply: ["$totalDiscount", -1] } // Subtract discount
+              ]
+            },
+            totalOrder: 1,
+            totalDiscountPrice: "$totalDiscount",
+            itemSold: 1
           }
         }
       ]);
@@ -192,7 +209,7 @@ const salesReport = async (req, res) => {
         break;
       case "weekly":
         startDate = new Date(now);
-        startDate.setDate(now.getDate() - 6); // Last 7 days
+        startDate.setDate(now.getDate() - 6);
         startDate.setHours(0, 0, 0, 0);
         endDate = new Date(now);
         endDate.setHours(23, 59, 59, 999);
@@ -220,11 +237,12 @@ const salesReport = async (req, res) => {
     const totalSales = await Order.aggregate([
       { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
       { $unwind: "$orderedItems" },
-      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+      { $match: { "orderedItems.orderStatus": { $nin: ["Cancelled", "Returned"] } } },
       {
         $group: {
           _id: "$_id",
-          finalAmount: { $first: "$finalAmount" },
+          activeAmount: { $sum: { $multiply: ["$orderedItems.price", "$orderedItems.quantity"] } },
+          shipping: { $first: "$shipping" },
           discount: { $first: "$discount" },
           quantity: { $sum: "$orderedItems.quantity" }
         }
@@ -232,18 +250,38 @@ const salesReport = async (req, res) => {
       {
         $group: {
           _id: null,
-          totalAmount: { $sum: "$finalAmount" },
+          totalBaseAmount: { $sum: "$activeAmount" },
+          totalShipping: { $sum: "$shipping" },
+          totalDiscount: { $sum: "$discount" },
           totalOrder: { $sum: 1 },
-          totalDiscountPrice: { $sum: "$discount" },
-          itemSold: { $sum: "$quantity" },
-          totalCouponDiscount: { $sum: "$couponDiscount" || 0 }
+          itemSold: { $sum: "$quantity" }
+        }
+      },
+      {
+        $project: {
+          totalAmount: {
+            $add: [
+              "$totalBaseAmount",
+              { $multiply: ["$totalBaseAmount", 0.18] },
+              "$totalShipping",
+              { $multiply: ["$totalDiscount", -1] }
+            ]
+          },
+          totalOrder: 1,
+          totalDiscountPrice: "$totalDiscount",
+          itemSold: 1,
+          totalCouponDiscount: "$totalDiscount" // Adjust if couponDiscount is a separate field
         }
       }
     ]);
 
-    const salesData = totalSales.length
-      ? totalSales[0]
-      : { totalAmount: 0, totalOrder: 0, totalDiscountPrice: 0, itemSold: 0, totalCouponDiscount: 0 };
+    const salesData = totalSales[0] || {
+      totalAmount: 0,
+      totalOrder: 0,
+      totalDiscountPrice: 0,
+      itemSold: 0,
+      totalCouponDiscount: 0
+    };
 
     const processingOrders = await Order.countDocuments({ status: "Order Placed", ...query });
 
@@ -287,7 +325,7 @@ const Chart = async (req, res) => {
     if (!filter) filter = "daily";
 
     let matchStage = {};
-    const now = new Date(); 
+    const now = new Date();
 
     switch (filter) {
       case "yearly":
@@ -309,7 +347,7 @@ const Chart = async (req, res) => {
         break;
       case "weekly":
         const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - 6); 
+        startOfWeek.setDate(now.getDate() - 6);
         startOfWeek.setHours(0, 0, 0, 0);
         const endOfWeek = new Date(now);
         endOfWeek.setHours(23, 59, 59, 999);
@@ -349,18 +387,36 @@ const Chart = async (req, res) => {
     const salesData = await Order.aggregate([
       { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...matchStage } },
       { $unwind: "$orderedItems" },
-      { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+      { $match: { "orderedItems.orderStatus": { $nin: ["Cancelled", "Returned"] } } }, 
       {
         $group: {
-          _id: "$_id",
-          createdOn: { $first: "$createdOn" },
-          finalAmount: { $first: "$finalAmount" }
+          _id: {
+            date: { $dateToString: { format: filter === "yearly" ? "%Y-%m" : "%Y-%m-%d", date: "$createdOn" } },
+            orderId: "$_id"
+          },
+          activeAmount: { $sum: { $multiply: ["$orderedItems.price", "$orderedItems.quantity"] } },
+          shipping: { $first: "$shipping" },
+          discount: { $first: "$discount" }
         }
       },
       {
         $group: {
-          _id: { $dateToString: { format: filter === "yearly" ? "%Y-%m" : "%Y-%m-%d", date: "$createdOn" } },
-          totalSales: { $sum: "$finalAmount" }
+          _id: "$_id.date",
+          totalBaseAmount: { $sum: "$activeAmount" },
+          totalShipping: { $sum: "$shipping" },
+          totalDiscount: { $sum: "$discount" }
+        }
+      },
+      {
+        $project: {
+          totalSales: {
+            $add: [
+              "$totalBaseAmount",
+              { $multiply: ["$totalBaseAmount", 0.18] }, 
+              "$totalShipping",
+              { $multiply: ["$totalDiscount", -1] }
+            ]
+          }
         }
       },
       { $sort: { _id: 1 } }

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const User = require('../../models/userSchema');
+const Cart = require('../../models/cartSchema');
 const Brand = require('../../models/brandSchema');
 const CustomError = require('../../utils/customError');
 const fs = require('fs');
@@ -148,6 +149,10 @@ const addProductOffer = async (req, res, next) => {
 
         console.log(offerAmount);
 
+        if (!productId || !offerAmount) {
+            throw new CustomError(400, 'Product ID and offer amount are required');
+        }
+
         const discountAmount = parseFloat(offerAmount);
         if (isNaN(discountAmount) || discountAmount < 0) {
             return res.status(400).json({ status: false, message: "Invalid input: offerAmount must be a positive number." });
@@ -159,8 +164,13 @@ const addProductOffer = async (req, res, next) => {
             return res.status(404).json({ status: false, message: "Product not found." });
         }
 
+        if (!findProduct.regularPrice || findProduct.regularPrice <= 0) {
+            throw new CustomError(400, 'Product regular price must be a positive number');
+        }
+
         if (discountAmount > findProduct.regularPrice) {
-            return res.status(400).json({ status: false, message: "Offer amount cannot exceed the regular price." });
+           // return res.status(400).json({ status: false, message: "Offer amount cannot exceed the regular price." });
+           throw new CustomError(400, 'Offer amount cannot exceed the regular price');
         }
 
         findProduct.salePrice = findProduct.regularPrice - discountAmount;
@@ -171,7 +181,8 @@ const addProductOffer = async (req, res, next) => {
         res.json({ status: true, message: "Offer applied successfully." });
     } catch (error) {
         console.error("Error applying product offer:", error);
-        return res.status(500).json({ status: false, message: "Internal Server Error" });
+        //return res.status(500).json({ status: false, message: "Internal Server Error" });
+        next(error instanceof CustomError ? error : new CustomError(500, 'Failed to apply product offer'));
     }
 };
 
@@ -207,6 +218,18 @@ const blockProduct = async (req, res,next) => {
         let id = req.query.id.trim();
         console.log("Blocking product ID:", id);
         await Product.updateOne({ _id: id }, { $set: { isBlocked: true } });
+
+        await User.updateMany(
+            { wishlist: id },
+            { $pull: { wishlist: id } }
+          );
+      
+          
+          await Cart.updateMany(
+            { "items.productId": id },
+            { $pull: { items: { productId: id } } }
+          );
+
         console.log("Blocked product successfully");
         res.redirect("/admin/products");
     } catch (error) {

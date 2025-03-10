@@ -562,7 +562,16 @@ hr {
             <% } else {%>
               <span style="color: rgb(6, 168, 6);">Delivered</span>
               <%}%>
-              </div>              
+              </div>    
+              
+              <div class="order-detail">
+                <span>Refund Status:</span>
+                <% if (order.hasRefund) { %>
+                  <span style="color: #ff9800;">Refunded: ₹<%= order.refundAmount.toFixed(2) %></span>
+                <% } else { %>
+                  <span style="color: #757575;">No Refund</span>
+                <% } %>
+              </div>
             
               <div class="order-detail">          
                     <span>Deliver To: <%= address.name %></span>           

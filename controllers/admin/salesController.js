@@ -58,11 +58,12 @@ const fetchSalesData = async (filterType = "daily", startDatee, endDatee, page =
   const totalSales = await Order.aggregate([
     { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...query } },
     { $unwind: "$orderedItems" },
-    { $match: { "orderedItems.orderStatus": { $ne: "Returned" } } },
+    { $match: { "orderedItems.orderStatus": { $nin: ["Cancelled", "Returned"] } } },
     {
       $group: {
-        _id: "$_id", // Group by order first
-        finalAmount: { $first: "$finalAmount" },
+        _id: "$_id",
+        activeAmount: { $sum: { $multiply: ["$orderedItems.price", "$orderedItems.quantity"] } },
+        shipping: { $first: "$shipping" },
         discount: { $first: "$discount" },
         quantity: { $sum: "$orderedItems.quantity" },
         couponDiscount: { $first: "$couponDiscount" || 0 }
@@ -71,11 +72,28 @@ const fetchSalesData = async (filterType = "daily", startDatee, endDatee, page =
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$finalAmount" },
+        totalBaseAmount: { $sum: "$activeAmount" },
+        totalShipping: { $sum: "$shipping" },
+        totalDiscount: { $sum: "$discount" },
         totalOrder: { $sum: 1 },
-        totalDiscountPrice: { $sum: "$discount" },
         itemSold: { $sum: "$quantity" },
         totalCouponDiscount: { $sum: "$couponDiscount" }
+      }
+    },
+    {
+      $project: {
+        totalAmount: {
+          $add: [
+            "$totalBaseAmount",
+            { $multiply: ["$totalBaseAmount", 0.18] },
+            "$totalShipping",
+            { $multiply: ["$totalDiscount", -1] }
+          ]
+        },
+        totalOrder: 1,
+        totalDiscountPrice: "$totalDiscount",
+        itemSold: 1,
+        totalCouponDiscount: 1
       }
     }
   ]);

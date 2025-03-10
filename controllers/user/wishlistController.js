@@ -12,7 +12,7 @@ const loadWishlist = async (req, res) => {
         }
 
         const currentPage = parseInt(req.query.page) || 1;
-        const itemsPerPage = 3;
+        const itemsPerPage = 5;
         const skip = (currentPage - 1) * itemsPerPage; 
 
         const totalProducts = user.wishlist.length;

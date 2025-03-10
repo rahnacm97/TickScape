@@ -244,37 +244,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-  //   async function addOffer(productId){
-  //       const {value:percentage} = await Swal.fire({
-  //           title:'Offer in Percentage',
-  //           input:'number',
-  //           inputLabel:'percentage',
-  //           inputPlaceholder:'%'
-  //       })
-  //       if (percentage) {
-  //           $.ajax({
-  //           url:"/admin/addProductOffer",
-  //           method:'post',
-  //           data:{
-  //               percentage:percentage,
-  //               productId:productId
-  //           },
-  //           success:(response)=>{
-  //               if(response.status===true){
-  //                   location.reload()
-  //                   Swal.fire('Offer Added',"The Offer has been removed",'Success');
-  //               }else{
-  //                   alert("Failed");
-  //               }
-  //           }
-  //       })
-  //   console.log('Amount entered:', amount);
-  // } else {
-  //   console.log('No value entered or the modal was closed');
-  // }
-  //       console.log(amount,"This is the amount");
-      
-  //   }
 
     function removeOffer(productId){
         try {
@@ -313,7 +282,7 @@
         }
     }
 
-  async function addOffer(productId) {
+async function addOffer(productId) {
     const { value: offerAmount } = await Swal.fire({
         title: 'Offer Amount',
         input: 'number',
@@ -333,7 +302,7 @@
             url: "/admin/addProductOffer",
             method: 'post',
             data: {
-                offerAmount: amount, // Now sending amount instead of percentage
+                offerAmount: amount, 
                 productId: productId
             },
             success: (response) => {
@@ -344,7 +313,7 @@
                     Swal.fire('Failed', response.message || "Something went wrong.", 'error');
                 }
             },
-            error: () => {
+            error: (err) => {
                 Swal.fire('Error', 'Could not connect to the server.', 'error');
             }
         });

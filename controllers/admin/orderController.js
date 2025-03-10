@@ -263,7 +263,6 @@ const approveOrder = async (req, res) => {
     const orderedItem = order.orderedItems.find(
       (item) => item.productId.equals(productId) && item.orderStatus === "Return request"
     );
-
     if (!orderedItem) {
       return res.status(404).json({ success: false, message: "Product not found in order or not in Return request status" });
     }
@@ -274,18 +273,13 @@ const approveOrder = async (req, res) => {
     }
 
     let walletCredit = 0;
-    let walletCreditRounded = 0;
-    const originalShipping = 50;
-    const currentShipping = order.shipping;
+    let walletCreditRounded = 0; 
     const gstRate = 18;
     const itemBasePrice = orderedItem.price * orderedItem.quantity;
     const itemPriceWithGST = itemBasePrice + (itemBasePrice * (gstRate / 100));
-    const totalItems = order.orderedItems.length;
     const activeTotalPrice = order.orderedItems
       .filter(item => item.orderStatus !== "Cancelled")
       .reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const returnItemsCount = order.orderedItems.filter(item => item.orderStatus === "Return request").length;
-    const isReturningAllActive = returnItemsCount === order.orderedItems.filter(item => item.orderStatus !== "Cancelled").length;
 
     if (order.paymentMethod !== "Cash on Delivery") {
       walletCredit = itemPriceWithGST;
@@ -293,12 +287,7 @@ const approveOrder = async (req, res) => {
       if (order.couponApplied && order.discount > 0) {
         const discountPerItem = (itemBasePrice / activeTotalPrice) * order.discount;
         walletCredit -= discountPerItem;
-        order.discount = parseFloat((order.discount - discountPerItem).toFixed(2)); // Fix: numeric
       }
-
-      const shippingShare = originalShipping / totalItems;
-      walletCredit += shippingShare;
-      order.shipping = parseFloat((Math.max(0, currentShipping - shippingShare)).toFixed(2)); // Fix: numeric
 
       walletCreditRounded = parseFloat(walletCredit.toFixed(2));
       if (walletCreditRounded > 0) {
@@ -322,13 +311,6 @@ const approveOrder = async (req, res) => {
     );
     console.log("Order item update result:", orderItemUpdateResult);
 
-    // Fix: Update top-level fields and save
-    order.totalPrice -= itemBasePrice;
-    order.gstAmount = order.totalPrice * (gstRate / 100);
-    order.finalAmount = order.totalPrice + order.gstAmount - order.discount + order.shipping;
-    const orderSaveResult = await order.save();
-    console.log("Order save result:", orderSaveResult);
-
     const updatedOrder = await Order.findById(orderId);
     const allItemsReturned = updatedOrder.orderedItems
       .filter(item => item.orderStatus !== "Cancelled")
@@ -348,13 +330,14 @@ const approveOrder = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Order item return request approved successfully!",
-      walletCredit: walletCreditRounded
+      walletCredit: walletCreditRounded 
     });
   } catch (error) {
     console.error("Error approving order:", error);
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 
 module.exports = {
   getOrderListPageAdmin,

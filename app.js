@@ -36,44 +36,6 @@ app.use(session({
     }
 }))
 
-// const userSessionConfig = {
-//     secret: process.env.USER_SESSION_SECRET, 
-//     resave: false,
-//     saveUninitialized: true,
-//     store: MongoStore.create({
-//         mongoUrl: process.env.MONGODB_URI,
-//         collectionName: "user_sessions", 
-//         ttl: 72 * 60 * 60, 
-//     }),
-//     cookie: {
-//         secure: false, 
-//         httpOnly: true,
-//         maxAge: 72 * 60 * 60 * 1000, 
-//     },
-// };
-
-// const adminSessionConfig = {
-//     secret: process.env.ADMIN_SESSION_SECRET, 
-//     resave: false,
-//     saveUninitialized: true,
-//     store: MongoStore.create({
-//         mongoUrl: process.env.MONGODB_URI,
-//         collectionName: "admin_sessions", 
-//         ttl: 72 * 60 * 60,
-//     }),
-//     cookie: {
-//         secure: false, 
-//         httpOnly: true,
-//         maxAge: 72 * 60 * 60 * 1000, 
-//     },
-// };
-
-// // Apply user session middleware to all routes
-// app.use(session(userSessionConfig));
-
-// // Apply admin session middleware to admin routes
-// app.use('/admin', session(adminSessionConfig));
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use((req, res, next) => {
@@ -91,15 +53,50 @@ app.use('/viewOrder/user-assets', express.static(path.join(__dirname, 'public/us
 app.use('/',userRouter);
 app.use('/admin',adminRouter);
 
-
-// Global Error Handling Middleware
-app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    const message = err.message || "Something went wrong! Please try again later.";
-    res.status(statusCode).json({ error: message });
+// 404 Handler for User Routes
+app.use('/', (req, res, next) => {
+    if (!req.path.startsWith('/admin')) { 
+      res.status(404).render("404page", {
+        message: "The page you are looking for does not exist."
+      });
+    } else {
+      next(); 
+    }
+});
+  
+// 404 Handler for Admin Routes 
+app.use('/admin', (req, res) => {
+    res.status(404).render("admin-error", {
+      message: "The requested admin page does not exist."
+    });
 });
 
+// Global Error Handling Middleware
+// app.use((err, req, res, next) => {
+//     const statusCode = err.statusCode || 500;
+//     const message = err.message || "Something went wrong! Please try again later.";
+//     res.status(statusCode).json({ error: message });
+// });
 
+app.use((err, req, res, next) => {
+    const statusCode = err instanceof CustomError ? err.statusCode : 500;
+    const message = err.message || "Something went wrong! Please try again later.";
+
+    console.error(`[${new Date().toISOString()}] ${statusCode} - ${message}`, err.stack);
+
+    if (req.accepts('json')) {
+        res.status(statusCode).json({
+            status: 'error',
+            statusCode,
+            message
+        });
+    } else {
+        const errorUrl = req.path.startsWith('/admin') 
+            ? `/admin/pageerror?status=${statusCode}&message=${encodeURIComponent(message)}`
+            : `/pageNotFound?status=${statusCode}&message=${encodeURIComponent(message)}`;
+        res.redirect(errorUrl);
+    }
+});
 
 const port = process.env.PORT;
 app.listen(port, () => {

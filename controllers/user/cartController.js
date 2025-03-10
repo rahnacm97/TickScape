@@ -18,7 +18,7 @@ const getCartPage = async (req, res, next) => {
 
     const userId = req.session.user;
     const currentPage = parseInt(req.query.page) || 1;
-    const limit = 4;
+    const limit = 5;
     const skip = (currentPage - 1) * limit;
 
     const user = await User.findById({_id:userId});
