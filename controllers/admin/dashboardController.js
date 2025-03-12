@@ -89,9 +89,9 @@ const loadDashboard = async (req, res) => {
             totalAmount: {
               $add: [
                 "$totalBaseAmount",
-                { $multiply: ["$totalBaseAmount", 0.18] }, // 18% GST
+                { $multiply: ["$totalBaseAmount", 0.18] }, 
                 "$totalShipping",
-                { $multiply: ["$totalDiscount", -1] } // Subtract discount
+                { $multiply: ["$totalDiscount", -1] } 
               ]
             },
             totalOrder: 1,
@@ -123,8 +123,7 @@ const loadDashboard = async (req, res) => {
       const totalCount = totalCouponUsers.length > 0 ? totalCouponUsers[0].totalCouponApplied : 0;
 
       const topOrders = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        { $match: query },
+        { $unwind: "$orderedItems" },        
         { $group: { _id: "$orderedItems.productId", orderCount: { $sum: 1 } } },
         { $sort: { orderCount: -1 } },
         { $limit: 10 },
@@ -134,8 +133,7 @@ const loadDashboard = async (req, res) => {
       ]);
 
       const topCategories = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        { $match: query },
+        { $unwind: "$orderedItems" },       
         { $lookup: { from: "products", localField: "orderedItems.productId", foreignField: "_id", as: "productDetails" } },
         { $unwind: "$productDetails" },
         { $group: { _id: "$productDetails.category", categoryCount: { $sum: 1 } } },
@@ -148,7 +146,6 @@ const loadDashboard = async (req, res) => {
 
       const topBrands = await Order.aggregate([
         { $unwind: "$orderedItems" },
-        { $match: query },
         { $lookup: { from: "products", localField: "orderedItems.productId", foreignField: "_id", as: "productDetails" } },
         { $unwind: "$productDetails" },
         { $lookup: { from: "brands", localField: "productDetails.brand", foreignField: "_id", as: "brandDetails" } },
@@ -270,7 +267,7 @@ const salesReport = async (req, res) => {
           totalOrder: 1,
           totalDiscountPrice: "$totalDiscount",
           itemSold: 1,
-          totalCouponDiscount: "$totalDiscount" // Adjust if couponDiscount is a separate field
+          totalCouponDiscount: "$totalDiscount"
         }
       }
     ]);
@@ -464,6 +461,7 @@ const Chart = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error", message: error.message });
   }
 };
+
 
 module.exports = {
     loadDashboard,

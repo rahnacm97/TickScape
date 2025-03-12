@@ -1,28 +1,27 @@
 <%- include("../../views/partials/user/header") %>
 <style>
     .page-header.breadcrumb-wrap {
-    margin-top: 10px;
-    background-color: #ede9ec;
+    background-color: #fff;
     padding: 10px 0;
-}
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  }
 
-.breadcrumb-wrap {
-    padding: 15px 0;
-    background-color: #1e918b;
-    color: #fff;
-}
-
-.breadcrumb a {
-    color: #088178;
+  .breadcrumb a {
+    color: #2874f0;
     text-decoration: none;
-}
+    font-weight: 500;
+  }
 
-.breadcrumb span {
+  .breadcrumb span {
     margin: 0 5px;
-    color: rgb(125, 124, 124);
-}
+    color: #878787;
+  }
+  .btn1 .btn-primary1{
+    background-color: #2874f0;
+    text-transform: capitalize;
+  }
 </style>
-<div class="page-header breadcrumb-wrap mb-3">
+<div class="page-header breadcrumb-wrap mb-3 mt-3">
     <div class="container">
       <div class="breadcrumb">
         <a href="/" rel="nofollow">Home</a>
@@ -58,7 +57,7 @@
                 <div id="err3" class="error-message"></div>
             </div>
                <div class="mb-4">
-                   <button type="submit" class="btn btn-primary w-100">Submit</button>
+                   <button type="submit" class="btn1 btn-primary1 w-100">Submit</button>
                </div>
            </form>
        </div>

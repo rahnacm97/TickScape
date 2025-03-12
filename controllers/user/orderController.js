@@ -118,7 +118,7 @@ const downloadInvoice = async (req, res) => {
         const writeStream = fs.createWriteStream(invoicePath);
         doc.pipe(writeStream);
 
-        // === Header ===
+        // Header
         doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
 
         // Order ID and Date
@@ -132,12 +132,12 @@ const downloadInvoice = async (req, res) => {
         doc.text(`Pincode: ${fullAddress.pincode}`);
         doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
 
-        // === Table ===
+        // Table
         const table = {
             title: "Order Details",
             headers: ["#", "Product Name", "Quantity", "Price", "Total" ,"Status"],
             rows: order.orderedItems.map((item, index) => [
-                index + 1, // # (Index)
+                index + 1, // Index
                 item.productId.productName, // Product Name
                 item.quantity.toString(), // Quantity
                 `₹${item.price}`, // Price
@@ -162,7 +162,7 @@ const downloadInvoice = async (req, res) => {
 
         //console.log('table data',table);
 
-        // === Summary Section ===
+        // Summary Section
         doc.moveDown().fontSize(12);
         const cgst = (order.totalPrice * 0.09).toFixed(2);
         const sgst = (order.totalPrice * 0.09).toFixed(2);
@@ -218,8 +218,11 @@ const getOrders = async (req, res) => {
 
         const user = await User.findById({_id:userId});
 
+        const cart = await Cart.findOne({ userId: req.user._id }); 
+        const cartItemCount = cart && cart.items ? cart.items.length : 0;
+
         const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-        const limit = 4;
+        const limit = 3;
         const skip = (page - 1) * limit;
 
         const [orders, totalOrders] = await Promise.all([
@@ -269,7 +272,8 @@ const getOrders = async (req, res) => {
                 orders: formattedOrders,
                 totalPages: Math.ceil(totalOrders / limit),
                 currentPage: page,
-                user: user
+                user: user,
+                cartItemCount
             });
             //console.log("order",formattedOrders);
 
@@ -431,7 +435,7 @@ const cancelOrder = async (req, res) => {
       // Shipping credit only if all items are cancelled
       const allItemsCancelled = order.orderedItems.every(i => i.orderStatus === "Cancelled" || i._id.toString() === itemId);
       if (allItemsCancelled) {
-        walletCredit += order.shipping; // Use full original shipping amount
+        walletCredit += order.shipping; 
         order.shipping = 0;
       }
 
@@ -495,7 +499,7 @@ const cancelParentOrder = async (req, res) => {
 
     let refundAmount = 0;
     if (order.paymentMethod !== "Cash on Delivery") {
-      refundAmount = order.finalAmount; // Includes shipping as part of original total
+      refundAmount = order.finalAmount; 
     }
 
     const user = await User.findById(order.userId);
@@ -519,7 +523,7 @@ const cancelParentOrder = async (req, res) => {
 
     order.status = "Cancelled";
     order.finalAmount = 0;
-    order.shipping = 0; // Shipping reset as full order is cancelled
+    order.shipping = 0; 
     order.trackingHistory.push({ date: new Date(), status: "Cancelled - " + reason });
 
     await order.save();
@@ -554,7 +558,7 @@ const getWriteReview = async(req,res) => {
     }
 }
 
-//Review
+//Review Submission
 const submitReview = async (req, res) => {
     const { productId, orderId, rating, comment } = req.body;
     const userId = req.session.user;
@@ -604,7 +608,7 @@ const returnOrder = async (req, res) => {
       }
   
       const productItem = order.orderedItems.find(
-        item => item.productId.equals(productId) // Use .equals() for ObjectId
+        item => item.productId.equals(productId)
       );
   
       if (!productItem) {
@@ -690,6 +694,7 @@ const retryPayment = async (req, res) => {
     }
 };
 
+
 //Failed payment verification
 const verifyRetryPayment = async (req, res) => {
   try {
@@ -699,7 +704,6 @@ const verifyRetryPayment = async (req, res) => {
       return res.status(500).json({ success: false, message: "Server error: Payment configuration missing." });
     }
 
-    // Verify payment signature
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(order_id + "|" + payment_id)
@@ -715,7 +719,7 @@ const verifyRetryPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid order or status." });
     }
 
-    // Deduct product quantities
+    // Deducting product quantities
     for (const item of order.orderedItems) {
       const product = await Product.findById(item.productId);
       if (!product) {
@@ -735,10 +739,9 @@ const verifyRetryPayment = async (req, res) => {
     order.paymentInfo.status = "Success";
     order.paymentInfo.paymentId = payment_id;
     order.paymentInfo.lastAttempted = new Date();
-    order.status = "Order Placed"; // Update order status
-    order.trackingHistory.push({ status: "Order Placed", date: new Date() }); // Update tracking history
+    order.status = "Order Placed"; 
+    order.trackingHistory.push({ status: "Order Placed", date: new Date() }); 
 
-    // Save the updated order
     const updatedOrder = await order.save();
 
     res.status(200).json({

@@ -1,393 +1,181 @@
 <%- include("../../views/partials/user/header") %>
+
 <style>
-    /* General Styling */
-body {
-  font-family: Arial, sans-serif;
-  color: #333;
-}
-
-.card-body {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.content-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.order-info-wrap {
-  background-color: #f1f8ff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.order-info-wrap .icontext {
-  display: flex;
-  align-items: center;
-}
-
-.order-info-wrap .icontext .icon {
-  background-color: #f3f6f9;
-  padding: 15px;
-  border-radius: 50%;
-  margin-right: 15px;
-}
-
-.order-info-wrap .icontext .text h6 {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.order-info-wrap .icontext .text p {
-  color: #777;
-}
-
-.table-responsive {
-  margin-top: 20px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 30px;
-}
-
-.table th,
-.table td {
-  padding: 12px;
-  text-align: center;
-  border: 1px solid #ddd;
-}
-
-.table th {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.table tbody tr:nth-child(odd) {
-  background-color: #f9f9f9;
-}
-
-.table .action a {
-  color: #dc3545;
-  text-decoration: none;
-}
-
-.table .action a:hover {
-  color: #bd2130;
-}
-
-.btn1 {
-  background-color: #0e944f;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  max-width: 150px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn1:hover {
-  background-color: #03490f;
-  color: white;
-
-}
-
-.success-message {
-  background-color: #e7f9e7;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 30px;
-  text-align: center;
-  font-size: 18px;
-  color: #28a745;
-}
-
-.order-info p {
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 5px;
-}
-
-@media (max-width: 768px) {
-  .order-info-wrap {
-    padding: 15px;
+  
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5; 
+    color: #333;
   }
 
-  .table-responsive {
+  .content-main {
+    min-height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .confirmation-container {
+    max-width: 600px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    height: fit-content;
+  }
+
+
+  .header {
+    background-color: #1a3c34; 
+    position: relative;
+    color: #fff;
+    height: fit-content;
+  }
+
+  .checkmark {
+    font-size: 50px;
+    margin-bottom: 20px;
+    color: #28a745; 
+  }
+
+  .greeting {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .order-number {
+    display: inline-block;
+    background-color: #f4c430; 
+    color: #333;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
     margin-top: 10px;
   }
 
-  .table td,
-  .table th {
-    padding: 8px;
+  
+  .content {
+    padding: 30px 20px;
+  }
+
+  .success-message {
+    font-size: 18px;
+    color: #28a745;
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
   }
 
   .btn {
-    padding: 6px 12px;
-  }
-}
-
-  .page-header.breadcrumb-wrap {
-    margin-top: 10px;
-    background-color: #ede9ec;
-    padding: 10px 0;
-  }
-
-  .breadcrumb-wrap {
-    padding: 15px 0;
-    background-color: #1e918b;
-    color: #fff;
-  }
-
-  .breadcrumb a {
-    color: #088178;
+    padding: 12px 25px;
+    border-radius: 4px;
     text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .breadcrumb span {
-    margin: 0 5px;
-    color: rgb(125, 124, 124);
+  .btn-primary {
+    background-color: #1a3c34;
+    color: #fff;
+    text-transform: capitalize;
   }
-</style>
-<main>
-    <section class="content-main mb-40">
-      <div class="page-header breadcrumb-wrap">
-        <div class="container">
-          <div class="breadcrumb">
-            <a href="/" rel="nofollow">Home</a>
-            <span></span> <a href="/shop" rel="nofollow">Shop</a> <span></span>
-            <a href="/cart" rel="nofollow">Cart</a> <span></span>
-            Order Details
-          </div>
-        </div>
-      </div>
-  
-      <div class="container content-header">
-        <div class="mt-20">
-          <h2 class="content-title card-title">Order Preview</h2>
-          <p></p>
-          <!-- Success Message -->
-          <div class="success-message">
-            <% if (orders.status === "Order Placed" && orders.paymentInfo.status === "Success") { %>
-              <p>Payment completed, your order is now confirmed!</p>
-            <% } else { %>
-              <p>Your order has been successfully placed!</p>
-            <% } %>
-          </div>
-        </div>
-      </div>
-  
-      <div class="container card-body">
-        <!-- Customer Information -->
-        <div class="row mb-10 mt-10 order-info-wrap background-info">
-          <div class="col-md-4">
-            <article class="icontext align-items-start">
-              <span class="icon icon-sm rounded-circle bg-primary-light">
-                <i class="material-icons text-primary person"></i>
-              </span>
-              <div class="text">
-                <h6 class="mb-1">Customer</h6>
-                <p><%= address.name %></p>
-                <!-- <p><%= orders.address.phone %>, <%= orders.address.altPhone %></p> -->
-              </div>
-            </article>
-          </div>
-          <!-- Order Information -->
-          <div class="col-md-4">
-            <article class="icontext align-items-start">
-              <span class="icon icon-sm rounded-circle bg-primary-light">
-                <i class="text-primary material-icons md-local_shipping"></i>
-              </span>
-              <div class="text">
-                <h6 class="mb-1">Order info</h6>
-                <p class="mb-1">
-                  Pay method: <%= orders.paymentMethod %><br />
-                  Status: <%= orders.status %><br />
-                  GST: ₹<%= orders.gstAmount %> <br />
-                  Shipping Charge: ₹<%= orders.shipping %><br />
-                  Discount: ₹<%= orders.discount %><br />
-                  Grand Total: ₹<%= (orders.finalAmount).toFixed(2) %>
-                </p>
-              </div>
-            </article>
-          </div>
-          <!-- Delivery Information -->
-          <div class="col-md-4">
-            <article class="icontext align-items-start">
-              <span class="icon icon-sm rounded-circle bg-primary-light">
-                <i class="text-primary material-icons md-place"></i>
-              </span>
-              <div class="text">
-                <h4 class="mb-1">Deliver to</h4>
-                <p class="mb-1">
-                  <div>
-                    <p><strong><%= address.addressType %></strong></p>
-                    <p><%= address.name %>, <%= address.city %>, <%= address.state %>, 
-                       <%= address.landMark %> Pincode: <%= address.pincode %> <br />
-                    Phone: <%= address.phone %>, <%= address.altPhone %>
-                    </p>
-                  </div>
-                </p>
-                <% if (orders.paymentMethod !== "Cash on Delivery") { %>
-                  <a href="/download-invoice/<%= orders._id %>" class="btn1 btn-sm">Download Invoice</a>
-                <% } %>
-              </div>
-            </article>
-          </div>
-          <a href="/orders" class="btn1 btn-sm">Go to Orders</a>
-        </div>
-  
-        <!-- Order Details Table -->
-        <div class="row">
-          <div class="col-lg">
-            <div class="table-responsive">
-              <table class="table w-100 ">
-                <thead>
-                  <tr class="text-center">
-                    <th>Sl. No</th>
-                    <th>Product Name</th>
-                    <th>Product Image</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                    <!-- <th>Total</th> -->
-                    <!-- <th>Action</th> -->
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (orders && orders.orderedItems && orders.orderedItems.length > 0){ %>
-                    <% orders.orderedItems.forEach((item, index) => {  %>
-                      <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= item.productId.productName %></td>
-                        <td>
-                          <img src="<%= item.productId.productImage[0] %>" style="height: 7rem; width: 7rem" class="img-xs" />
-                        </td>
-                        <td>₹<%= item.price %></td>
-                        <td><%= item.quantity %></td>
-                        <!-- <td>$<%= orders.finalAmount %></td> -->
-                        <!-- <td>
-                          <a href="#" class="btn btn-sm" onclick="return confirmCancel(this)">
-                            <i class="fi-rs-trash"></i> <i class="fa fa-times-circle"></i>Cancel Order
-                          </a>
-                        </td> -->
-                      </tr>
-                    <% }); %>
-                  <% } else { %>
-                    <p>No orders found.</p>
-                  <% } %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-  
-<script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-<script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-<script src="assets/js/vendors/select2.min.js"></script>
-<script src="assets/js/vendors/perfect-scrollbar.js"></script>
-<script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
-<script src="assets/js/main.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-<script>
-  function handleDropdownChange(selectElement) {
-    var selectedValue = selectElement.value;
-    var orderId = document.getElementById("orderId").value;
+  .btn-primary:hover {
+    background-color: #15322c;
+  }
 
-    if (selectedValue === "cancel") {
-      confirmCancelOrder(orderId);
-    } else if (selectedValue == "returnrequest") {
-      returnRequestOrder(orderId);
+  .btn-secondary {
+    background-color: #308cf4;
+    color: #333;
+    text-transform: capitalize;
+  }
+
+  .btn-secondary:hover {
+    background-color: #e0b31e;
+  }
+
+  
+  @media (max-width: 768px) {
+    .header {
+      padding: 30px 15px;
+    }
+
+    .greeting {
+      font-size: 20px;
+    }
+
+    .order-number {
+      font-size: 14px;
+      padding: 6px 15px;
+    }
+
+    .success-message {
+      font-size: 16px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 14px;
     }
   }
 
-  function confirmCancelOrder(orderId) {
-    Swal.fire({
-      title: "Confirm Cancel Order",
-      text: "Are you sure you want to cancel this order?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, cancel it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("working");
-        cancelOrder(orderId);
-      }
-    });
+  @media (max-width: 576px) {
+    .btn-group {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 250px;
+    }
   }
+</style>
 
-  function cancelOrder(orderId) {
-    $.ajax({
-      url: "/cancelOrder",
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({ orderId: orderId }),
-      success: (response) => {
-        if (response.result.modifiedCount === 1) {
-          window.location.reload();
-        }
-      },
-      error: (error) => {
-        alert(error);
-      },
-    });
-  }
+<main>
+  <section class="content-main">
+    <div class="confirmation-container">
+    
+      <div class="header">
+        <div class="checkmark mt-4">✔</div>
+        <div class="greeting">Hi <%= address.name %>,</div>
+        <div class="greeting">Thank You for Your Order!</div>
+        <div class="order-number mb-4">Order No: #<%= orders.orderId %></div>
+      </div>
 
-  function returnRequestOrder(orderId) {
-    $.ajax({
-      url: "/returnrequestOrder",
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({ orderId: orderId }),
-      success: (response) => {
-        if (response.result.modifiedCount === 1) {
-          window.location.reload();
-        }
-      },
-      error: (error) => {
-        alert(error);
-      },
-    });
-  }
-</script>
+     
+      <div class="content">
+        <div class="success-message">
+          <% if (orders.status === "Order Placed" && orders.paymentInfo.status === "Success") { %>
+            Payment completed, your order is now confirmed!
+          <% } else { %>
+            Your order has been successfully placed!
+          <% } %>
+        </div>
+        <div class="btn-group">
+          <a href="/orders" class="btn btn-primary">Back to Orders</a>
+          <a href="/shop" class="btn btn-secondary">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-
-<script>
-function confirmCancel(element) {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Do you really want to cancel the order?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, cancel it!",
-        cancelButtonText: "No, go back"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            handleConfirm(element);
-        } else {
-            window.location.href = `/orderDetails?orders=${encodedOrders}`; 
-        }
-    });
-}
-
-//const orders = JSON.parse(localStorage.getItem('orders'));   
-</script>
 <%- include("../../views/partials/user/footer") %>

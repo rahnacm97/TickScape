@@ -1,6 +1,5 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-  /* Other Products Section */
   .text-danger {
     color: red;
 }
@@ -29,13 +28,6 @@
   max-width: 1175px;
   margin: 20px auto;
   font-size: 12px;
-
-    /* max-width: 1150px;
-    margin-top: 20px;
-    padding: 15px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); */
 }
 
 h3 {
@@ -45,7 +37,6 @@ h3 {
     color: #333;
 }
 
-/* List Styling */
 .list {
     width: 1100px;
     list-style: none;
@@ -64,7 +55,6 @@ h3 {
     flex-wrap: wrap;
 }
 
-/* Product Image */
 .list li img {
     width: 80px;
     height: 80px;
@@ -73,7 +63,6 @@ h3 {
     border: 1px solid #ddd;
 }
 
-/* Product Details */
 .list li p {
     font-size: 14px;
     margin: 3px 0;
@@ -81,23 +70,21 @@ h3 {
     flex: 1;
 }
 
-/* Bold Labels */
+
 .list li p strong {
     color: #555;
 }
 
-/* Status Colors */
 .text-danger {
     color: red;
     font-weight: bold;
 }
 
 .text-success {
-    color: green;
+    color: rgb(2, 168, 2);
     font-weight: bold;
 }
 
-/* Divider */
 hr {
     border: 0;
     height: 1px;
@@ -111,7 +98,7 @@ hr {
             margin: 0;
             padding: 0;
         }
-      /* General Styling */
+      
 .container1 {
   display: flex;
   align-items: flex-start;
@@ -136,8 +123,6 @@ hr {
   font-size: 12px;
 }
 
-
-/* Image Styling */
 .image.container {
   flex: 1;
   max-width: 400px;
@@ -150,7 +135,6 @@ hr {
   object-fit: cover;
 }
 
-/* Order Info Styling */
 .order-info {
   flex: 2;
   display: flex;
@@ -170,7 +154,6 @@ hr {
   font-size: 16px;
   color: #555;
   display: flex;
-  /* justify-content: space-between; */
   border-bottom: 1px solid #ddd;
   padding: 5px 0;
 }
@@ -180,14 +163,12 @@ hr {
   color: #000;
 }
 
-/* Address Styling */
 .order-detail div {
   margin-top: 5px;
   font-size: 14px;
   color: #333;
 }
 
-/* Buttons */
 .btn1-container {
   display: flex;
   justify-content: center;
@@ -216,7 +197,7 @@ hr {
 .btn-sm:hover {
   background: #c82333;
 }
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .container1 {
     flex-direction: column;
@@ -229,29 +210,24 @@ hr {
   }
 }
 
- .page-header .breadcrumb-wrap {
-    margin-top: 10px;
-    padding: 15px 0;
-  }
-
-  .breadcrumb-wrap {
-    padding: 15px 0;
-    background-color: #1e918b;
-    color: #fff;
+.page-header.breadcrumb-wrap {
+    background-color: #fff;
+    padding: 10px 0;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   }
 
   .breadcrumb a {
-    color: #088178;
+    color: #2874f0;
     text-decoration: none;
+    font-weight: 500;
   }
 
   .breadcrumb span {
     margin: 0 5px;
-    color: rgb(125, 124, 124);
+    color: #878787;
   }
 
 
-/* Status-specific colors */
 .order-placed { color: blue; }
 .processing { color: orange; }
 .cancelled { color: red; }
@@ -276,7 +252,7 @@ hr {
 }
 
 .completed .circle {
-    background-color: green !important;
+    background-color: rgb(3, 180, 3) !important;
     color: white !important;
 }
 
@@ -308,27 +284,24 @@ hr {
   font-size: 12px;
 }
 
-/* Connector Line */
 .tracking-step::before {
   content: "";
   position: absolute;
   width: 100%;
   height: 4px;
-  background-color: #ccc; /* Default gray */
+  background-color: #ccc; 
   top: 50%;
   left: -50%;
   z-index: 1;
   margin-bottom: 20px;
 }
 
-/* Hide line for first step */
 .tracking-step:first-child::before {
   display: none;
 }
 
-/* Change line color when step is completed */
 .tracking-step.completed::before {
-  background-color: green !important; /* Same as the completed circle */
+  background-color:  rgb(3, 180, 3) !important;
 }
 
 .tracking-step small {
@@ -343,57 +316,6 @@ hr {
     font-weight: bold;
 }
 
-/* Modal Background */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  overflow-y: auto; /* Enable vertical scrolling */
-  display: flex;
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-}
-
-/* Modal Content */
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 50%;
-  max-width: 500px; /* Limit max width */
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
-}
-
-/* Close Button */
-.close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-  color: black;
-}
-
-.close:hover {
-  color: red;
-}
-
-/* Make form fields more readable */
-.modal-content input {
-  width: 100%;
-  padding: 8px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Responsive - Fullscreen modal on small screens */
 @media screen and (max-width: 600px) {
   .modal-content {
     width: 90%;
@@ -432,7 +354,7 @@ hr {
 
 <main class="main">
     <section class="pt-10 pb-10">
-        <div class="page-header breadcrumb-wrap" style="background-color: #ede9ec;">
+        <div class="page-header breadcrumb-wrap" style="background-color: #fff;">
           <div class="container">
             <div class="breadcrumb">
               <a href="/" rel="nofollow">Home</a>
@@ -601,7 +523,7 @@ hr {
               <p>
                 <% if (item.productId && item.productId._id) { %>
                   <a href="/viewOrder/<%= order._id %>?productId=<%= item.productId._id %>">
-                    <img src="http://localhost:3000/<%= item.productImage || item.productId.productImage[0] %>" 
+                    <img src="/<%= item.productImage || item.productId.productImage[0] %>" 
                     alt="<%= item.productName || item.productId.productName %>">               
                   </a>
                 <% } %>
@@ -610,7 +532,6 @@ hr {
               <p><strong>Quantity:</strong> <%= item.quantity %></p>
               <p><strong>Price per Item:</strong> ₹<%= item.price %></p>
               
-              <!-- Show status and buttons only if order.status is not "Payment Pending" -->
               <% if (order.status !== "Payment Pending") { %>
                 <p>
                   <strong>Status:</strong> 

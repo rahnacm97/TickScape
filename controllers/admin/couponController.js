@@ -126,8 +126,9 @@ const updateCoupon = async (req, res) => {
                   minimumPrice: parseInt(req.body.minimumPrice),
               }
           },
-          { new: true }
       );
+
+      //console.log(result.modifiedCount);
 
       if (updatedCoupon.modifiedCount > 0) {
           res.send("Coupon updated successfully");

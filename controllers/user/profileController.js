@@ -1,6 +1,7 @@
 const User = require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
 const Order = require('../../models/orderSchema');
+const Cart = require("../../models/cartSchema");
 const CustomError = require('../../utils/customError');
 const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
@@ -194,10 +195,10 @@ const userProfile = async (req, res) => {
         const addressData = await Address.findOne({ userId: userId });
 
         const sortedWallet = userData.wallet.sort((a, b) => {
-            return new Date(b.date) - new Date(a.date); // Descending order
+            return new Date(b.date) - new Date(a.date); 
           });
 
-        // Pagination logic
+        
         const page = parseInt(req.query.page) || 1;
         const limit = 5; 
         const skip = (page - 1) * limit;
@@ -387,6 +388,9 @@ const getAddress = async (req, res) => {
 
         const addressData = await Address.findOne({ userId: userId });
 
+        const cart = await Cart.findOne({ userId: req.user._id }); 
+        const cartItemCount = cart && cart.items ? cart.items.length : 0;
+
         if (!addressData || !addressData.address || addressData.address.length === 0) {
             return res.render('address', {
                 userAddress: null,
@@ -405,7 +409,8 @@ const getAddress = async (req, res) => {
             userAddress: { address: paginatedAddresses },
             currentPage: page,
             totalPages: totalPages,
-            user: user
+            user: user,
+            cartItemCount
         });
 
     } catch (error) {

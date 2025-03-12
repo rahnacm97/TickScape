@@ -49,7 +49,7 @@ const verifyWalletPayment = async (req, res) => {
       .digest('hex');
   
     if (expectedSignature === razorpay_signature) {
-      // Payment is successful, update the user's wallet
+      
       const userId = req.session.user;
       const user = await User.findById(userId);
   
@@ -67,13 +67,11 @@ const verifyWalletPayment = async (req, res) => {
     }
   }
 
-// Add this new route
 const getUserProfile = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         
-        // Return only the necessary fields
         const userProfile = {
             name: userData.fname || "",
             email: userData.email || "",

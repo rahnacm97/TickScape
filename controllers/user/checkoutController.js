@@ -91,18 +91,18 @@ const getCheckout = async (req, res) => {
     if (appliedCoupon) {
       const coupon = await Coupon.findById(appliedCoupon._id);
       if (coupon && total >= coupon.minimumPrice && today <= new Date(coupon.expireOn)) {
-        couponDiscount = Math.min(appliedCoupon.discount, total); // Set discount
+        couponDiscount = Math.min(appliedCoupon.discount, total); 
       } else {
         couponDiscount = 0; // Invalid coupon
       }
     }
 
-    // Ensure discount does not exceed total price
+    // Discount does not exceed total price
     couponDiscount = Math.min(couponDiscount, total);
 
     const razorpayKey = process.env.RAZORPAY_KEY_ID;
 
-    // Calculate final total including GST
+    // Calculating final total including GST
     let finalTotal = total - couponDiscount + gstAmount;
 
     req.session.gstAmount = gstAmount;
@@ -334,7 +334,7 @@ const razorpayPayment = async (req, res) => {
           });
       });
 
-      // Always recalculate finalAmount to ensure consistency
+      // Always recalculate finalAmount 
       let couponDiscount = req.session.couponDiscount || 0;
       let appliedCoupon = req.session.appliedCoupon ? req.session.appliedCoupon._id : null;
 
@@ -396,7 +396,6 @@ const razorpayPayment = async (req, res) => {
           appliedCoupon
       };
 
-      // Update session finalTotal to reflect the correct amount
       req.session.finalTotal = finalAmount;
       await req.session.save();
 
@@ -459,7 +458,7 @@ const verifyRazorpay = async (req, res) => {
         if (req.session.appliedCoupon) {
             couponApplied = true;
             appliedCoupon = req.session.appliedCoupon._id;
-            discount = req.session.appliedCoupon.discount || discount; // Use coupon discount if available
+            discount = req.session.appliedCoupon.discount || discount; 
             console.log("Applied Coupon in verifyRazorpay:", req.session.appliedCoupon);
         }
 
@@ -601,7 +600,6 @@ const savePendingOrder = async (req, res) => {
     // Clear the cart
     await Cart.findOneAndDelete({ userId });
 
-    // Update coupon usage if applied
     if (req.session.appliedCoupon) {
       await Coupon.updateOne(
         { name: req.session.appliedCoupon.name },
@@ -609,7 +607,6 @@ const savePendingOrder = async (req, res) => {
       );
     }
 
-    // Clear session data
     req.session.orderDetails = null;
     req.session.appliedCoupon = null;
 
@@ -784,7 +781,6 @@ const deductWalletBalance = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Ensure wallet array exists
     let walletTransactions = user.wallet || [];
     console.log("walletTransactions1",walletTransactions);
     
@@ -797,10 +793,8 @@ const deductWalletBalance = async (req, res) => {
       return res.status(400).json({ success: false, message: "Insufficient funds" });
     }
 
-    // Deduct amount by adding a negative transaction
     user.wallet.push({ amount: -req.body.amount, date: new Date(), reason: "Order Payment" });
 
-    // Save updated user data
     await user.save();
     console.log(user,"after save")
 
@@ -815,7 +809,6 @@ const deductWalletBalance = async (req, res) => {
 module.exports = {
     checkCart,
     getCheckout,
-    //getCoupon,
     applyCoupon,
     removeCoupon,
     razorpayPayment,
@@ -823,8 +816,6 @@ module.exports = {
     savePendingOrder,
     getUserWalletBalance,
     deductWalletBalance,
-    //walletPayment,
-    //codPayment,
     paymentFailure,
     placeOrder,
 }

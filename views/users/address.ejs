@@ -1,283 +1,467 @@
 <%- include("../../views/partials/user/header") %>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style>
-    .main-container{
-      gap: 20px;
-      padding: 40px;
-      background: #fff;
-      border-radius: 10px;
-      transition: transform 0.2s ease-in-out;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      max-width: 1200px;
-      margin: 30px auto;
-    }
-    
-      .order-card {
-          padding: 20px;
-          border-radius: 10px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .price {
-          font-size: 1.2rem;
-          font-weight: bold;
-          margin-right: 50px;
-          margin-top: 25%;
-        }
-        body {
-          font-family: 'Arial', sans-serif;
-          background-color: #f8f9fa;
-          margin: 0;
-          padding: 0;
-        }
-      
-        .main {
-          padding: 20px 0;
-        }
-      
-        .page-header.breadcrumb-wrap {
-          margin-top: 10px;
-          background-color: #ede9ec;
-          padding: 10px 0;
-      }
-      
-      .breadcrumb-wrap {
-          padding: 15px 0;
-          background-color: #1e918b;
-          color: #fff;
-      }
-      
-      .breadcrumb a {
-          color: #088178;
-          text-decoration: none;
-      }
-      
-      .breadcrumb span {
-          margin: 0 5px;
-          color: rgb(125, 124, 124);
-      }
-      
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-          .dashboard-menu {
-            padding: 10px;
-          }
-      
-          .dashboard-menu .nav-link {
-            font-size: 14px;
-          }
-      
-          .card-header {
-            font-size: 16px;
-          }
-      
-          .btn-small {
-            font-size: 12px;
-          }
-        }
-    
-      
-        .card{
-          border: 1px solid #dee2e6;
-          border-radius: 10px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          background-color: #ffffff;
-          margin-bottom: 20px;
-          transition: transform 0.2s ease-in-out;
-        }
-      
-        .card:hover {
-          transform: scale(1.02);
-        }
-      
-        .card-header {
-          background-color: #007bff;
-          color: #ffffff;
-          font-weight: bold;
-          padding: 15px;
-          border-radius: 10px 10px 0 0;
-          text-align: center;
-        }
-      
-        .card-body {
-          padding: 20px;
-          line-height: 1;
-        }
-      
-        .card-body p {
-          margin: 5px 0;
-        }
-    
-        .text-success{
-            margin-right: 20px;
-        }
-      
-        .d-flex {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 15px;
-        }
-      
-        .pagination{
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-  }
-  
-  .pagination a {
-    padding: 8px 12px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    color: #333;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.2s;
-  }
-  
-  .pagination a:hover {
-    background-color: #1e918b;
-    color: white;
-    transform: scale(1.05);
-  }
-  
-  .pagination .active {
-    background-color: #1e918b;
-    color: white;
-  }
-      .btn-primary {
-        margin-left: 40%;
-    background-color: #067520;
-    border: none;
-    color: #ffffff;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 5px;
-    cursor: pointer;
-    display: inline-block;
-    margin-top: 20px;
-    transition: background-color 0.3s ease-in-out;
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f1f3f6;
+    margin: 0;
+    padding: 0;
   }
 
-  .btn-primary:hover {
-    background-color: #0a4817;
+  .main {
+    padding: 20px 0;
   }
-  .btn-small .delete-btn{
+
+  .page-header.breadcrumb-wrap {
+    background-color: #fff;
+    padding: 10px 0;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); 
+  }
+
+  .breadcrumb a {
+    color: #2874f0; 
     text-decoration: none;
-    cursor: pointer;
-    color: #088178;
+    font-weight: 500;
   }
-      
-      </style>
+
+  .breadcrumb span {
+    margin: 0 5px;
+    color: #878787; 
+  }
+
+  .main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px;
+  }
+
+  
+  .sidebar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .sidebar .profile-summary {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .sidebar .profile-summary .avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+  }
+
+  .sidebar .profile-summary .fas.fa-user {
+    font-size: 40px;
+    color: #6c757d;
+  }
+
+  .sidebar .profile-summary h5 {
+    font-size: 18px;
+    color: #212121;
+    margin-bottom: 5px;
+  }
+
+  .sidebar .profile-summary p {
+    font-size: 14px;
+    color: #878787;
+  }
+
+  .sidebar .nav-link {
+    color: #212121;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 2px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .sidebar .nav-link:hover,
+  .sidebar .nav-link.active {
+    background-color: #5695fa;
+    color: #fff;
+  }
+
+  .sidebar .nav-link i {
+    margin-right: 10px;
+  }
+
+  .sidebar .nav-link .badge {
+    background-color: #2872a7; 
+    color: #fff;
+  }
+
+  .section-title {
+    font-size: 38px;
+    font-weight: 600;
+    color: #212121;
+    margin-bottom: 20px;
+    text-align: left;   
+  }
+
+
+  .address-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .address-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .address-card .card-header {
+    background-color: #4083ee; 
+    color: #fff;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 4px 4px 0 0;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .address-card .card-body {
+    padding: 15px;
+  }
+
+  .address-card address {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .address-card i {
+    color: #0e0e0f;
+    margin-right: 5px;
+    font-size: 14px;
+  }
+
+  .address-card p {
+    margin: 5px 0;
+    font-size: 13px;
+    color: #777;
+  }
+
+  .address-card .btn-group {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .btn-custom {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 2px;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-edit {
+    background-color: #fd7412; 
+    color: #fff;
+    border: none;
+    text-transform: capitalize;
+  }
+
+  .btn-edit:hover {
+    background-color: #e59400;
+  }
+
+  .btn-delete {
+    background-color: #fe4848; 
+    color: #fff;
+    border: none;
+    text-transform: capitalize;
+  }
+
+  .btn-delete:hover {
+    background-color: #e64c4c;
+  }
+
+  .btn-add {
+    background-color: #ff7300; 
+    border: none;
+    padding: 10px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 2px;
+    display: block;
+    text-transform: capitalize;
+    margin: 20px auto;
+    transition: background-color 0.2s ease;
+    max-width: 200px;
+  }
+
+  .btn-add:hover {
+    background-color: #e59400;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 20px 0;
+  }
+
+  .pagination .page-item .page-link {
+    color: #2874f0;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+  }
+
+  .pagination .page-item .page-link:hover {
+    background-color: #2874f0;
+    color: #fff;
+    border-color: #2874f0;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #2874f0;
+    color: #fff;
+    border-color: #2874f0;
+  }
+
+
+  .no-address {
+    text-align: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .no-address p {
+    font-size: 16px;
+    color: #ff6161;
+    font-weight: 500;
+  }
+
+  
+  @media (max-width: 991px) {
+    .sidebar {
+      margin-bottom: 20px;
+    }
+    .main-container {
+      padding: 10px;
+    }
+    .section-title {
+      font-size: 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .address-card .card-header {
+      font-size: 14px;
+      padding: 10px;
+    }
+    .address-card .card-body {
+      padding: 10px;
+    }
+    .address-card address {
+      font-size: 13px;
+    }
+    .btn-group {
+      flex-direction: column;
+      gap: 5px;
+    }
+    .btn-custom {
+      width: 100%;
+    }
+    .btn-add {
+      padding: 8px 20px;
+      font-size: 13px;
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .sidebar .profile-summary .avatar-placeholder {
+      width: 60px;
+      height: 60px;
+    }
+    .sidebar .profile-summary .fas.fa-user {
+      font-size: 30px;
+    }
+    .sidebar .nav-link {
+      font-size: 14px;
+    }
+    .pagination .page-link {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+  }
+</style>
+
 <main class="main">
-    <div class="page-header breadcrumb-wrap mb-3">
-      <div class="container">
-        <div class="breadcrumb">
-          <a href="/" rel="nofollow">Home</a>
-          <span></span><a href="/userProfile" rel="nofollow">Profile</a>
-          <span></span>Addresses
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span><a href="/userProfile" rel="nofollow">Profile</a>
+        <span></span>Address
+      </div>
+    </div>
+  </div>
+
+  <section class="pt-5 pb-5">
+    <div class="container">
+      <h3 class="section-title mt-2">My Addresses</h3>
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-12">
+          <div class="sidebar">
+            <div class="profile-summary">
+              <div class="avatar-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+              <h5><%= user.fname || 'User Name' %> <%= user.lname || '' %></h5>
+              <p><%= user.email || 'user@example.com' %></p>
+            </div>
+            <nav class="nav flex-column">
+              <a class="nav-link" href="/userProfile"><i class="fas fa-user"></i> Profile</a>
+              <a class="nav-link" href="/orders"><i class="fas fa-shopping-bag"></i> Orders</a>
+              <a class="nav-link active" href="/address"><i class="fas fa-map-marker-alt"></i> Addresses</a>
+              <a class="nav-link" href="/wishlist"><i class="fas fa-heart"></i> Wishlist
+                <% if (user.wishlist && user.wishlist.length > 0) { %>
+                  <span class="badge bg-teal rounded-pill ms-2"><%= user.wishlist.length %></span>
+                <% } %>
+              </a>
+              <a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> Cart
+                <% if (cartItemCount > 0) { %>
+                  <span class="badge bg-teal rounded-pill ms-2"><%= cartItemCount %></span>
+                <% } %>
+              </a>
+            </nav>
+          </div>
+        </div>
+
+        <div class="col-lg-9 col-md-12">
+          <div class="main-container">
+            <div class="row g-4">
+              <% if (userAddress && userAddress.address && userAddress.address.length > 0) { %>
+                <% userAddress.address.forEach((address) => { %>
+                  <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="address-card">
+                      <div class="card-header">
+                        <h5 class="mb-0"><%= address.addressType %></h5>
+                      </div>
+                      <div class="card-body">
+                        <address>
+                          <i class="fas fa-user"></i> <%= address.name %><br>
+                          <i class="fas fa-city"></i> <%= address.city %><br>
+                          <i class="fas fa-map-marker-alt"></i> <%= address.landMark %><br>
+                          <i class="fas fa-flag"></i> <%= address.state %>
+                        </address>
+                        <p><i class="fas fa-map-pin"></i> Pincode: <%= address.pincode %></p>
+                        <p><i class="fas fa-phone"></i> Phone: <%= address.phone %></p>
+                        <p><i class="fas fa-mobile-alt"></i> Alternate: <%= address.altPhone || 'N/A' %></p>
+                        <div class="btn-group">
+                          <a href="/editAddress?id=<%= address._id %>" class="btn btn-custom btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                          </a>
+                          <button class="btn btn-custom btn-delete" data-id="<%= address._id %>">
+                            <i class="fas fa-trash"></i> Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <div class="col-12">
+                  <div class="no-address">
+                    <p>No addresses found. Add one to get started!</p>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+            <a href="/addAddress" class="btn btn-add">
+              <i class="fas fa-plus"></i> Add New Address
+            </a>
+
+            <% if (totalPages > 1) { %>
+              <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination">
+                  <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                      <a class="page-link" href="/address?page=<%= currentPage - 1 %>">Prev</a>
+                    </li>
+                  <% } %>
+                  <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                      <a class="page-link" href="/address?page=<%= i %>"><%= i %></a>
+                    </li>
+                  <% } %>
+                  <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                      <a class="page-link" href="/address?page=<%= currentPage + 1 %>">Next</a>
+                    </li>
+                  <% } %>
+                </ul>
+              </nav>
+            <% } %>
+          </div>
         </div>
       </div>
     </div>
-<section class="pt-10 pb-10">
-<div class="container"> 
-<h3>My Addresses</h3>
-<div class="main-container">
-<div class="row">
-    <% if (userAddress && userAddress.address && userAddress.address.length > 0) { %>
-        <% userAddress.address.forEach((address) => { %>
-            <div class="col-lg-6">
-                <div class="card address mb-3">
-                    <div class="card-header">
-                        <h5 class="mb-0"><%= address.addressType %></h5>
-                    </div>
-                    <div class="card-body">
-                        <address>
-                            Name: <%= address.name %> <br/>
-                            City: <%= address.city %> <br>
-                            Landmark: <%= address.landMark %> <br>
-                            State: <%= address.state %> <br>
-                        </address>
-                        <p>Pincode: <%= address.pincode %></p>
-                        <p>Phone No: <%= address.phone %></p>
-                        <p>Alternate No: <%= address.altPhone %></p>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="/editAddress?id=<%= address._id %>" class="btn-small">Edit</a>
-                            <button class="btn-small delete-btn" data-id="<%= address._id %>" style="text-decoration: none;
-                                cursor: pointer;
-                                color: #088178;border: none;background-color: #ffffff;">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <% }) %>
-    <% } else { %>
-        <p>No address found.</p>
-    <% } %>
-</div>
-<div>
-    <a href="/addAddress">
-        <button class="btn btn-primary w-70" style="text-transform: capitalize;">Add Address</button>
-    </a>
-</div>
-</div>
-<div class="pagination">
-    <% if (totalPages > 1) { %>
-        <% if (currentPage > 1) { %>
-            <a href="/address?page=<%= currentPage - 1 %>" class="btn btn-primary">Prev</a>
-        <% } %>
-
-        <% for (let i = 1; i <= totalPages; i++) { %>
-            <a href="/address?page=<%= i %>" class="btn <%= i === currentPage ? 'active' : '' %>">
-                <%= i %>
-            </a>
-        <% } %>
-
-        <% if (currentPage < totalPages) { %>
-            <a href="/address?page=<%= currentPage + 1 %>" class="btn btn-primary">Next</a>
-        <% } %>
-    <% } %>
-</div>
-</div>
-</section>
+  </section>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".delete-btn").forEach((button) => {
-        button.addEventListener("click", function () {
-            const addressId = this.getAttribute("data-id");
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You won't be able to recover this address!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`/deleteAddress?id=${addressId}`, {
-                        method: "DELETE"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire("Deleted!", "Your address has been removed.", "success");
-                            button.closest(".col-lg-6").remove();
-                        } else {
-                            Swal.fire("Error!", "Something went wrong.", "error");
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire("Error!", "Failed to delete address.", "error");
-                    });
-                }
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".btn-delete").forEach((button) => {
+      button.addEventListener("click", function () {
+        const addressId = this.getAttribute("data-id");
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to recover this address!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/deleteAddress?id=${addressId}`, {
+              method: "DELETE"
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire("Deleted!", "Your address has been removed.", "success").then(() => {
+                  button.closest(".col-lg-6").remove();
+                });
+              } else {
+                Swal.fire("Error!", "Something went wrong.", "error");
+              }
+            })
+            .catch(error => {
+              Swal.fire("Error!", "Failed to delete address.", "error");
             });
+          }
         });
+      });
     });
-});
+  });
 </script>
 
 <%- include("../../views/partials/user/footer") %>

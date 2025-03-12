@@ -12,6 +12,7 @@ const { default: mongoose } = require("mongoose");
 //Cart page
 const getCartPage = async (req, res, next) => {
   try {
+
     if (!req.session.user) {
       return res.redirect('/login');
     }
@@ -110,7 +111,7 @@ const addToCart = async (req, res,next) => {
           },
         ],
       });
-      await newCart.save();
+    await newCart.save();
    return res.status(200).json({ status: true, message: "Product added to cart successfully!" });
 
     }

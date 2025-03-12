@@ -24,9 +24,10 @@ const fetchSalesData = async (filterType = "daily", startDatee, endDatee, page =
 
   switch (filterType) {
     case "daily":
-      queryStartDate = new Date(now);
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      queryStartDate = new Date(today); 
       queryStartDate.setHours(0, 0, 0, 0);
-      queryEndDate = new Date(now);
+      queryEndDate = new Date(today);
       queryEndDate.setHours(23, 59, 59, 999);
       break;
     case "weekly":
@@ -187,7 +188,7 @@ const getSalesReport = async (req, res) => {
     }
 };
 
-//SalesReport
+//Sales Report
 const salesReport = async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;

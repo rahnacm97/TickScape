@@ -1,565 +1,617 @@
 <%- include("../../views/partials/user/header") %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/fontawesome-free/css/all.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 <style>
-    .products {
-    border: 2px solid #d5d3d3; 
-    border-radius: 10px; 
-    padding: 30px; 
-    background-color: #fefdfd;
-}
-body {
-        font-family: 'Arial', sans-serif;
-        background-color: #fff;
-    }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f1f3f6;
+    margin: 0;
+    padding: 0;
+  }
 
-    .main {
-        padding-top: 20px;
-        padding-bottom: 50px;
-    }
+  .main {
+    padding: 20px 0;
+  }
 
-.page-header.breadcrumb-wrap {
-    margin-top: 10px;
-    background-color: #ede9ec;
-    padding: 10px 0;
-}
-
-.breadcrumb-wrap {
-    padding: 15px 0;
-    background-color: #1e918b;
-    color: #fff;
-}
-
-.breadcrumb a {
-    color: #088178;
-    text-decoration: none;
-}
-
-.breadcrumb span {
-    margin: 0 5px;
-    color: rgb(125, 124, 124);
-}
-
-.table th, .table td {
-    text-align: center;
-}
-
-.table-shopping-summery {
-    width: 100%;
-    border-collapse: collapse;
+  .page-header.breadcrumb-wrap {
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd; /* Outer border */
-}
+    padding: 10px 0;
+    border-bottom: 1px solid #eaeaec;
+  }
 
-.table-shopping-summery th,
-.table-shopping-summery td {
-    padding: 15px;
+  .breadcrumb a {
+    color: #2874f0;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumb span {
+    margin: 0 5px;
+    color: #878787;
+  }
+
+ 
+  .cart-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .cart-row {
+    display: flex;
+    gap: 20px;
+  }
+
+  .cart-row > .col-lg-8 {
+    flex: 0 0 66.666667%;
+  }
+
+  .cart-row > .col-lg-4 {
+    flex: 0 0 33.333333%;
+  }
+
+ 
+  .cart-items {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 0;
+  }
+
+  .cart-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eaeaec;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-header h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #212121;
+    margin: 0;
+  }
+
+  .cart-item {
+    padding: 20px;
+    border-bottom: 1px solid #eaeaec;
+    display: flex;
+    gap: 15px;
+  }
+
+  .cart-item:last-child {
+    border-bottom: none;
+  }
+
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .cart-item-details {
+    flex: 1;
+  }
+
+  .cart-item-details h5 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #212121;
+    margin-bottom: 5px;
+  }
+
+  .cart-item-details p {
+    font-size: 14px;
+    color: #878787;
+    margin-bottom: 5px;
+  }
+
+  .cart-item-price {
+    font-size: 16px;
+    font-weight: 500;
+    color: #212121;
+  }
+
+  .cart-item-price .gst {
+    font-size: 12px;
+    color: #878787;
+  }
+
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .quantity-control button {
+    width: 30px;
+    height: 30px;
+    background: #f1f3f6;
+    border: 1px solid #eaeaec;
+    border-radius: 50%;
+    font-size: 16px;
+    color: #212121;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+  }
+
+  .quantity-control button:hover {
+    background: #eaeaec;
+  }
+
+  .quantity-control input {
+    width: 40px;
     text-align: center;
-    border: 1px solid #474242; /* Borders for table cells */
-}
+    border: none;
+    font-size: 14px;
+    color: #212121;
+  }
 
-.table-shopping-summery th {
-    background-color: #f4f4f4;
-    font-weight: bold;
+  .cart-item-actions {
+    display: flex;
+    gap: 15px;
+  }
+
+  .cart-item-actions a {
+    font-size: 14px;
+    color: #2874f0;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .cart-item-actions a:hover {
+    text-decoration: underline;
+  }
+
+ 
+  .cart-totals {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+  }
+
+  .cart-totals h4 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #212121;
+    margin-bottom: 15px;
+  }
+
+  .cart-totals table {
+    width: 100%;
+  }
+
+  .cart-totals td {
+    padding: 8px 8px;
+    font-size: 14px;
+    color: #878787;
+  }
+
+  .cart-totals td:last-child {
+    text-align: right;
+    color: #212121;
+  }
+
+  .cart-totals .total {
+    font-size: 16px;
+    font-weight: 500;
+    color: #212121;
+    border-top: 1px dashed #eaeaec;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  .cart-totals .total td:last-child {
+    color: #212121;
+  }
+
+  .place-order-btn {
+    background-color: #f95706;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 4px;
+    width: 100%;
+    transition: background-color 0.3s;
+    text-decoration: none; 
+    display: flex; 
+    justify-content: center;
+  }
+
+  .place-order-btn:hover {
+    background-color: #e65100;
+  }
+
+  .cart-totals .button-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 20px;
+  }
+
+ 
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 0 20px;
+  }
+
+  .pagination a {
+    padding: 8px 12px;
+    background: #fff;
     color: #333;
-    border: 1px solid #7b7676; /* Thicker border for headers */
-}
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+  }
 
-.table-shopping-summery tr {
-    border-bottom: 1px solid #595454; /* Border for rows */
-}
+  .pagination a:hover {
+    background-color: #0944a1;
+    color: white;
+    transform: scale(1.05);
+  }
 
-.table-shopping-summery tbody tr:hover {
-    background-color: #f9f9f9; /* Hover effect */
-}
+  .pagination .active {
+    background-color: #2874f0;
+    color: white;
+  }
 
-.product-thumbnail img {
-    max-width: 60px;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  .empty-cart {
+    padding: 20px;
+    text-align: center;
+  }
 
-.price span {
-    font-weight: bold;
-    color: #1e918b;
-}
+  .empty-cart p {
+    font-size: 16px;
+    color: #212121;
+    margin-bottom: 15px;
+  }
 
+  .empty-cart a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #2874f0;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+  }
 
-    .btn {
-        padding: 8px 8px;
-        font-size: 12px;
-        text-transform: uppercase;
-        cursor: pointer;
-        background-color: #1e918b;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease, transform 0.2s;
+  .empty-cart a:hover {
+    background: #1a5dc7;
+  }
+
+  @media (max-width: 991px) {
+    .cart-row {
+      flex-direction: column;
+      gap: 0;
     }
 
-    .btn:hover {
-        background-color: #18877c;
-        transform: scale(1.05);
-    }
-
-    .fi-rs-trash {
-        font-size: 18px;
-        color: rgb(243, 239, 239);
-    }
-
-    /* Cart Total Section */
     .cart-totals {
-        background-color: #fff;
-        border-radius: 8px;
-        padding: 30px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      position: static;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .cart-item {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .cart-total_label {
-        font-weight: bold;
-        color: #333;
+    .cart-item img {
+      width: 60px;
+      height: 60px;
     }
 
-    .cart-total_amount {
-        font-size: 18px;
-        color: #1e918b;
+    .cart-item-actions {
+      margin-top: 10px;
     }
-
-    .cart-total_amount i {
-        margin-right: 5px;
-    }
-
-    /* Pagination */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin: 20px 0;
-    }
-
-    .pagination a {
-        padding: 8px 12px;
-        background: #fff;
-        color: #333;
-        text-decoration: none;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-        transition: background-color 0.3s ease, transform 0.2s;
-    }
-
-    .pagination a:hover {
-        background-color: #1e918b;
-        color: white;
-        transform: scale(1.05);
-    }
-
-    .pagination .active {
-        background-color: #1e918b;
-        color: white;
-    }
-
-    .table-shopping-summery .quantity-control {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .quantity-control button {
-        background-color: #1e918b;
-        color: white;
-        border: none;
-        padding: 5px;
-        font-size: 12px;
-        border-radius: 4px;
-    }
-
-    .quantity-control button:hover {
-        background-color: #18877c;
-    }
-
-    .quantity-input {
-        padding: 5px;
-        text-align: center;
-        border: none;
-        border-radius: 4px;
-        font-size: 12px;
-        color: #333;
-    }
-
+  }
 </style>
+
 <main class="main">
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/" rel="nofollow">Home</a>
-                <span></span> <a href="/shop" rel="nofollow">Shop</a>
-                <span></span> My Cart
-            </div>
-        </div>
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span> <a href="/shop" rel="nofollow">Shop</a>
+        <span></span> My Cart
+      </div>
     </div>
-    <section class="mt-50 mb-50">
-        <div class="container">
-            <div class="row">
-                <div class="col-9 products">
-                    <div class="table-responsive">
-                        <table class="table shopping-summery text-center clean" style="border: 1px solid #e6e1e1;">
-                            <thead style="border: 1px solid #e6e1e1;">
-                                <tr class="main-heading">
-                                    <th scope="col" style="border: 1px solid #e6e1e1;">Sl. No</th>
-                                    <th scope="col" style="border: 1px solid #e6e1e1;">Image</th>
-                                    <th scope="col" style="border: 1px solid #e6e1e1;">Name</th>
-                                    <th scope="col" style="border: 1px solid #e6e1e1;">Price</th>
-                                    <th scope="col" style="border: 1px solid #e6e1e1;">Quantity</th>
-                                    <th scope="col" style="border: 1px solid #e6e1e1;">Remove</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (data && data.length > 0) { %>
-                                    <% var x = 0 %>
-                                    <% data.forEach((item,index) => { %>
-                                        <tr id="cart-item-<%= item.productId._id %>">
-                                            <td style="border: 1px solid #e6e1e1;" class="py-5"><%= index + 1 %></td>
-                                            <td class="image product-thumbnail" style="border: 1px solid #e6e1e1;">
-                                                <img src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="#" />
-                                            </td>
-                                            <td class="product-des product-name py-5" style="border: 1px solid #e6e1e1;">
-                                                <h5 class="product-name">
-                                                    <a href="cart">
-                                                        <%= item.productId.productName %>
-                                                    </a>
-                                                </h5>
-                                                <p class="font-xs ">
-                                                    <%= item.productId.category ? item.productId.category.name : "No Category" %><br />
-                                                    <%= item.productId.brand ? item.productId.brand.brandName : "No Brand" %>
-                                                </p>
-                                            </td>
-                                            <td class="price py-5" data-title="Price" style="border: 1px solid #e6e1e1;">₹<span id="subTotal<%= item.productId._id %>">
-                                                <%= item.productId.salePrice * item.quantity %>
-                                            </span>
-                                            + <small class="text-muted text-nowrap"><span id="gst">
-                                                <%= item.productId.gstRate %> % 
-                                            </span>GST</small>
-                                            <br>
-                                                <small class="text-muted text-nowrap">₹<span id="price">
-                                                    <%= item.productId.salePrice %> 
-                                                </span>/ per item</small>
-                                                
-                                            </td>
-                                
-                                            <% x += item.productId.salePrice * item.quantity %>
-                                
-                                            <td class="text-center" data-title="Stock" style="border: 1px solid #e6e1e1;">
-                                                <div class="detail-qty border radius m-auto">
-                                                    <div class="quantity-control">
-                                                        <button class="btn btn-sm increment-button" onclick="changeQuantity('<%= item.productId._id %>', '<%= item.quantity %>', 1, '<%= item.productId.salePrice %>',  '<%= item.productId.id %>', '<%= item.productId.quantity%>')">+</button>
-                                                        <input class="quantity-input" id="cartProductQuantity<%= item.productId.id %>" value="<%= item.quantity %>" type="text" readonly>
-                                                        <button class="btn btn-sm decrement-button" onclick="changeQuantity('<%= item.productId._id %>', '<%= item.quantity %>', -1, '<%= item.productId.salePrice %>',  '<%= item.productId.id %>', '<%= item.productId.quantity%>')">-</button>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                
-                                            <td  class="action py-5" data-title="Remove" style="border: 1px solid #e6e1e1;">
-                                                <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= item.productId._id %>')">
-                                                    <i class="fi-rs-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="2" class="text-center">
-                                            <p class="lead mb-4">No item found in the Cart</p>
-                                        </td>
-                                    </tr>
-                                <% } %>
-                                
-                                <input type="hidden" name="" id="totalabc" value="<%= x %>">
+  </div>
 
-                            </tbody>
-                        </table>
-                    </div>
+  <section class="cart-container mt-30">
+    <div class="cart-row">
+      <div class="col-lg-8 cart-items">
+        <div class="cart-header">
+          <h3>My Cart (<%= data ? data.length : 0 %>)</h3>
+          <a href="/shop" class="btn btn-sm btn-outline-primary">Continue Shopping</a>
+        </div>
+
+        <% if (data && data.length > 0) { %>
+          <% var x = 0 %>
+          <% data.forEach((item, index) => { %>
+            <div class="cart-item" id="cart-item-<%= item.productId._id %>">
+              <img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>">
+              <div class="cart-item-details">
+                <h5><%= item.productId.productName %></h5>
+                <p><%= item.productId.category ? item.productId.category.name : "No Category" %></p>
+                <div class="quantity-control">
+                  <button class="decrement-button" onclick="changeQuantity('<%= item.productId._id %>', '<%= item.quantity %>', -1, '<%= item.productId.salePrice %>', '<%= item.productId.id %>', '<%= item.productId.quantity %>')">-</button>
+                  <input class="quantity-input" id="cartProductQuantity<%= item.productId.id %>" value="<%= item.quantity %>" type="text" readonly>
+                  <button class="increment-button" onclick="changeQuantity('<%= item.productId._id %>', '<%= item.quantity %>', 1, '<%= item.productId.salePrice %>', '<%= item.productId.id %>', '<%= item.productId.quantity %>')">+</button>
                 </div>
-                <div class="col-3">
-                    <div class="border p-md-4 p-20 border-radius cart-totals mt-5">
-                        <div class="heading_s1 mb-3">
-                            <h4>PRICE DETAILS</h4>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <tbody>
-
-                                    <tr>
-                                        <td class="cart_total_label">Shipping</td>
-                                        <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Charge Included
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="cart_total_label">Item Total</td>
-                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
-                                                <text id="itemTotal">
-                                                    <%= itemTotal %>
-                                                </text>
-                                            </span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="cart_total_label">GST</td>
-                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
-                                                <text id="gstAmount">
-                                                    <%= parseFloat(gstAmount).toFixed(2) %>
-                                                </text>
-                                            </span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="cart_total_label">Total Amount</td>
-                                        <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
-                                                <text id="total">
-                                                    <%= total || 0  %>
-                                                </text>
-                                            </span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <a href="#" id="proceedToCheckout" class="btn" data-user-id="<%= user._id %>" style="text-transform: capitalize; min-width:100% ;">
-                            <i class="fi-rs-box-alt mr-10"></i>
-                            Proceed To Checkout
-                        </a>
-                    </div>
+                <div class="cart-item-actions">
+                  <!-- <a href="#" onclick="saveForLater('<%= item.productId._id %>')">Save for Later</a> -->
+                  <a href="#" onclick="confirmRemove('<%= item.productId._id %>')">Remove</a>
                 </div>
-
+              </div>
+              <div class="cart-item-price">
+                ₹<span id="subTotal<%= item.productId._id %>"><%= (item.productId.salePrice * item.quantity).toFixed(2) %></span>
+                <div class="gst">+ 18% GST</div>
+              </div>
+              <% x += item.productId.salePrice * item.quantity %>
             </div>
-
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="pagination" style="background: #fff;">
+          <% }) %>
+          <div class="pagination">
             <% if (currentPage > 1) { %>
-                <a class="btn" href="/cart?page=<%= currentPage - 1 %>">Prev</a>
+              <a href="/cart?page=<%= currentPage - 1 %>">Prev</a>
             <% } %>
-            
             <% for (let i = 1; i <= totalPages; i++) { %>
-                
-                <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/cart?page=<%= i %>"><%= i %></a>
-                
+              <a href="/cart?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
             <% } %>
-            
             <% if (currentPage < totalPages) { %>
-                <a class="btn" href="/cart?page=<%= currentPage + 1 %>">Next</a>
+              <a href="/cart?page=<%= currentPage + 1 %>">Next</a>
             <% } %>
           </div>
-    </section>
+        <% } else { %>
+          <div class="empty-cart">
+            <p>Your cart is empty!</p>
+            <a href="/shop">Shop Now</a>
+          </div>
+        <% } %>
+        <input type="hidden" id="totalabc" value="<%= x %>">
+      </div>
+
+      <div class="col-lg-4 cart-totals">
+        <h4>Price Details</h4>
+        <table>
+          <tbody>
+            <tr>
+              <td>Item Total</td>
+              <td>₹<span id="itemTotal"><%= itemTotal %></span></td>
+            </tr>
+            <tr>
+              <td>GST</td>
+              <td>₹<span id="gstAmount"><%= parseFloat(gstAmount).toFixed(2) %></span></td>
+            </tr>
+            <tr>
+              <td>Delivery Charges</td>
+              <td>₹50</td>
+            </tr>
+            <tr class="total">
+              <td>Total Amount</td>
+              <td>₹<span id="total"><%= total || 0 %></span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="button-container">
+          <a href="#" id="proceedToCheckout" class="place-order-btn" data-user-id="<%= user._id %>">
+            Proceed to Checkout
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
-function changeQuantity(productId, cartQuantity, count, productPrice, i, productQuantity, gstRate) {
-    const cartProductQuantityElement = document.querySelector(`#cartProductQuantity${i}`);
-    const subtotalElement = document.querySelector(`#subTotal${i}`);
-    const totalElement = document.getElementById('total');
-    const gstElement = document.getElementById('gstAmount');
-    const itemTotalElement = document.getElementById('itemTotal');
+function changeQuantity(productId, cartQuantity, count, productPrice, i, productQuantity) {
+  const cartProductQuantityElement = document.querySelector(`#cartProductQuantity${i}`);
+  const subtotalElement = document.querySelector(`#subTotal${i}`);
+  const totalElement = document.getElementById('total');
+  const gstElement = document.getElementById('gstAmount');
+  const itemTotalElement = document.getElementById('itemTotal');
 
-    if (!cartProductQuantityElement || !subtotalElement || !totalElement || !gstElement || !itemTotalElement) {
-        console.error("One or more elements not found!");
-        return;
-    }
+  if (!cartProductQuantityElement || !subtotalElement || !totalElement || !gstElement || !itemTotalElement) {
+    console.error("One or more elements not found!");
+    return;
+  }
 
-    let currentQuantity = parseInt(cartProductQuantityElement.value);
-    let currentSubTotal = parseFloat(subtotalElement.innerHTML) || 0;
-    let currentItemTotal = parseFloat(itemTotalElement.innerHTML) || 0;
-    let currentGstAmount = parseFloat(gstElement.innerHTML) || 0;
-    let currentTotal = parseFloat(totalElement.innerHTML) || 0;
-    let validGstRate = gstRate ? parseFloat(gstRate) : 18;
+  let currentQuantity = parseInt(cartProductQuantityElement.value);
+  let currentSubTotal = parseFloat(subtotalElement.innerHTML) || 0;
+  let currentItemTotal = parseFloat(itemTotalElement.innerHTML) || 0;
+  let currentGstAmount = parseFloat(gstElement.innerHTML) || 0;
+  let currentTotal = parseFloat(totalElement.innerHTML) || 0;
+  let validGstRate = 18; 
 
-    console.log("Before update:");
-    console.log("Quantity:", currentQuantity);
-    console.log("Subtotal:", currentSubTotal);
-    console.log("Item Total:", currentItemTotal);
-    console.log("GST Amount:", currentGstAmount);
-    console.log("Total:", currentTotal);
-    console.log("GST Rate:", validGstRate);  
+  const newQuantity = currentQuantity + count;
 
-    const newQuantity = currentQuantity + count;
-
-    if (newQuantity < 1) {
-        Swal.fire({
-            title: 'Invalid Quantity!',
-            text: 'You must add at least 1 item to your cart.',
-            icon: 'error',
-            timer: 5000
-        });
-        return;
-    }
-
-    if (newQuantity > 3) {
-        Swal.fire({
-            title: 'Limit Exceeded!',
-            text: 'You can only add up to 3 items to your cart.',
-            icon: 'error',
-            timer: 5000
-        });
-        return;
-    }
-
-    if (newQuantity > productQuantity) {
-        Swal.fire({
-            title: 'Out of Stock!',
-            text: 'Product is out of stock.',
-            icon: 'error',
-            timer: 5000
-        });
-        return;
-    }
-
-    const newSubTotal = newQuantity * productPrice;
-    subtotalElement.innerHTML = newSubTotal;
-
-    const updatedItemTotal = currentItemTotal + (newSubTotal - currentSubTotal);
-    const updatedGstAmount = (updatedItemTotal * validGstRate).toFixed(2) / 100;
-    const updatedTotal = updatedItemTotal + updatedGstAmount;
-
-    console.log("After update:");
-    console.log("New Subtotal:", newSubTotal);
-    console.log("Updated Item Total:", updatedItemTotal);
-    console.log("Updated GST Amount:", updatedGstAmount);
-    console.log("Updated Total:", updatedTotal);
-
-    
-    itemTotalElement.innerHTML = updatedItemTotal;
-    gstElement.innerHTML = updatedGstAmount;
-    totalElement.innerHTML = updatedTotal;
-
-    $.ajax({
-        url: '/changeQuantity',
-        method: 'POST',
-        data: {
-            productId: productId,
-            quantity: newQuantity,
-        },
-        success: (response) => {
-            cartProductQuantityElement.value = newQuantity;
-        },
-        error: (error) => {
-            console.error("Error updating cart:", error);
-        }
-    });
-}
-
-function confirmRemove(productId, productPrice, quantity, gstRate) {
+  if (newQuantity < 1) {
     Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, remove it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/deleteProduct?id=${productId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    Swal.fire('Error', data.error, 'error');
-                } else {
-                    const cartItem = document.getElementById(`cart-item-${productId}`);
-                    if (cartItem) {
-                        const itemPrice = parseFloat(cartItem.querySelector('[id^="subTotal"]').textContent) || 0;
-                        cartItem.remove();
-
-                      
-                        const totalElement = document.getElementById("total");
-                        const itemTotalElement = document.getElementById("itemTotal");
-                        const gstElement = document.getElementById("gstAmount");
-
-                        let currentItemTotal = parseFloat(itemTotalElement.textContent) || 0;
-                        let currentGstAmount = parseFloat(gstElement.textContent) || 0;
-                        let currentTotal = parseFloat(totalElement.textContent) || 0;
-
-                       
-                        let validGstRate = gstRate > 0 ? gstRate : 18; 
-                        console.log("GST Rate:", validGstRate);
-
-                        // Calculate new totals
-                        let newItemTotal = currentItemTotal - itemPrice;
-                        let newGstAmount = newItemTotal > 0 ? newItemTotal * (validGstRate / 100) : 0;
-                        let newTotal = newItemTotal + newGstAmount;
-
-                        
-                        itemTotalElement.textContent = newItemTotal;
-                        gstElement.textContent = newGstAmount.toFixed(2);
-                        totalElement.textContent = newTotal;
-                    }
-
-                 
-                    const cartCount = document.getElementById("cartItemCount");
-                    if (cartCount) {
-                        cartCount.textContent = data.cartItemCount;
-                    }
-
-                  
-                    const cartTableBody = document.querySelector("tbody");
-                    if (!cartTableBody.querySelector("tr[id^='cart-item-']")) {
-                        cartTableBody.innerHTML = `
-                            <tr>
-                                <td colspan="5" class="text-center">
-                                    <p class="lead mb-4">No item found in Cart</p>
-                                </td>
-                            </tr>`;
-                    }
-
-                    Swal.fire('Deleted!', 'Product removed from cart.', 'success');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error', 'Failed to remove product.', 'error');
-            });
-        }
+      title: 'Invalid Quantity!',
+      text: 'You must add at least 1 item to your cart.',
+      icon: 'error',
+      timer: 5000
     });
+    return;
+  }
+
+  if (newQuantity > 3) {
+    Swal.fire({
+      title: 'Limit Exceeded!',
+      text: 'You can only add up to 3 items to your cart.',
+      icon: 'error',
+      timer: 5000
+    });
+    return;
+  }
+
+  if (newQuantity > productQuantity) {
+    Swal.fire({
+      title: 'Out of Stock!',
+      text: 'Product is out of stock.',
+      icon: 'error',
+      timer: 5000
+    });
+    return;
+  }
+
+  const newSubTotal = newQuantity * productPrice;
+  subtotalElement.innerHTML = newSubTotal.toFixed(2);
+
+  const updatedItemTotal = currentItemTotal + (newSubTotal - currentSubTotal);
+  const updatedGstAmount = (updatedItemTotal * validGstRate / 100).toFixed(2);
+  const updatedTotal = updatedItemTotal + parseFloat(updatedGstAmount) + 50; 
+
+  itemTotalElement.innerHTML = updatedItemTotal.toFixed(2);
+  gstElement.innerHTML = updatedGstAmount;
+  totalElement.innerHTML = updatedTotal.toFixed(2);
+
+  $.ajax({
+    url: '/changeQuantity',
+    method: 'POST',
+    data: {
+      productId: productId,
+      quantity: newQuantity,
+    },
+    success: (response) => {
+      cartProductQuantityElement.value = newQuantity;
+    },
+    error: (error) => {
+      console.error("Error updating cart:", error);
+    }
+  });
 }
+
+function confirmRemove(productId) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, remove it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/deleteProduct?id=${productId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          Swal.fire('Error', data.error, 'error');
+        } else {
+          const cartItem = document.getElementById(`cart-item-${productId}`);
+          if (cartItem) {
+            const itemPrice = parseFloat(cartItem.querySelector('[id^="subTotal"]').textContent) || 0;
+            cartItem.remove();
+
+            const totalElement = document.getElementById("total");
+            const itemTotalElement = document.getElementById("itemTotal");
+            const gstElement = document.getElementById("gstAmount");
+
+            let currentItemTotal = parseFloat(itemTotalElement.textContent) || 0;
+            let currentGstAmount = parseFloat(gstElement.textContent) || 0;
+            let currentTotal = parseFloat(totalElement.textContent) || 0;
+
+            let newItemTotal = currentItemTotal - itemPrice;
+            let newGstAmount = newItemTotal > 0 ? (newItemTotal * 18 / 100).toFixed(2) : 0;
+            let newTotal = newItemTotal + parseFloat(newGstAmount) + (newItemTotal > 0 ? 50 : 0);
+
+            itemTotalElement.textContent = newItemTotal.toFixed(2);
+            gstElement.textContent = newGstAmount;
+            totalElement.textContent = newTotal.toFixed(2);
+          }
+
+          const cartCount = document.getElementById("cartItemCount");
+          if (cartCount) {
+            cartCount.textContent = data.cartItemCount;
+          }
+
+          const cartItemsContainer = document.querySelector(".cart-items");
+          if (!cartItemsContainer.querySelector(".cart-item")) {
+            cartItemsContainer.innerHTML = `
+              <div class="cart-header">
+                <h3>My Cart (0)</h3>
+                <a href="/shop" class="btn btn-sm btn-outline-primary">Continue Shopping</a>
+              </div>
+              <div class="empty-cart">
+                <p>Your cart is empty!</p>
+                <a href="/shop">Shop Now</a>
+              </div>`;
+          } else {
+            const cartHeader = document.querySelector(".cart-header h3");
+            cartHeader.textContent = `My Cart (${data.cartItemCount})`;
+          }
+
+          Swal.fire('Deleted!', 'Product removed from cart.', 'success');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Failed to remove product.', 'error');
+      });
+    }
+  });
+}
+
+function saveForLater(productId) {
+  Swal.fire({
+    icon: 'info',
+    title: 'Feature Coming Soon!',
+    text: 'Save for Later functionality will be implemented soon.',
+  });
+}
+
 
 document.getElementById("proceedToCheckout").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default link behavior
+  event.preventDefault();
+  const userId = this.getAttribute("data-user-id");
 
-        const userId = this.getAttribute("data-user-id");
-
-        // Check cart status
-        fetch(`/checkCart?userId=${userId}`, {
-            method: "GET",
-            headers: { "Accept": "application/json" }
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.message);
-                });
-            }
-            // Cart has items, proceed to checkout
-            window.location.href = `/checkout?userId=${userId}`;
-        })
-        .catch(error => {
-            // Show SweetAlert for empty cart or other errors
-            Swal.fire({
-                icon: "warning",
-                title: "Oops...",
-                text: error.message || "An error occurred while checking the cart.",
-            });
-        });
+  fetch(`/checkCart?userId=${userId}`, {
+    method: "GET",
+    headers: { "Accept": "application/json" }
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(data => { throw new Error(data.message); });
+    }
+    window.location.href = `/checkout?userId=${userId}`;
+  })
+  .catch(error => {
+    Swal.fire({
+      icon: "warning",
+      title: "Oops...",
+      text: error.message || "An error occurred while checking the cart.",
     });
-
+  });
+});
 </script>
-<%- include("../../views/partials/user/footer") %>
 
+<%- include("../../views/partials/user/footer") %>

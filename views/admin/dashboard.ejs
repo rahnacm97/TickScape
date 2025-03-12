@@ -1,6 +1,7 @@
 <%- include("../../views/partials/admin/header") %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
 body {
     font-family: 'Roboto', sans-serif;
@@ -613,7 +614,7 @@ let lineChart = null;
 let pieChart = null;
 let barChart = null;
 
-    async function updateCharts() {
+async function updateCharts() {
       const lineCtx = document.getElementById('lineChart').getContext('2d');
       const pieCtx = document.getElementById('pieChart').getContext('2d');
       const barCtx = document.getElementById('barChart').getContext('2d');

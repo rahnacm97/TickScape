@@ -3,11 +3,11 @@
 
 <style>
   :root {
-    --primary-color: #38b2ac;
+    --primary-color: #108af4;
     --secondary-color: #4a5568;
     --light-color: #f7fafc;
     --dark-color: #2d3748;
-    --success-color: #48bb78;
+    --success-color: #2e6c81;
     --danger-color: #e53e3e;
     --border-radius: 0.5rem;
     --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -19,21 +19,22 @@
     color: var(--dark-color);
   }
   
-  .breadcrumb-wrap {
-    padding: 15px 0;
-    background-color: #1e918b;
-    color: #fff;
-}
+  .page-header.breadcrumb-wrap {
+    background-color: #fff;
+    padding: 10px 0;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  }
 
-.breadcrumb a {
-    color: #088178;
+  .breadcrumb a {
+    color: #2874f0;
     text-decoration: none;
-}
+    font-weight: 500;
+  }
 
-.breadcrumb span {
+  .breadcrumb span {
     margin: 0 5px;
-    color: rgb(125, 124, 124);
-}
+    color: #878787;
+  }
   
   .dashboard-menu {
     background-color: white;
@@ -209,7 +210,7 @@
 </head>
 <body>
 <main class="main">
-  <div class="page-header breadcrumb-wrap mb-3">
+  <div class="page-header breadcrumb-wrap mb-3 mt-3">
     <div class="container">
       <div class="breadcrumb">
         <a href="/" rel="nofollow">Home</a>

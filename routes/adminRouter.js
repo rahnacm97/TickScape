@@ -10,7 +10,6 @@ const orderController = require("../controllers/admin/orderController");
 const bannerController = require('../controllers/admin/bannerController');
 const brandController = require('../controllers/admin/brandController');
 const couponController = require('../controllers/admin/couponController');
-const offerController = require('../controllers/admin/offerController');
 const dashboardController = require('../controllers/admin/dashboardController');
 const salesController = require('../controllers/admin/salesController');
 

@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
     const statusCode = err instanceof CustomError ? err.statusCode : 500;
     const message = err.message || "Something went wrong! Please try again later.";
 
-    console.error(`[${new Date().toISOString()}] ${statusCode} - ${message}`, err.stack);
+    console.error(`${statusCode} - ${message}`, err.stack);
 
     if (req.accepts('json')) {
         res.status(statusCode).json({

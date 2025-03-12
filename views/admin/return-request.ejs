@@ -1,6 +1,7 @@
 <%- include("../../views/partials/admin/header") %>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -289,9 +290,9 @@ function confirmApprove(orderId, productId) {
                 if (data.success) {
                     Swal.fire("Approved!", data.message, "success").then(() => {
                         
-                      const row = document.getElementById(`order-${orderId}`);
+                      const row = document.getElementById(`order-${orderId}-item-${productId}`);
                         if (row) row.remove();
-
+                        
                        
                         const remainingRows = document.querySelectorAll(`tr[data-order-id="${orderId}"]`);
                         if (remainingRows.length === 0) {
