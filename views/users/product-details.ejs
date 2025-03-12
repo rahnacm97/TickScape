@@ -1,194 +1,41 @@
-<%- include("../../views/partials/user/header") %>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <style>
-  /* Custom styling for the SweetAlert popup */
-.swal-popup-custom {
+  .zoom-container {
+    overflow: hidden; 
     position: relative;
-    font-size: 16px; 
-}
-
-.swal-btn-confirm {
-    position: absolute;
-    margin-top: 120px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    height: 35px;  
-    padding: 3px 20px;  
-    font-size: 12px; 
-}
-
-
-.swal-btn-custom {
-    position: absolute;
-    margin-top: 120px; 
-    left: 40%; 
-    transform: translateX(-50%); 
-    height: 35px;  
-    padding: 3px 20px;  
-    font-size: 12px; 
-}
-.swal-btn-custom1 {
-    position: absolute;
-    margin-top: 120px; 
-    left: 60%; 
-    transform: translateX(-50%); 
-    height: 35px;  
-    padding: 3px 20px;  
-    font-size: 12px; 
-}
-
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
   }
-
-  .page-header.breadcrumb-wrap {
-    margin-top: 20px;
-    background-color: #eee2e9;
-    padding: 10px 0;
-  }
-
-  .page-header.breadcrumb-wrap {
-    margin-top: 10px;
-    background-color: #ede9ec;
-    padding: 10px 0;
-}
-
-.breadcrumb-wrap {
-    padding: 15px 0;
-    background-color: #1e918b;
-    color: #fff;
-}
-
-.breadcrumb a {
-    color: #088178;
-    text-decoration: none;
-}
-
-.breadcrumb span {
-    margin: 0 5px;
-    color: rgb(125, 124, 124);
-}
-
-  .detail-gallery {
-    position: relative;
-    max-width: 600px;
-    margin: auto;
-  }
-
-  .slider-wrapper {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-  }
-
-  .slider-image {
-    width: 100%;
-    border-radius: 30px;
-    display: none;
-  }
-
-  .slider-image.active {
-    display: block;
-  }
-
-  button {
-    position: absolute;
-    top: 40%;
-    transform: translateY(-50%);
-    background-color: rgba(161, 161, 161, 0.5);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 10;
-  }
-
-  button.prev {
-    left: 10px;
-  }
-
-  button.next {
-    right: 10px;
-  }
-
-  button:hover {
-    background-color: rgba(97, 95, 95, 0.8);
-  }
-
-  .product-image-slider figure {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .slider-nav-thumbnails img {
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: border 0.3s;
-  }
-
-  .slider-nav-thumbnails .slick-current img {
-    border-color: #007bff;
-  }
-
-  .product-image-slider .zoom-icon {
-    display: block;
-  }
-
-  .product-image-slider img {
-    width: 100%;
-    height: auto;
-    cursor: pointer;
+  
+  .zoom-container img {
     transition: transform 0.3s ease;
+    cursor: zoom-in;
+  }
+  
+  .zoom-container:hover img {
+    transform: scale(2); 
   }
 
-  .short-desc,
-  .product-price-cover {
-    margin-bottom: 20px;
+  .page-header.breadcrumb-wrap {
+    background-color: #fff;
+    padding: 10px 0;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   }
 
-  .product-price ins {
-    font-size: 24px;
-    color: #007bff;
+  .breadcrumb a {
+    color: #2874f0;
+    text-decoration: none;
+    font-weight: 500;
   }
 
-  .old-price {
-    text-decoration: line-through;
-    color: #888;
+  .breadcrumb span {
+    margin: 0 5px;
+    color: #878787;
   }
 
-  .save-price {
-    color: green;
-  }
-
-  .detail-info ul {
-    padding-left: 0;
-    list-style: none;
-  }
-
-  .detail-info ul li {
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #555;
-  }
-
-  .detail-extralink .button {
-    background-color: #166d29;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .detail-extralink .button:hover {
-    background-color: #0056b3;
-  }
-
-  .button-new{
+.button-new{
     margin-top: 25px;
     font-size: 18px;
     color: #077625;
@@ -207,73 +54,109 @@
   .action-btn:hover {
     color: #0056b3;
   }
-   
-  .related-products {
-  padding: 50px 0;
-  background-color: #f9f9f9;
-}
 
-.related-title {
-  font-size: 24px;
-  text-align: center;
-  margin-bottom: 30px;
-}
+  .related-product-area {
+    padding: 50px 0;
+    background-color: #f9f9f9;
+  }
 
-.related-product-item {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.3s ease;
-}
+  .section-title {
+    text-align: center;
+    margin-bottom: 30px;
+  }
 
-.related-product-item:hover {
-  transform: translateY(-10px);
-}
+  .section-title h1 {
+    font-size: 24px;
+    color: #333;
+  }
 
-.related-product-item .product-image img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
+  .section-title p {
+    font-size: 16px;
+    color: #666;
+  }
 
-.related-product-item .product-info {
-  padding: 15px;
-  text-align: center;
-}
+  .swiper-container {
+    padding-bottom: 40px; /* Space for pagination */
+    overflow: hidden;
+  }
 
-.related-product-item .product-name {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  margin: 10px 0;
-}
+  .swiper-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
 
-.related-product-item .product-price {
-  font-size: 14px;
-  color: #007bff;
-}
+  .swiper-slide {
+    flex-shrink: 0;
+  }
 
-.related-product-item .product-price .old-price {
-  text-decoration: line-through;
-  color: #888;
-}
+  .swiper-slide .product-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
-.related-product-item .button-add-to-cart {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #166d29;
-  color: white;
-  border-radius: 5px;
-  text-decoration: none;
-  margin-top: 15px;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
+  .swiper-slide .product-card:hover {
+    transform: translateY(-10px);
+  }
 
-.related-product-item .button-add-to-cart:hover {
-  background-color: #0056b3;
-}
+  .swiper-slide .product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .swiper-slide .product-card .card-body {
+    padding: 15px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .swiper-slide .product-card .card-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0;
+  }
+
+  .swiper-slide .product-card .price {
+    font-size: 14px;
+    color: #007bff;
+  }
+
+  .swiper-slide .product-card .price .text-muted {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 12px;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #077625 !important;
+    opacity: 0.8;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+
+  .swiper-pagination-bullet {
+    background-color: #18815a !important;
+    opacity: 1;
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: #077625 !important;
+  }
 
 .row{
   margin-top: 10px;
@@ -312,132 +195,251 @@
   color: #555;
   line-height: normal;
 }
+
 h2{
  margin-left: 20px;
  margin-bottom: 10px;
 }
-.customer-reviews {
-    max-width: 1150px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background: #f9f9f9;
+.customer-reviews-section {
+    padding: 40px 0;
+    background-color: #f9f9f9;
   }
-  .review {
-    padding: 10px 0;
-  }
-  .review-header {
+
+  .reviews-title {
+    font-size: 28px;
     font-weight: bold;
+    color: #333;
+    margin-left: 20px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
   }
+
+  .customer-reviews {
+    max-width: 1150px;
+    margin-left: 50px;
+    padding: 0;
+  }
+
+  .review-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .review-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
   .review-rating {
-    color: #f4c542;
-    font-size: 16px;
+    margin-bottom: 15px;
   }
-  .review-comment {
+
+  .review-rating .star {
+    font-size: 20px;
+    color: #ddd; /* Empty stars */
+  }
+
+  .review-rating .star.filled {
+    color: #f4c542; /* Filled stars */
+  }
+
+  .review-rating .rating-text {
     font-size: 14px;
-    margin-top: 5px;
-  }
-.rating-1 { width: 20%; }
-.rating-2 { width: 40%; }
-.rating-3 { width: 60%; }
-.rating-4 { width: 80%; }
-.rating-5 { width: 100%; }
-
-.swiper-pagination-bullet-active {
-    background-color: #077625 !important;
+    color: #666;
+    margin-left: 10px;
   }
 
-  .swiper-pagination-bullet {
-    background-color: #18815a !important; 
-    opacity: 1; 
+  .review-comment {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
   }
+
+  .review-date {
+    margin-top: 10px;
+  }
+
+  .review-date .text-muted {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .no-reviews {
+    text-align: center;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .no-reviews p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .no-reviews .review-cta {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #077625;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+
+  .no-reviews .review-cta:hover {
+    background-color: #0056b3;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .customer-reviews {
+      margin-left: 20px;
+    }
+    .reviews-title {
+      font-size: 24px;
+      margin-left: 10px;
+    }
+    .review-card {
+      padding: 15px;
+    }
+    .review-header {
+      font-size: 16px;
+    }
+    .review-comment {
+      font-size: 14px;
+    }
+    .review-rating .star {
+      font-size: 18px;
+    }
+    .swiper-slide .product-card img {
+      height: 150px;
+    }
+    .swiper-slide .product-card .card-title {
+      font-size: 14px;
+    }
+  }
+
+.carousel-item img {
+              background: #f8f9fa;
+          }
   
-
-  .swiper-button-next,
-  .swiper-button-prev {
-    color: #e7e8e8 !important; 
-    opacity: 0.5;
-  }
-
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
-    font-size: 20px; 
-  }
-
-</style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-<main class="main">
-  <div class="page-header breadcrumb-wrap">
-    <div class="container">
-      <div class="breadcrumb">
-        <a href="/" rel="nofollow">Home</a>
-        <span></span><a href="/shop" rel="nofollow">Shop</a>
-        <span></span>Product
+          .carousel-control-prev,
+          .carousel-control-next {
+              background: rgba(0,0,0,0.2);
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              margin-top: 50%;
+              transform: translateY(-50%);
+          }
+  
+          .carousel-indicators {
+              bottom: -50px;
+          }
+  
+          .carousel-indicators li {
+              background-color: #777;
+          }
+  
+          .img-thumbnail {
+              transition: opacity 0.2s;
+          }
+  
+          .img-thumbnail:hover {
+              opacity: 0.8;
+          }
+  
+          #product-carousel {
+              margin-bottom: 50px;
+          }
+  
+          .carousel-control-prev-icon,
+          .carousel-control-next-icon {
+              width: 20px;
+              height: 20px;
+          }
+  </style>
+  
+    <%- include("../../views/partials/user/header") %>
+    <main class="main">
+      <div class="page-header breadcrumb-wrap mt-4 mb-3">
+        <div class="container">
+          <div class="breadcrumb">
+            <a href="/" rel="nofollow">Home</a>
+            <span></span><a href="/shop" rel="nofollow">Shop</a>
+            <span></span>Product
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.2/easyzoom.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.2/easyzoom.min.js"></script>
-
-  <section class="mt-50 mb-10">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-9">
-          <div class="product-detail accordion-detail">
-            <div class="row mb-50">
-              <!-- Left Column: Product Images -->
-              <div class="col-md-6 col-sm-12 col-xs-12">
-                <div class="detail-gallery">
-                  <div class="slider-wrapper">
-                    <% product.productImage.forEach((image, index) => { %>
-                    <figure class="border-radius-10 magnify image-class slider-image <%= index === 0 ? 'active' : '' %>">
-                      <img id="image-container" src="http://localhost:3000/<%= image %>" alt="Product Image" style="
-                        max-width: 600px;  
-                        max-height: 600px;  
-                        object-fit: cover;  
-                      ">
-                    </figure>
-                    <% }); %>
+  
+  <section class="product_details_area section_gap mt-4">
+      <div class="container mt-4">
+          <div class="row mt-4">
+              <div class="col-lg-6">
+                  <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                      
+                      <ol class="carousel-indicators">
+                          <% product.productImage.forEach((image, index) => { %>
+                              <li data-target="#product-carousel" data-slide-to="<%= index %>" 
+                                  class="<%= index === 0 ? 'active' : '' %>"></li>
+                          <% }); %>
+                      </ol>
+  
+                     
+                      <div class="carousel-inner">
+                          <% product.productImage.forEach((image, index) => { %>
+                              <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                  <div class="zoom-container">
+                                    <img src="<%= image %>" 
+                                         class="d-block w-100" 
+                                         alt="Product Image <%= index + 1 %>"
+                                         style="height: 500px; object-fit: contain;">
+                                  </div>
+                                </div>
+                                
+                                
+                          <% }); %>
+                      </div>
+  
+                      <!-- Controls -->
+                      <a class="carousel-control-prev" href="#product-carousel" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Previous</span>
+                      </a>
+                      <a class="carousel-control-next" href="#product-carousel" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Next</span>
+                      </a>
                   </div>
-                  <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
-                  <button class="next" onclick="moveSlide(1)">&#10095;</button>
-                  <script>
-                    const images = document.querySelectorAll('.slider-image');
-                    const totalImages = images.length;
-                    let currentIndex = 0;
   
-                    function moveSlide(direction) {
-                      images[currentIndex].classList.remove('active');
-                      currentIndex = (currentIndex + direction + totalImages) % totalImages;
-                      images[currentIndex].classList.add('active');
-                    }
-  
-                    images.forEach(img => {
-                      const options = {
-                        width: 400,
-                        height: 400,
-                        zoomWidth: 400,
-                        zoomHeight: 50,
-                        zoomStyle: 'z-index: 99999999',
-                        offset: { vertical: 0, horizontal: -60 }
-                      };
-                      new ImageZoom(img, options);
-                    });
-                  </script>
-  
-                  <div class="slider-nav-thumbnails">
-                    <% product.productImage.forEach((image) => { %>
-                    <div>
-                      <img src="http://localhost:3000/<%= image %>" alt="Thumbnail Image">
-                    </div>
-                    <% }); %>
+                  <div class="row mt-3">
+                      <% product.productImage.forEach((image, index) => { %>
+                          <div class="col-3">
+                              <img src="<%= image %>" 
+                                   class="img-thumbnail" 
+                                   data-target="#product-carousel" 
+                                   data-slide-to="<%= index %>"
+                                   style="cursor: pointer; height: 80px; object-fit: cover;">
+                          </div>
+                      <% }); %>
                   </div>
-                </div>
               </div>
-
               <div class="col-md-6 col-sm-12 col-xs-12">
                 <div class="row">
                   <div class="col-12">
@@ -528,113 +530,128 @@ h2{
           </div>
         </div>
       </div>
-    </section>
-    
-    <section class="mb-30">
-      <h2>Customer Reviews</h2>
-      <div class="customer-reviews ml-50">
-        <% if (reviews.length > 0) { %>
-          <% reviews.forEach(review => { %>
-            <div class="review">
-              <div class="review-header">
-                <strong><%= review.user ? `${review.user.fname || 'Anonymous'} ${review.user.lname || ''}` : 'Anonymous' %></strong>   
-              </div>
-              <div class="review-rating">
-                <% if(review.rating == 1){ %>
-                <span style="color: red;">⭐ <%= review.rating %></span>/5
-                <% } else if(review.rating <= 3) {%>
-                  <span style="color: orange;">⭐ <%= review.rating %></span>/5
-                <% } else { %>
-                  <span style="color: gold;">⭐ <%= review.rating %></span>/5
-                <% } %>
-              </div>
-              <p class="review-comment"><%= review.comment %></p>
+  </section>
+
+  <section class="mb-30 customer-reviews-section">
+    <h2 class="ml-15 reviews-title">Customer Reviews</h2>
+    <div class="customer-reviews ml-50 mt-4">
+      <% if (reviews.length > 0) { %>
+        <% reviews.forEach(review => { %>
+          <div class="review-card">
+            <div class="review-header">
+              <strong><%= review.user ? `${review.user.fname || 'Anonymous'} ${review.user.lname || ''}` : 'Anonymous' %></strong>
             </div>
-            <div>
+            <div class="review-rating">
+              <% for (let i = 1; i <= 5; i++) { %>
+                <span class="star <%= i <= review.rating ? 'filled' : '' %>">★</span>
+              <% } %>
+              <span class="rating-text">(<%= review.rating %>/5)</span>
+            </div>
+            <p class="review-comment"><%= review.comment %></p>
+            <div class="review-date">
               <span class="text-muted"><%= new Date(review.createdAt).toLocaleDateString() %></span>
             </div>
-            <hr />
-          <% }); %>
-        <% } else { %>
-          <p style="font-weight:bold ;">No reviews yet. Be the first to review this product!</p>
-        <% } %>
-      </div>
-
-    </section>
-
-  <section class="related-product-area section_gap_bottom">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-6 text-center">
-          <div class="section-title">
-            <h1>Others Also Bought</h1>
-            <p>Check out what other customers loved!</p>
           </div>
+        <% }); %>
+      <% } else { %>
+        <div class="no-reviews">
+          <p>No reviews yet. Be the first to share your thoughts!</p>
+          <a href="#" class="review-cta">Write a Review</a>
         </div>
-      </div>
-      <div class="row" style="margin-bottom: 5%;">
-        <div class="col-lg-12">
-          <% if (relatedProducts && relatedProducts.length > 0) { %>
-            <!-- Swiper Container -->
-            <div class="swiper-container">
-              <div class="swiper-wrapper">
-                <% for (let i = 0; i < relatedProducts.length; i++) { %>
-                  <div class="swiper-slide">
-                    <div class="product-card shadow-sm h-100">
-                      <a href="/productDetails?id=<%= relatedProducts[i]._id %>">
-                        <img src="http://localhost:3000/<%= relatedProducts[i].productImage[0] %>" 
-                          alt="<%= relatedProducts[i].productName %>" class="card-img-top" 
-                          style="height: 300px; width:100%; border-radius: 8px;">
-                      </a>
-                      <div class="card-body d-flex flex-column">
-                        <h5 class="card-title mb-2 text-center">
-                          <a href="/productDetails?id=<%= relatedProducts[i]._id %>" class="text-dark text-decoration-none"><%= relatedProducts[i].productName %></a>
-                        </h5>
-                        <div class="mt-auto text-center">
-                          <div class="price">
-                            <span class="text-success fw-bold">₹<%= relatedProducts[i].salePrice %></span>
-                            <% if (relatedProducts[i].regularPrice) { %>
-                              <span class="text-muted text-decoration-line-through">₹<%= relatedProducts[i].regularPrice %></span>
-                            <% } %>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                <% } %>
-              </div>
-
-              <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev" ></div>
-
-        <div class="swiper-pagination" style="margin-bottom: -4%; color: #077625;"></div>
-      </div>
-    <% } else { %>
-      <div class="text-center">
-        <p>No related products available.</p>
-      </div>
-    <% } %>
-  </div>
-</div>
-        
-      </div>
+      <% } %>
     </div>
   </section>
 
-  <!-- <section class="col-lg-3">
-    <div class="advertisement">
-      <a href="#" target="_blank">
-        <img class="img-fluid d-block mx-auto" src="assets/img/gallery/card2.png" alt="Advertisement" style="border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"> 
-      </a>
+<section class="related-product-area section_gap">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+        <div class="section-title">
+          <h1>Related Products</h1>
+          <p>Explore similar items you might love!</p>
+        </div>
+      </div>
     </div>
-  </section> -->
+    <div class="row">
+      <div class="col-lg-12">
+        <% if (relatedProducts && relatedProducts.length > 0) { %>
+          <div class="swiper-container">
+            <div class="swiper-wrapper">
+              <% relatedProducts.forEach(function(relProduct) { %>
+                <div class="swiper-slide">
+                  <div class="product-card shadow-sm">
+                    <a href="/productDetails?id=<%= relProduct._id %>">
+                      <img src="http://localhost:3000/<%= relProduct.productImage[0] %>" 
+                           alt="<%= relProduct.productName %>" 
+                           class="card-img-top">
+                    </a>
+                    <div class="card-body">
+                      <h5 class="card-title">
+                        <a href="/productDetails?id=<%= relProduct._id %>" class="text-dark text-decoration-none">
+                          <%= relProduct.productName %>
+                        </a>
+                      </h5>
+                      <div class="price">
+                        <span class="fw-bold text-dark">₹<%= relProduct.salePrice %></span>
+                        <% if (relProduct.salePrice < relProduct.regularPrice) { %>
+                          <span class="text-danger"><strike>₹<%= relProduct.regularPrice %></strike></span>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+            <!-- Navigation and Pagination -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+          </div>
+        <% } else { %>
+          <div class="text-center">
+            <p>No related products available.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
 
 </main>
+  
+  
+  <script>   
+    document.querySelectorAll('.zoom-container').forEach(function(container) {
+      container.addEventListener('mousemove', function(e) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left; 
+        const y = e.clientY - rect.top;  
+        const xPercent = (x / rect.width) * 100;
+        const yPercent = (y / rect.height) * 100;
+        container.querySelector('img').style.transformOrigin = `${xPercent}% ${yPercent}%`;
+      });
+    });
+  
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+      $(document).ready(function() {
+          
+          $('#product-carousel').carousel({
+              interval: 5000 
+          });
+  
+          $('.img-thumbnail').click(function() {
+              var slideIndex = $(this).data('slide-to');
+              $('#product-carousel').carousel(slideIndex);
+          });
+  
+          $('#product-carousel').on('slide.bs.carousel', function (e) {
+              $('.img-thumbnail').css('opacity', '0.5');
+              $('.img-thumbnail').eq(e.to).css('opacity', '1');
+          });
+      });
+</script>
+   
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -746,26 +763,28 @@ function addToCart(productId) {
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  var swiper = new Swiper(".swiper-container", {
-    slidesPerView: 4, 
-    spaceBetween: 20,
-    loop: true,
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
-    breakpoints: {
-      1024: { slidesPerView: 4 },
-      768: { slidesPerView: 2 }, 
-      480: { slidesPerView: 1 }, 
-    },
+  document.addEventListener('DOMContentLoaded', function () {
+    var swiper = new Swiper('.swiper-container', {
+      slidesPerView: 4,
+      spaceBetween: 20,
+      loop: true,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      breakpoints: {
+        1024: { slidesPerView: 4 },
+        768: { slidesPerView: 2 },
+        480: { slidesPerView: 1 },
+      },
+    });
+    console.log('Swiper initialized for Related Products');
   });
 </script>
-
-<%- include("../../views/partials/user/footer") %>
+      
+<%- include("../../views/partials/user/footer") %>  
