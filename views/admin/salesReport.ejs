@@ -311,6 +311,17 @@ document.addEventListener("DOMContentLoaded", () => {
         Swal.fire({ icon: "error", title: "Invalid Range", text: "Start date must be before end date." });
         return;
       }
+      const today = new Date();
+    if(new Date(startDate) > today){
+      Swal.fire({
+        icon: "error",
+        title: "Future Dates Not Allowed",
+        text: "Start date cannot be in the future.",
+        confirmButtonColor: "#d33",
+      });
+      return;
+    }
+
       startDate = new Date(startDate).toISOString().split("T")[0];
       endDate = new Date(endDate).toISOString().split("T")[0];
     }

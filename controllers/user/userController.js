@@ -23,41 +23,58 @@ const pageNotFound = async(req,res) => {
 }
 
 //Home page
-const loadHomePage = async(req,res,next) => {
-    try{
+const loadHomePage = async (req, res, next) => {
+    try {
         const today = new Date().toISOString();
         const findBanner = await Banner.find({
-            startDate:{$lt:new Date(today)},
-            endDate:{$gt:new Date(today)},
+            startDate: { $lt: new Date(today) },
+            endDate: { $gt: new Date(today) },
         });
+
         const userId = req.session.user;
+        let user = null;
 
-        const user = await User.findById({_id:userId});
+        if (userId) {
+            user = await User.findById(userId);
+            if (!user) {
 
-        const categories = await Category.find({isListed:true});
-        let productData = await Product.find({
-            isBlocked:false,
-            category:{$in:categories.map(category=>category._id)},quantity:{$gt:0}
-        })
+                delete req.session.user;
+                res.locals.user = null;
+            } else if (user.isBlocked) {
 
-        productData.sort((a,b) => new Date(b.createdOn) - new Date(a.createdOn));
-        productData = productData.slice(0,4);
-        if(user){
-            const userData = await User.findOne({_id:user});
-            res.locals.user = userData;
-            res.render("home",{user:userData,products:productData,banner:findBanner || []});
-        }else{
+                delete req.session.user;
+                return res.render("404page", {
+                    message: "Your account has been blocked by the admin. Please contact support.",
+                });
+            } else {
+              
+                res.locals.user = user;
+            }
+        } else {
             res.locals.user = null;
-            return res.render("home",{products:productData, banner:findBanner || []});
         }
-       
-    }catch(err){
-        console.log("Home Page Not Found");
-        //res.status(500).send("Server Error");
-        //next(new CustomError(500, "Internal Server Error"))
+
+        const categories = await Category.find({ isListed: true });
+        let productData = await Product.find({
+            isBlocked: false,
+            category: { $in: categories.map(category => category._id) },
+            quantity: { $gt: 0 },
+        });
+
+        productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+        productData = productData.slice(0, 4);
+
+        return res.render("home", {
+            user: res.locals.user,
+            products: productData,
+            banner: findBanner || [],
+        });
+
+    } catch (err) {
+        console.log("Home Page Not Found:", err);
         res.render('login');
     }
-}
+};
 
 //Login page 
 const loadLoginPage = async(req,res,next) => {
@@ -397,6 +414,7 @@ const loadShoppingPage = async (req, res, next) => {
         res.redirect('/pageNotFound');
     }
 };
+
 
 //Filtering
 const filterProducts = async (req, res) => {

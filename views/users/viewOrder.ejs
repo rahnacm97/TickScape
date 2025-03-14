@@ -510,7 +510,7 @@ hr {
                     <p class="no-address">No address available for this order.</p>
                 <% } %>
             </div> 
-            <% if (order.paymentMethod !== "Cash on Delivery" && (order.status !== "Payment Pending" || order.status === "Delivered")) { %>
+            <% if ((order.paymentMethod !== "Cash on Delivery" && order.status !== "Payment Pending") || (order.paymentMethod === "Cash on Delivery" && order.status === "Delivered")) { %>
               <a href="/download-invoice/<%= order._id %>" class="btn1 btn-sm">Download Invoice</a>
             <% } %>
 

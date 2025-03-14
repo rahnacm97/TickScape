@@ -11,7 +11,6 @@ const { v4: uuidv4 } = require('uuid');
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const ExcelJS = require("exceljs");
-//const PDFDocument = require("pdfkit");
 const PDFDocument = require('pdfkit-table');
 const path = require("path");
 const sharp = require("sharp");
@@ -19,6 +18,7 @@ const fs = require("fs");
 
 //Dashboard loading
 const loadDashboard = async (req, res) => {
+  console.log(req.session);
   if (req.session.admin) {
     try {
       let page = parseInt(req.query.page) || 1;
@@ -47,6 +47,10 @@ const loadDashboard = async (req, res) => {
           startDate = new Date(now.getFullYear(), now.getMonth(), 1);
           endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
           break;
+        case "yearly":
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+            break;
         case "custom":
           startDate = req.query.startDatee ? new Date(req.query.startDatee) : new Date(now.setHours(0, 0, 0, 0));
           endDate = req.query.endDatee ? new Date(req.query.endDatee) : new Date(now);
@@ -58,7 +62,7 @@ const loadDashboard = async (req, res) => {
       }
 
       let query = { createdOn: { $gte: startDate, $lte: endDate } };
-      console.log("loadDashboard Query:", JSON.stringify(query, null, 2));
+      //console.log("loadDashboard Query:", JSON.stringify(query, null, 2));
 
       const userCount = await User.countDocuments({ isAdmin: false });
       const totalSales = await Order.aggregate([
@@ -107,7 +111,7 @@ const loadDashboard = async (req, res) => {
         totalDiscountPrice: 0,
         itemSold: 0
       };
-      console.log("loadDashboard sales:", salesData);
+      //console.log("loadDashboard sales:", salesData);
 
       const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
       const count = await Order.countDocuments(query);
@@ -157,6 +161,7 @@ const loadDashboard = async (req, res) => {
       ]);
 
       const lowStockProducts = await Product.find({ quantity: { $lte: 5 } });
+      const totalProducts = await Product.countDocuments();
 
       if (req.xhr) {
         return res.json({ orders: salesData, totalPage, currentPage: page });
@@ -164,6 +169,7 @@ const loadDashboard = async (req, res) => {
 
       res.render('dashboard', {
         userCount,
+        totalProducts,
         orders: salesData,
         processingOrders,
         totalCouponUsers: totalCount,
@@ -217,6 +223,10 @@ const salesReport = async (req, res) => {
         startDate.setHours(0, 0, 0, 0);
         endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
         break;
+      case "yearly":
+          startDate = new Date(now.getFullYear(), 0, 1);
+          endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+          break;
       case "custom":
         startDate = req.query.startDatee ? new Date(req.query.startDatee) : new Date(now.setHours(0, 0, 0, 0));
         endDate = req.query.endDatee ? new Date(req.query.endDatee) : new Date(now);
@@ -227,7 +237,7 @@ const salesReport = async (req, res) => {
     }
 
     let query = { createdOn: { $gte: startDate, $lte: endDate } };
-    console.log("salesReport Query:", JSON.stringify(query, null, 2));
+    //console.log("salesReport Query:", JSON.stringify(query, null, 2));
 
     const userCount = await User.countDocuments({ isAdmin: false });
 
@@ -287,6 +297,8 @@ const salesReport = async (req, res) => {
 
     const order = await Order.find(query).sort({ createdOn: -1 }).limit(limit).skip(skip);
 
+    const totalProducts = await Product.countDocuments();
+
     const totalCouponUsers = await Order.aggregate([
       { $match: { couponApplied: true, ...query } },
       { $count: "totalCouponApplied" }
@@ -299,6 +311,7 @@ const salesReport = async (req, res) => {
       userCount,
       processingOrders,
       order,
+      totalProducts,
       totalCouponUsers: totalCouponCount,
       totalPage,
       currentPage: page,
@@ -307,7 +320,7 @@ const salesReport = async (req, res) => {
       filterType
     };
 
-    console.log("salesReport Result:", JSON.stringify(result, null, 2));
+    //console.log("salesReport Result:", JSON.stringify(result, null, 2));
     res.json(result);
   } catch (error) {
     console.error("Sales report error:", error);
@@ -320,6 +333,10 @@ const Chart = async (req, res) => {
   try {
     let { filter, startDate, endDate } = req.query;
     if (!filter) filter = "daily";
+
+    console.log("Filter:", filter); 
+    console.log("Start Date:", startDate); 
+    console.log("End Date:", endDate);
 
     let matchStage = {};
     const now = new Date();
@@ -342,7 +359,7 @@ const Chart = async (req, res) => {
           }
         };
         break;
-      case "weekly":
+        case "weekly":
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - 6);
         startOfWeek.setHours(0, 0, 0, 0);
@@ -367,19 +384,28 @@ const Chart = async (req, res) => {
           }
         };
         break;
-      case "custom":
-        matchStage = {
-          createdOn: {
-            $gte: new Date(startDate || now.setHours(0, 0, 0, 0)),
-            $lte: new Date(endDate || now).setHours(23, 59, 59, 999)
+        case "custom":
+          if (!startDate || !endDate) {
+            return res.status(400).json({ error: "Start date and end date are required for custom filter" });
           }
-        };
-        break;
-      default:
-        return res.status(400).json({ error: "Invalid filter type" });
-    }
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ error: "Invalid date format" });
+          }
+          end.setHours(23, 59, 59, 999); // Ensure end date includes the full day
+          matchStage = {
+            createdOn: {
+              $gte: start,
+              $lte: end
+            }
+          };
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid filter type" });
+      }
 
-    console.log('Chart Match stage:', JSON.stringify(matchStage, null, 2));
+    //console.log('Chart Match stage:', JSON.stringify(matchStage, null, 2));
 
     const salesData = await Order.aggregate([
       { $match: { status: { $nin: ["Cancelled", "Returned"] }, ...matchStage } },
@@ -419,7 +445,7 @@ const Chart = async (req, res) => {
       { $sort: { _id: 1 } }
     ]);
 
-    console.log('Chart Sales data:', JSON.stringify(salesData, null, 2));
+    //console.log('Chart Sales data:', JSON.stringify(salesData, null, 2));
 
     let labels, values;
     if (filter === "yearly") {
@@ -452,7 +478,7 @@ const Chart = async (req, res) => {
       values = salesData.map(data => parseFloat(data.totalSales.toFixed(2)));
     }
 
-    console.log('Chart Labels:', labels);
+   console.log('Chart Labels:', labels);
     console.log('Chart Values:', values);
 
     res.json({ labels, values });

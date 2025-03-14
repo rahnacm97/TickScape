@@ -430,6 +430,10 @@ strike{
         </form>
       </div>
 
+      <div class="clear-filter-section" style="margin-top: 20px;">
+        <button onclick="clearAllFilters()" class="clear-filter-btn" style="padding: 8px 15px; background-color: #1e5cef; border: 1px solid #ddd; border-radius: 20px; cursor: pointer; width: 100%;">Clear All Filters</button>
+      </div>
+
      </aside>
 
      <main class="product-grid">
@@ -492,23 +496,33 @@ strike{
 
 <script>
 
- function searchProducts() {
-    let searchValue = document.getElementById("searchQuery").value.trim();
-    console.log("Search Query:", searchValue);
-    filters.search = searchValue;
-    filters.page = 1;
-    updateProducts();
- }
-  
-  let filters = {
+let filters = {
     category: "<%= selectedCategory || '' %>",
     brand: "<%= selectedBrand || '' %>",
     price: { gt: "<%= selectedPriceRange.gt || '' %>", lt: "<%= selectedPriceRange.lt || '' %>" },
     sort: "<%= sort || '' %>",
+    search: "",
     page: "<%= currentPage || 1 %>"
-  };
+};
 
-  function applyFilters(type, value) {
+document.getElementById('searchQuery').addEventListener('keyup', function(e) {
+    const searchValue = this.value.trim();
+    filters.search = searchValue;
+    
+    if (e.key === 'Backspace' || searchValue === '') {
+        filters.search = '';
+        updateProducts();
+    }
+});
+
+function searchProducts() {
+    let searchValue = document.getElementById("searchQuery").value.trim();
+    filters.search = searchValue;
+    filters.page = 1;
+    updateProducts();
+}
+
+function applyFilters(type, value) {
     if (type === 'category') {
         filters.category = value;
         document.querySelectorAll('.filter-item[data-type="category"]').forEach(item => item.classList.remove('active'));
@@ -533,22 +547,38 @@ strike{
         document.querySelector(`.sort-button[data-id='${value}']`)?.classList.add('active');
     }
 
-    if (type === 'search') filters.search = value;
-
     filters.page = 1;
     updateProducts();
 }
 
-  function loadPage(pageNumber) {
+function loadPage(pageNumber) {
     filters.page = pageNumber;
     updateProducts();
-  }
+}
 
-  function updateProducts() {
+function clearAllFilters() {
+    filters = {
+        category: '',
+        brand: '',
+        price: { gt: '', lt: '' },
+        sort: '',
+        search: '',
+        page: 1
+    };
+
+    document.getElementById('searchQuery').value = '';
+    document.querySelectorAll('.filter-item, .price-button, .sort-button')
+        .forEach(item => item.classList.remove('active'));
+
+    updateProducts();
+}
+
+function updateProducts() {
     let query = `?page=${filters.page}`;
     if (filters.category) query += `&category=${filters.category}`;
     if (filters.brand) query += `&brand=${filters.brand}`;
-    if (filters.price.gt && filters.price.lt) query += `&gt=${filters.price.gt}&lt=${filters.price.lt}`;
+    if (filters.price.gt) query += `&gt=${filters.price.gt}`;
+    if (filters.price.lt) query += `&lt=${filters.price.lt}`;
     if (filters.sort) query += `&sort=${filters.sort}`;
     if (filters.search) query += `&search=${encodeURIComponent(filters.search)}`;
 
@@ -560,17 +590,19 @@ strike{
             document.querySelector('.product-grid').innerHTML = doc.querySelector('.product-grid').innerHTML;
             document.querySelector('.pagination').innerHTML = doc.querySelector('.pagination').innerHTML;
 
-            document.querySelectorAll('.filter-item[data-type="category"]').forEach(item => item.classList.remove('active'));
-            document.querySelector(`.filter-item[data-id='${filters.category}'][data-type="category"]`)?.classList.add('active');
-
-            document.querySelectorAll('.filter-item[data-type="brand"]').forEach(item => item.classList.remove('active'));
-            document.querySelector(`.filter-item[data-id='${filters.brand}'][data-type="brand"]`)?.classList.add('active');
-
-            document.querySelectorAll('.price-button').forEach(button => button.classList.remove('active'));
-            document.querySelector(`.price-button[data-gt='${filters.price.gt}'][data-lt='${filters.price.lt}']`)?.classList.add('active');
-
-            document.querySelectorAll('.sort-button').forEach(button => button.classList.remove('active'));
-            document.querySelector(`.sort-button[data-id='${filters.sort}']`)?.classList.add('active');
+            document.querySelectorAll('.filter-item[data-type="category"]').forEach(item => 
+                item.classList.toggle('active', filters.category === item.dataset.id));
+            
+            document.querySelectorAll('.filter-item[data-type="brand"]').forEach(item => 
+                item.classList.toggle('active', filters.brand === item.dataset.id));
+            
+            document.querySelectorAll('.price-button').forEach(button => 
+                button.classList.toggle('active', 
+                    filters.price.gt === button.dataset.gt && 
+                    filters.price.lt === button.dataset.lt));
+            
+            document.querySelectorAll('.sort-button').forEach(button => 
+                button.classList.toggle('active', filters.sort === button.dataset.id));
         })
         .catch(error => console.error('Error fetching data:', error));
 }
@@ -579,9 +611,6 @@ function resetFilters() {
     window.location.href = window.location.pathname;
 }
 
-</script>
-
-<script>
   function addToWishlist(productId) {
     $.ajax({
         url: '/addToWishlist',

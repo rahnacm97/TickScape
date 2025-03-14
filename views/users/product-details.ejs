@@ -462,22 +462,24 @@ h2{
                       </div>
                       <div class="clearfix product-price-cover">
                         <div class="product-price primary-color float-left">
-                            <ins>
-                                <span class="text-brand">₹<%= product.regularPrice - highestOffer %></span>
-                            </ins>
-                            <ins>
-                                <span class="old-price font-md ml-15">₹<%= product.regularPrice %></span>
-                            </ins>
-                            <span class="save-price font-md color3 ml-15">
-                              <% if (!highestOffer) { %>
-                                No Offers
-                            <% } else if (categoryOffer > productOffer) { %>
-                              Category Offer: <%= categoryOffer %>% Off
-                            <% } else { %>
-                             Product Offer: ₹<%= productOffer %> Off
-                            <% } %>
-                            </span>
-                        </div>
+                          <ins>
+                              <span class="text-brand">₹<%= finalPrice.toLocaleString('en-IN') %></span>
+                          </ins>
+                          <ins>
+                              <span class="old-price font-md ml-15">₹<%= product.regularPrice.toLocaleString('en-IN') %></span>
+                          </ins>
+                          <span class="save-price font-md color3 ml-15">
+                              <% if (!categoryOffer && !productOffer) { %>
+                                  No Offers
+                              <% } else if ((categoryOffer / 100) * product.regularPrice > productOffer) { %>
+                                  Category Offer: <%= categoryOffer %>% Off
+                              <% } else if (productOffer > 0) { %>
+                                  Product Offer: ₹<%= productOffer %> Off
+                              <% } else { %>
+                                  Category Offer: <%= categoryOffer %>% Off
+                              <% } %>
+                          </span>
+                      </div>
                     </div>
                     
                       <div class="bt-1 border-color-1 mt-15 mb-15"></div>

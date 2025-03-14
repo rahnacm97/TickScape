@@ -80,7 +80,7 @@ const adminLogin = async (req, res, next) => {
         if (!passwordMatch) {
             return res.render('admin-login', { message: 'Invalid password' });
         }
-
+        
         // Set session and redirect
         req.session.admin = { _id: admin._id };
         res.redirect('/admin/dashboard');

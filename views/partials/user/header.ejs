@@ -138,17 +138,13 @@
                             <ul>
                                 <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a></li>
                                 <li><a href="/wishlist"><span class="flaticon-heart"></span></a></li>
-                                <% if (locals.user) { %>
+                                <% if (locals.user || user && !user.isBlocked) { %>
                                     <li class="dropdown">
-                                        <% if (locals.user.isBlocked) { %>
-                                            <a href="#" class="sign-in-link" style="color: red; font-weight: bold;">UserBlocked</a>
-                                        <% } else { %>
                                             <a href="#" class="sign-in-link"><%= locals.user.fname %> <%= locals.user.lname || "" %></a>
                                             <div class="dropdown-content">
                                                 <a href="/userProfile"><i class="fas fa-user"></i> Profile</a>
                                                 <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
                                             </div>
-                                        <% } %>
                                     </li>
                                 <% } else { %>
                                     <li><a href="/login"><span class="flaticon-user"> Login</span></a></li>

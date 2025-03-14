@@ -9,6 +9,8 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback',
 },
 async (accessToken, refreshToken, profile, done) => {
+
+    
     try {
         let user = await User.findOne({ $or: [{ googleId: profile.id }, { email: profile.emails[0].value }] });
 
@@ -48,6 +50,7 @@ async (accessToken, refreshToken, profile, done) => {
 ));
 
 
+
 passport.serializeUser((user,done) => {
     done(null,user.id)
 });
@@ -62,5 +65,21 @@ passport.deserializeUser((id,done) => {
         done(err,null)
     })
 })
+
+
+passport.session = function () {
+    return function (req, res, next) {
+        if (req.session && req.session.passport) {
+            passport.deserializeUser(req.session.passport.user, (err, user) => {
+                if (err) return next(err);
+                req.user = user;
+                next();
+            });
+        } else {
+            next();
+        }
+    };
+};
+
 
 module.exports = passport;

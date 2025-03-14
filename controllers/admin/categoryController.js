@@ -81,6 +81,59 @@ const addCategory = async (req, res,next) => {
 };
 
 //Adding category offer
+// const addCategoryOffer = async (req, res, next) => {
+//     try {
+//         const percentage = parseInt(req.body.percentage);
+//         const categoryId = req.body.categoryId;
+
+//         if (percentage < 0 || percentage > 100) {
+//             throw new CustomError(400, 'Percentage must be between 0 and 100');
+//         }
+        
+//         //console.log("Received request:", { categoryId, percentage });
+
+//         const category = await Category.findById(categoryId);
+//         if (!category) {
+//             //return res.status(404).json({ status: false, message: "Category Not Found" });
+//             throw new CustomError(404, 'Category not found');
+//         }
+
+//         console.log("Updating category with offer...");
+//         await Category.updateOne({ _id: categoryId }, { $set: { categoryOffer: percentage } });
+//         console.log("Category offer updated successfully.");
+
+//         const products = await Product.find({ category: category._id });
+
+//         for (const product of products) {
+            
+//             if (product.productOffer && product.productOffer > 0) {
+//                 console.log(`Skipping product ${product.productName} as it already has an offer.`);
+//                 continue;
+//             }
+
+//             let discountAmount = (product.regularPrice * percentage) / 100;
+
+//             if (discountAmount > product.regularPrice) {
+//                 discountAmount = product.regularPrice;
+//             }
+
+//             product.productOffer = discountAmount;
+//             product.salePrice = product.regularPrice - discountAmount;
+
+//             await product.save();
+//         }
+
+//         console.log("Category offer applied to all applicable products.");
+//         res.json({ status: true, message: "Category offer applied successfully." });
+
+//     } catch (error) {
+//         console.error("Error in addCategoryOffer:", error);
+//         //res.status(500).json({ status: false, message: "Internal Server Error" });
+//         next(error instanceof CustomError ? error : new CustomError(500, 'Failed to apply category offer'));
+//     }
+// };
+
+
 const addCategoryOffer = async (req, res, next) => {
     try {
         const percentage = parseInt(req.body.percentage);
@@ -89,46 +142,25 @@ const addCategoryOffer = async (req, res, next) => {
         if (percentage < 0 || percentage > 100) {
             throw new CustomError(400, 'Percentage must be between 0 and 100');
         }
-        
-        //console.log("Received request:", { categoryId, percentage });
 
         const category = await Category.findById(categoryId);
         if (!category) {
-            //return res.status(404).json({ status: false, message: "Category Not Found" });
             throw new CustomError(404, 'Category not found');
         }
 
-        console.log("Updating category with offer...");
         await Category.updateOne({ _id: categoryId }, { $set: { categoryOffer: percentage } });
-        console.log("Category offer updated successfully.");
 
         const products = await Product.find({ category: category._id });
 
         for (const product of products) {
-            
-            if (product.productOffer && product.productOffer > 0) {
-                console.log(`Skipping product ${product.productName} as it already has an offer.`);
-                continue;
-            }
-
-            let discountAmount = (product.regularPrice * percentage) / 100;
-
-            if (discountAmount > product.regularPrice) {
-                discountAmount = product.regularPrice;
-            }
-
-            product.productOffer = discountAmount;
-            product.salePrice = product.regularPrice - discountAmount;
-
+            const categoryDiscount = (product.regularPrice * percentage) / 100;
+            const effectiveDiscount = Math.max(categoryDiscount, product.productOffer || 0);
+            product.salePrice = product.regularPrice - effectiveDiscount;
             await product.save();
         }
 
-        console.log("Category offer applied to all applicable products.");
         res.json({ status: true, message: "Category offer applied successfully." });
-
     } catch (error) {
-        console.error("Error in addCategoryOffer:", error);
-        //res.status(500).json({ status: false, message: "Internal Server Error" });
         next(error instanceof CustomError ? error : new CustomError(500, 'Failed to apply category offer'));
     }
 };

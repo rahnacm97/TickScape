@@ -1,4 +1,5 @@
 const Coupon = require('../../models/couponSchema');
+const CustomError = require('../../utils/customError');
 const mongoose = require('mongoose');
 
 //Coupon loading
@@ -23,6 +24,7 @@ const loadCoupon = async (req, res) => {
       const findCoupons = await Coupon.find({
         name: { $regex: searchQuery, $options: 'i' },
       })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(itemsPerPage);
 
@@ -51,29 +53,29 @@ const loadCreateCoupon = async(req,res) => {
 
 //Creating coupon
 const createCoupon = async(req,res) => {
-    try {
-        const data = {
-            couponName: req.body.couponName,
-            startDate: new Date(req.body.startDate + "T00:00:00"),
-            endDate: new Date(req.body.endDate + "T00:00:00"),
-            offerPrice: parseInt(req.body.offerPrice),
-            minimumPrice: parseInt(req.body.minimumPrice),
-        }
+  try {
+      const data = {
+          couponName: req.body.couponName,
+          startDate: new Date(req.body.startDate + "T00:00:00"),
+          endDate: new Date(req.body.endDate + "T00:00:00"),
+          offerPrice: parseInt(req.body.offerPrice),
+          minimumPrice: parseInt(req.body.minimumPrice),
+      }
 
-        const newCoupon = new Coupon({
-            name: data.couponName,
-            createdOn: data.startDate,
-            expireOn: data.endDate,
-            offerPrice: data.offerPrice,
-            minimumPrice: data.minimumPrice,
-            isList: true
-        });
-        //console.log("This is new",newCoupon);
-        await newCoupon.save();
-        return res.redirect('/admin/coupon');
-    } catch (error) {
-        res.redirect('/pageerror');
-    }
+      const newCoupon = new Coupon({
+          name: data.couponName,
+          createdOn: data.startDate,
+          expireOn: data.endDate,
+          offerPrice: data.offerPrice,
+          minimumPrice: data.minimumPrice,
+          isList: true
+      });
+      //console.log("This is new",newCoupon);
+      await newCoupon.save();
+      return res.json({ success: true, message: "Coupon created successfully!" });
+  } catch (error) {
+    return res.json({ success: false, message: "An error occurred while creating the coupon." });
+  }
 }
 
 //Edit coupon page

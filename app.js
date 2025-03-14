@@ -38,6 +38,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     next();
@@ -53,7 +54,7 @@ app.use('/viewOrder/user-assets', express.static(path.join(__dirname, 'public/us
 app.use('/',userRouter);
 app.use('/admin',adminRouter);
 
-// 404 Handler for User Routes
+
 app.use('/', (req, res, next) => {
     if (!req.path.startsWith('/admin')) { 
       res.status(404).render("404page", {
@@ -63,20 +64,13 @@ app.use('/', (req, res, next) => {
       next(); 
     }
 });
-  
-// 404 Handler for Admin Routes 
+
 app.use('/admin', (req, res) => {
     res.status(404).render("admin-error", {
       message: "The requested admin page does not exist."
     });
 });
 
-// Global Error Handling Middleware
-// app.use((err, req, res, next) => {
-//     const statusCode = err.statusCode || 500;
-//     const message = err.message || "Something went wrong! Please try again later.";
-//     res.status(statusCode).json({ error: message });
-// });
 
 app.use((err, req, res, next) => {
     const statusCode = err instanceof CustomError ? err.statusCode : 500;

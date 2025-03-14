@@ -86,41 +86,98 @@ const getForgotPassword = async(req,res) => {
 }
 
 //Email validation
-const forgotEmailValid = async(req,res) => {
+// const forgotEmailValid = async(req,res) => {
+//     try {
+//         const {email} = req.body;
+//         const findUser = await User.findOne({email:email});
+//         if(findUser){
+//             const otp = generateOtp();
+//             const emailSent = await sendVerificationEmail(email,otp);
+//             if(emailSent){
+//                 req.session.userOtp = otp;
+//                 req.session.email = email;
+
+//                 setTimeout(()=>{
+//                     delete req.session.userOtp
+//                     req.session.save((err)=>{
+//                         if(err){
+//                             console.log('Error deleting session');
+//                         }
+//                     })
+//                     console.log('otp expired');
+//                   },60000)
+//                   console.log('5');
+
+//                 res.render('forgotPass-otp');
+//                 console.log("OTP:",otp);
+//             }else{
+//                 res.json({success:false,message:"Failed to send OTP. Please try again."});
+//             }
+//         }else{
+//             res.render('forgot-password',{
+//                 message:"User with this email does not exist"
+//             });
+//         }
+
+//     } catch (error) {
+//         res.redirect('/pageNotFound');
+//     }
+// }
+
+const forgotEmailValid = async (req, res) => {
     try {
-        const {email} = req.body;
-        const findUser = await User.findOne({email:email});
-        if(findUser){
+        console.log("body", req.body);
+        const { email } = req.body;
+        console.log("email", email);
+        const findUser = await User.findOne({ email: email });
+        console.log("user", findUser);
+        if (findUser) {
             const otp = generateOtp();
-            const emailSent = await sendVerificationEmail(email,otp);
-            if(emailSent){
+            const emailSent = await sendVerificationEmail(email, otp);
+            if (emailSent) {
                 req.session.userOtp = otp;
                 req.session.email = email;
 
-                setTimeout(()=>{
-                    delete req.session.userOtp
-                    req.session.save((err)=>{
-                        if(err){
+                console.log("OTP saved in session:", req.session.userOtp);
+                console.log("Email saved in session:", req.session.email);
+
+                setTimeout(() => {
+                    delete req.session.userOtp;
+                    req.session.save((err) => {
+                        if (err) {
                             console.log('Error deleting session');
                         }
-                    })
+                    });
                     console.log('otp expired');
-                  },60000)
-                  console.log('5');
+                }, 60000);
 
-                res.render('forgotPass-otp');
-                console.log("OTP:",otp);
-            }else{
-                res.json({success:false,message:"Failed to send OTP. Please try again."});
+                // Send JSON response instead of rendering HTML
+                res.json({ success: true, message: "OTP sent successfully" });
+            } else {
+                res.json({ success: false, message: "Failed to send OTP. Please try again." });
             }
-        }else{
-            res.render('forgot-password',{
-                message:"User with this email does not exist"
+        } else {
+            res.json({
+                success: false,
+                message: "User with this email does not exist"
             });
         }
-
     } catch (error) {
-        res.redirect('/pageNotFound');
+        console.error("Server error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+const getForgotPasswordOtp = async(req,res) => {
+    try {
+        if (!req.session.userOtp || !req.session.email) {
+            console.log("No OTP or email in session, redirecting to forgot password page");
+            return res.redirect('/forgot-email-valid');
+        }
+        
+        res.render('forgotPass-otp', { email: req.session.email });  
+    } catch (error) {
+        console.log("Error in rendering",error);
     }
 }
 
@@ -388,7 +445,7 @@ const getAddress = async (req, res) => {
 
         const addressData = await Address.findOne({ userId: userId });
 
-        const cart = await Cart.findOne({ userId: req.user._id }); 
+        const cart = await Cart.findOne({ userId: userId }); 
         const cartItemCount = cart && cart.items ? cart.items.length : 0;
 
         if (!addressData || !addressData.address || addressData.address.length === 0) {
@@ -612,6 +669,7 @@ const editProfile = async (req, res) => {
 module.exports = {
     getForgotPassword,
     forgotEmailValid,
+    getForgotPasswordOtp,
     verifyForgotPassOtp,
     getResetPassword,
     resendForgotOtp,

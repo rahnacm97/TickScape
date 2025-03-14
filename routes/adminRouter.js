@@ -13,7 +13,7 @@ const couponController = require('../controllers/admin/couponController');
 const dashboardController = require('../controllers/admin/dashboardController');
 const salesController = require('../controllers/admin/salesController');
 
-const {userAuth,adminAuth} = require('../middlewares/auth');
+const {userAuth,adminAuth,redirectIfAdminLoggedIn,redirectIfUserLoggedIn} = require('../middlewares/auth');
 
 const storage = multer.diskStorage({ 
     destination: function (req, file, cb) { 
@@ -29,7 +29,7 @@ const uploads = multer({ storage: storage });
 
 
 //admin 
-router.get('/login',adminController.adminLoadLogin);
+router.get('/login',redirectIfAdminLoggedIn,adminController.adminLoadLogin);
 router.post('/login',adminController.adminLogin);
 //Logout
 router.get('/logout',adminAuth,adminController.logout);

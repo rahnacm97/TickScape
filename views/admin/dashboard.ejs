@@ -120,6 +120,7 @@ button:hover {
           <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
           <option value="custom">Custom Date Range</option>
         </select>
     
@@ -147,6 +148,17 @@ button:hover {
               </div>
               <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
                 Total clients: <span class="user-count" id="userCount"><%= userCount %></span>
+              </p>
+            </div>
+
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                </svg>
+              </div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total Products: <span class="user-count" id="totalProducts"><%= totalProducts %></span>
               </p>
             </div>
           
@@ -221,11 +233,46 @@ button:hover {
                 Pending Orders: <span class="user-count" id="processingOrders"><%= processingOrders %></span>
               </p>
             </div>
+
           </div>
               
     </div>
 
-          <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
+<!-- Charts -->
+
+<h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
+    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
+    Charts
+</h2>
+
+  <div class="grid mb-8 gap-6 mt-4">
+    <!-- Line Chart -->
+    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden mb-4">
+      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Trend</h4>
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+</div>
+
+    <div class="grid mb-8 gap-6 md:grid-cols-2 mt-4">
+    <!-- Pie Chart -->
+    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
+      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Distribution</h4>
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
+      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales by Period</h4>
+      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
     style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
     TOP 10 PRODUCTS AND CATEGORIES
 </h2>
@@ -364,64 +411,6 @@ button:hover {
       
     </div>
 
-
-          <!-- Charts -->
-  <h2 class="text-xl md:text-2xl font-semibold text-center text-gray-800 bg-gray-300 px-6 py-4 rounded-md shadow-md"
-    style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">
-    Charts
-</h2>
-
-<div class="container mx-auto px-4 py-8">
-  <div class="grid gap-6 mb-8 md:grid-cols-2 mt-4">
-    <div class="w-full md:w-48">
-      <select id="filter" 
-              class="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 
-                     dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
-        <option value="yearly">Yearly</option>
-        <option value="monthly" selected>Monthly</option>
-        <option value="weekly">Weekly</option>
-        <option value="daily">Daily</option>
-        <!-- <option value="custom">Custom Date Range</option> -->
-      </select>
-    </div>
-  </div>
-
-  <div id="customDateInputs" class="flex items-center gap-4 mt-4" style="display: none;">
-    <label for="startDate" class="text-gray-700 dark:text-gray-300">From:</label>
-    <input type="date" id="startDate" name="startDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <label for="endDate" class="text-gray-700 dark:text-gray-300">To:</label>
-    <input type="date" id="endDate" name="endDate" class="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
-
-  <div class="grid mb-8 gap-6 mt-4">
-    <!-- Line Chart -->
-    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden mb-4">
-      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Trend</h4>
-      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
-        <canvas id="lineChart"></canvas>
-      </div>
-    </div>
-</div>
-
-    <div class="grid mb-8 gap-6 md:grid-cols-2 mt-4">
-    <!-- Pie Chart -->
-    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
-      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales Distribution</h4>
-      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
-        <canvas id="pieChart"></canvas>
-      </div>
-    </div>
-    <div class="min-w-0 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 overflow-hidden">
-      <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Sales by Period</h4>
-      <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
-        <canvas id="barChart"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-
-
         </div>
       </main>
     </div>
@@ -548,9 +537,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const today = new Date();
+    if(new Date(startDate) > today){
+      Swal.fire({
+        icon: "error",
+        title: "Future Dates Not Allowed",
+        text: "Start date cannot be in the future.",
+        confirmButtonColor: "#d33",
+      });
+      return;
+    }
+
     startDate = new Date(startDate).toISOString().split("T")[0];
     endDate = new Date(endDate).toISOString().split("T")[0];
-  }
+  }else {
+      startDate = undefined; 
+      endDate = undefined;
+    }
 
   try {
     const url = `/admin/salesReport?filterType=${filterType}${
@@ -568,6 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //updateTable(result);
     updateCardForm(result);
     //updatePagination(result);
+    await updateCharts(filterType, startDate, endDate);
   } catch (error) {
     console.error("Fetch error:", error);
     Swal.fire({
@@ -579,8 +583,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-});
+updateCharts("daily");
 
+});
 
 
 function updateCardForm(result) {
@@ -592,6 +597,7 @@ function updateCardForm(result) {
     document.getElementById('totalCouponUsers').textContent = result.totalCouponUsers || 0;
     document.getElementById('totalDiscount').textContent = `₹${result.totalDiscountPrice.toFixed(2) || 0}`;
     document.getElementById('processingOrders').textContent = result.processingOrders || 0;
+    document.getElementById('totalProducts').textContent = result.totalProducts || 0;
 
 }
 
@@ -614,28 +620,22 @@ let lineChart = null;
 let pieChart = null;
 let barChart = null;
 
-async function updateCharts() {
+async function updateCharts(filter, startDate, endDate) {
       const lineCtx = document.getElementById('lineChart').getContext('2d');
       const pieCtx = document.getElementById('pieChart').getContext('2d');
       const barCtx = document.getElementById('barChart').getContext('2d');
-      const filter = document.getElementById('filter').value;
+      //const filter = document.getElementById('filter').value;
+  
+
       let url = `/admin/sales-data?filter=${filter}`;
-
-      if (filter === "custom") {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        if (!startDate || !endDate) {
-          alert("Please select both start and end dates for custom range.");
-          return;
-        }
-        if (new Date(startDate) > new Date(endDate)) {
-          alert("Start date must be before end date.");
-          return;
-        }
-
-        url += `&startDate=${startDate}&endDate=${endDate}`;
-      }
+  if (filter === "custom") {
+    if (!startDate || !endDate) {
+      console.error("Missing startDate or endDate for custom filter");
+      return;
+    }
+    url += `&startDate=${startDate}&endDate=${endDate}`;
+    console.log("Chart URL:", url); 
+  }
 
       try {
         const response = await fetch(url);
@@ -747,7 +747,12 @@ async function updateCharts() {
 
   } catch (error) {
     console.error("Error loading chart data:", error);
-    alert("Failed to load chart data. Please try again.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to load chart data!",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -771,7 +776,7 @@ async function updateCharts() {
       console.log('Initial setup - Filter:', filterSelect);
       console.log('Initial setup - Custom inputs:', customDateInputs);
 
-      updateCharts();
+      updateCharts(filter, startDate, endDate);
 
       filterSelect.addEventListener('change', () => {
         const isCustom = filterSelect.value === 'custom';
@@ -784,7 +789,7 @@ async function updateCharts() {
           document.getElementById('startDate').value = '';
           document.getElementById('endDate').value = '';
         }
-        debouncedUpdateCharts();
+        debouncedUpdateCharts(filter, startDate, endDate);
       });
 
       document.getElementById('startDate').addEventListener('change', debouncedUpdateCharts);
