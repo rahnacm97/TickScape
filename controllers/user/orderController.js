@@ -218,7 +218,8 @@ const getOrders = async (req, res) => {
 
         const user = await User.findById({_id:userId});
 
-        const cart = await Cart.findOne({ userId: req.user._id }); 
+        const cart = await Cart.findOne({ userId: userId }); 
+
         const cartItemCount = cart && cart.items ? cart.items.length : 0;
 
         const page = Math.max(1, parseInt(req.query.page, 10) || 1);

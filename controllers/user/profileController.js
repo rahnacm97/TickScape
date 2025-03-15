@@ -251,6 +251,7 @@ const userProfile = async (req, res) => {
         const userData = await User.findById(userId);
         const addressData = await Address.findOne({ userId: userId });
 
+        const wallet = Array.isArray(userData.wallet) ? userData.wallet : [];
         const sortedWallet = userData.wallet.sort((a, b) => {
             return new Date(b.date) - new Date(a.date); 
           });

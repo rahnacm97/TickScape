@@ -13,7 +13,7 @@ const couponController = require('../controllers/admin/couponController');
 const dashboardController = require('../controllers/admin/dashboardController');
 const salesController = require('../controllers/admin/salesController');
 
-const {userAuth,adminAuth,redirectIfAdminLoggedIn,redirectIfUserLoggedIn} = require('../middlewares/auth');
+const {adminAuth,redirectIfAdminLoggedIn} = require('../middlewares/auth');
 
 const storage = multer.diskStorage({ 
     destination: function (req, file, cb) { 

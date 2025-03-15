@@ -5,7 +5,7 @@ const customerInfo = async (req, res) => {
     try {
         const search = req.query.search || "";
         const page = parseInt(req.query.page) || 1;
-        const limit = 3;
+        const limit = 5;
 
         const userData = await User.find({
             isAdmin: false,
@@ -14,6 +14,7 @@ const customerInfo = async (req, res) => {
                 { email: { $regex: ".*" + search + ".*", $options: "i" } }
             ],
         })
+            .sort({ createdOn: -1 })
             .limit(limit)
             .skip((page - 1) * limit)
             .exec();
@@ -39,9 +40,11 @@ const customerInfo = async (req, res) => {
 const customerBlocked = async (req,res) => {
     try {
         let id = req.query.id;
+        //console.log("Admin session before blocking:", req.session.admin);
         console.log("id for blocking",id)
         await User.updateOne({_id: id},{$set: {isBlocked: true}});
-        console.log("Blocked",id);
+        //console.log("Blocked",id);
+        //console.log("Admin session after blocking:", req.session.admin);
         res.redirect('/admin/users');
         console.log("Exited");
     } catch (error) {

@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
-  
   body {
     font-family: 'Arial', sans-serif;
     color: #333;
@@ -34,7 +33,7 @@
     color: #fff;
     text-align: left;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(4, 4, 4, 0.4);
     border-radius: 10px;
   }
 
@@ -70,22 +69,51 @@
   .product-content-wrap { padding: 15px; text-align: center; }
   .product-content-wrap h6 { font-size: 18px; margin-bottom: 10px; color: #333; font-weight: 600; }
   .product-content-wrap h5 { font-size: 16px; margin-bottom: 15px; color: #ff6b6b; font-weight: bold; }
-  .product-content-wrap a { font-size: 14px; text-transform: uppercase; color: #fff; background-color: #ff6b6b; padding: 8px 12px; border-radius: 5px; text-decoration: none; transition: background-color 0.3s ease; }
-  .product-content-wrap a:hover { background-color: #ff4c4c; }
-  .add-to-cart-btn{background-color: #0b65d4;}
+  .product-content-wrap a button { font-size: 14px; text-transform: uppercase; color: #fff; background-color: #ff6b6b; padding: 8px 12px; border: none; border-radius: 5px; text-decoration: none; transition: background-color 0.3s ease; }
+  .product-content-wrap a button:hover { background-color: #ff4c4c; }
+  .add-to-cart-btn { background-color: #0b65d4; }
 
+  /* Responsive Media Queries */
   @media (max-width: 768px) {
     .hero__items { height: 350px; }
     .hero__text h2 { font-size: 28px; }
+    .hero__text h6 { font-size: 16px; }
     .hero__text p { font-size: 14px; }
-    .banner__item { height: 250px; }
-    .banner__item__text h2 { font-size: 20px; }
+    .banner__item { height: 300px; }
+    .banner__item__text h2 { font-size: 18px; }
+    .banner__item__text a { font-size: 12px; padding: 6px 15px; }
+    .product-img { height: 300px; }
+    .product-content-wrap h6 { font-size: 16px; }
+    .product-content-wrap h5 { font-size: 14px; }
+    .product-content-wrap a button { font-size: 12px; padding: 6px 10px; }
+    .owl-nav button { width: 30px; height: 30px; font-size: 16px !important; }
   }
 
   @media (max-width: 576px) {
-    .hero__text h2 { font-size: 24px; }
+    .hero__items { height: 350px; }
     .hero__text { padding: 15px; }
-    .banner__item__text { bottom: 10px; left: 10px; padding: 10px; }
+    .hero__text h2 { font-size: 20px; }
+    .hero__text h6 { font-size: 14px; }
+    .hero__text p { font-size: 12px; }
+    .banner__item { height: 200px; }
+    .banner__item__text { bottom: 10px; left: 10px; padding: 8px; }
+    .banner__item__text h2 { font-size: 16px; }
+    .banner__item__text a { font-size: 10px; padding: 4px 10px; }
+    .product-img { height: 300px; }
+    .col-lg-3, .col-md-4, .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+    .product-content-wrap h6 { font-size: 14px; }
+    .product-content-wrap h5 { font-size: 12px; }
+    .product-content-wrap a button { font-size: 10px; padding: 4px 8px; }
+    .wishlist-btn { top: 10px; right: 10px; padding: 6px; font-size: 16px; }
+    .owl-nav { display: none; } /* Hide navigation arrows on very small screens */
+  }
+
+  @media (max-width: 400px) {
+    .col-lg-3, .col-md-4, .col-sm-6 { flex: 0 0 100%; max-width: 100%; }
+    .hero__text { padding: 10px; }
+    .banner__item { height: 200px; }
+    .banner__item__text h2 { font-size: 14px; }
+    .product-img { height: 300px; }
   }
 </style>
 
@@ -100,7 +128,6 @@
                   <h6>Summer Collection</h6>
                   <h2>Fall - Winter Collections 2030</h2>
                   <p>A specialist label creating luxury essentials. Ethically created.</p>
-                  
                 </div>
               </div>
             </div>
@@ -126,19 +153,33 @@
 <section class="banner py-5">
   <div class="container">
     <div class="banner__carousel owl-carousel owl-theme">
-        <div class="banner__item__pic">
-          <img src="assets/img/banner/new2.jpg" alt="Clothing Collections 2030">
-        </div>             
-     
-        <div class="banner__item__pic">
-          <img src="assets/img/banner/new3.jpg" alt="Accessories">
+        <div class="banner__item">
+          <div class="banner__item__pic">
+            <img src="assets/img/banner/new2.jpg" alt="Clothing Collections 2030">
+          </div>
+          <div class="banner__item__text">
+            <h2>Daily Collections 2030</h2>
+            <a href="#">Shop Now</a>
+          </div>
         </div>
-     
-      
-        <div class="banner__item__pic">
-          <img src="assets/img/banner/new4.jpg" alt="Shoes Spring 2030">
+        <div class="banner__item">
+          <div class="banner__item__pic">
+            <img src="assets/img/banner/new3.jpg" alt="Accessories">
+          </div>
+          <div class="banner__item__text">
+            <h2>Accessories</h2>
+            <a href="#">Shop Now</a>
+          </div>
         </div>
-      
+        <div class="banner__item">
+          <div class="banner__item__pic">
+            <img src="assets/img/banner/new4.jpg" alt="Shoes Spring 2030">
+          </div>
+          <div class="banner__item__text">
+            <h2>Shoes Spring 2030</h2>
+            <a href="#">Shop Now</a>
+          </div>
+        </div>
     </div>
   </div>
 </section>
@@ -168,7 +209,7 @@
           <div class="product-content-wrap">
             <h6><%=products[i].productName%></h6>
             <h5>₹<%=products[i].salePrice%></h5>
-            <a><button class="add-to-cart-btn" onclick="addToCart('<%= products[i]._id %>')" style="background-color: #ff6b6b; border: none;">Add to Cart</button></a>
+            <a><button class="add-to-cart-btn" onclick="addToCart('<%= products[i]._id %>')">Add to Cart</button></a>
           </div>
         </div>
       </div>

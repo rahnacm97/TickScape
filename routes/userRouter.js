@@ -12,7 +12,7 @@ const orderController = require("../controllers/user/orderController");
 const wishlistController = require('../controllers/user/wishlistController');
 const walletController = require("../controllers/user/walletController");
 
-const {userAuth,adminAuth,redirectIfUserLoggedIn,redirectIfAdminLoggedIn} = require('../middlewares/auth');
+const {userAuth,redirectIfUserLoggedIn} = require('../middlewares/auth');
 const { profile } = require('console');
 
 const razorpay = new Razorpay({
@@ -27,29 +27,9 @@ router.get('/signup',userController.loadSignupPage);
 router.post('/signup',userController.signup);
 router.post('/verify-otp',userController.verifyOtp);
 router.post('/resend-otp',userController.resendOtp);
-// router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-// router.get('/auth/google/callback',passport.authenticate('google', { failureRedirect: '/signup' }),
-//     async (req, res) => {
-//         try {
-//             const user = req.user;
-//             if (!user) {
-//                 return res.redirect('/signup');
-//             }
-//             req.session.user = user._id;
-//             console.log("User logged in via Google:", user.email);
-//             if (req.session.admin) {
-//                 console.log("Admin session also present:", req.session.admin);
-//             }
-//             res.redirect('/');
-//         } catch (err) {
-//             console.error("Google OAuth Error:", err);
-//             res.redirect('/signup');
-//         }
-//     }
-// );
 
 const preserveAdminSession = (req, res, next) => {
-    req._adminSession = req.session.admin ? { ...req.session.admin } : null; // Store admin session separately
+    req._adminSession = req.session.admin ? { ...req.session.admin } : null; 
     next();
 };
 
@@ -70,7 +50,6 @@ router.get(
             
             if (req._adminSession) {
                 req.session.admin = req._adminSession;
-                //console.log("Admin session preserved:", req.session.admin);
             }
             req.session.save((err) => {
                 if (err) {

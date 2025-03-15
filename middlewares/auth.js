@@ -17,7 +17,6 @@ const redirectIfAdminLoggedIn = (req, res, next) => {
 
 const userAuth = async (req, res, next) => {
     let userId;
-
     if (req.session.user) {
         userId = req.session.user;
     } else if (req.user) {
@@ -29,7 +28,7 @@ const userAuth = async (req, res, next) => {
     try {     
         const user = await User.findById(userId);
         if (!user) {
-           // console.log("User not found, logging out and redirecting to login");
+           console.log("User not found, logging out and redirecting to login");
             if (req.user) {
                 req.logout((err) => {
                     if (err) console.error("Error during logout:", err);

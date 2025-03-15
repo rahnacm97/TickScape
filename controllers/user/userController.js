@@ -41,13 +41,11 @@ const loadHomePage = async (req, res, next) => {
                 delete req.session.user;
                 res.locals.user = null;
             } else if (user.isBlocked) {
-
                 delete req.session.user;
                 return res.render("404page", {
                     message: "Your account has been blocked by the admin. Please contact support.",
                 });
-            } else {
-              
+            } else { 
                 res.locals.user = user;
             }
         } else {
@@ -65,11 +63,10 @@ const loadHomePage = async (req, res, next) => {
         productData = productData.slice(0, 4);
 
         return res.render("home", {
-            user: res.locals.user,
+            user: user,
             products: productData,
             banner: findBanner || [],
         });
-
     } catch (err) {
         console.log("Home Page Not Found:", err);
         res.render('login');

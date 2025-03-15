@@ -306,7 +306,7 @@
               </a>
               <a class="nav-link" href="/cart">
                 <i class="fas fa-shopping-cart"></i> Cart
-                <% if (cartItemCount > 0) { %>
+                <% if (typeof cartItemCount !== 'undefined' && cartItemCount > 0 ) { %>
                   <span class="badge bg-teal rounded-pill ms-2"><%= cartItemCount %></span>
                 <% } %>
               </a>
