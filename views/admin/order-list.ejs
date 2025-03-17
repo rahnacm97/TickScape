@@ -162,7 +162,9 @@
               <td><%= order.userId.fname %> <%= order.userId.lname %></td>
               <td><%= order.orderId %></td>
               <td>
-                ₹<%= order.finalAmount.toFixed(2) %>
+                ₹<%= (order.orderedItems
+                  .filter(item => item.orderStatus !== "Cancelled" && item.orderStatus !== "Returned")
+                  .reduce((sum, item) => sum + item.price * item.quantity, 0) * 1.18 + (order.shipping || 0)).toFixed(2) || '0' %>
               </td>
               <td>
                 <% 
@@ -171,7 +173,6 @@
                 <%= activeItems %>
               </td>
               <td><strong><%= order.status %></strong></td>
-              <!-- <td>₹<%= order.totalPrice.toFixed(2) %></td> -->
               <td>
                 <a href="/admin/orderDetailsAdmin/<%= order._id %>" data-section="order">
                     <button class="btn btn-primary delete-order mb-2" 
@@ -179,11 +180,6 @@
                         View
                     </button>
                 </a>
-                <!-- <a href="/admin/delete-order/<%= order._id %>>
-                <button class="btn btn-danger delete-order " data-order-id="<%= order._id %>" <%= (order.status === 'Delivered' || order.status === 'Cancelled') ? 'disabled' : '' %>>
-                    <i class="fas fa-trash"></i>
-                </button>
-                </a> -->
             </td>
             </tr>
         <% }) %>

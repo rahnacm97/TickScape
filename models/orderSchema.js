@@ -10,7 +10,6 @@ const orderSchema = new Schema({
     },
     orderId: {
         type: String,
-        //default: () => uuidv4(),
         default: () => uuidv4().replace(/-/g, '').substring(0, 10),
         unique: true
     },
@@ -20,8 +19,14 @@ const orderSchema = new Schema({
             ref: "Product",
             required: true
     },
-    productName: { type: String, required: true }, 
-    productImage: { type: String, required: true }, 
+    productName: { 
+        type: String, 
+        required: true 
+    }, 
+    productImage: { 
+        type: String, 
+        required: true 
+    }, 
     quantity: {
             type: Number,
             required: true
@@ -122,4 +127,5 @@ const orderSchema = new Schema({
 })
 
 const Order = mongoose.model("Order",orderSchema);
+
 module.exports = Order;

@@ -109,28 +109,83 @@
 
               <!-- Product Details -->
               <div class="order-summary mb-4">
-                  <h5>Ordered Products</h5>
-                  <table class="table table-bordered">
-                    <thead>
+                <h5>Ordered Products</h5>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th>Product Image</th>
+                      <th>Category</th>
+                      <th>Description</th>
+                      <th>Brand</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Order Status</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <!-- Active Items Section -->
+                  <tbody>
+                    <% 
+                      const activeItems = order.orderedItems.filter(item => item.orderStatus !== "Cancelled");
+                      if (activeItems.length > 0) {
+                        activeItems.forEach((item, index) => { 
+                    %>
                       <tr>
-                        <th>Product Name</th>
-                        <th>Product Image</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Brand</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total Price</th>
-                        <th>Status</th>
+                        <td><%= item.productId.productName %></td>
+                        <td><img class="img-fluid" src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
+                        <td><%= item.productId.category.name %></td>
+                        <td><%= item.productId.description %></td>
+                        <td><%= item.productId.brand ? item.productId.brand.brandName : "N/A" %></td>
+                        <td><%= item.quantity %></td>
+                        <td><%= item.price %></td>
+                        <td><%= item.orderStatus %></td>
+                        <% if (index === 0) { %>
+                          <td rowspan="<%= activeItems.length %>">
+                            <select class="order-status-dropdown" 
+                                    data-order-id="<%= order._id %>" 
+                                    data-current-status="<%= order.status %>">
+                              <% 
+                                let statuses;
+                                if (order.status === "Payment Pending") {
+                                  statuses = ["Payment Pending"]; 
+                                } else if (order.status === "Cancelled") {
+                                  statuses = ["Cancelled"];
+                                } else {
+                                  statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"];
+                                }
+                                let adjustedStatus = ["Return Request", "Returned", "Return Denied"].includes(order.status) ? "Delivered" : order.status;
+                                let currentIndex = statuses.indexOf(adjustedStatus);
+                              %>
+                              <% statuses.forEach((status, index) => { %>
+                                <option value="<%= status %>" 
+                                        <%= adjustedStatus === status ? 'selected' : '' %>
+                                        <%= index < currentIndex && order.status !== "Payment Pending" ? 'disabled' : '' %>> 
+                                  <%= status %>
+                                </option>
+                              <% }); %>
+                            </select>
+                          </td>
+                        <% } %>
                       </tr>
-                    </thead>
-                    <tbody>
-                      <% 
-                        const activeItems = order.orderedItems.filter(item => item.orderStatus !== "Cancelled");
-                        if (activeItems.length > 0) {
-                          activeItems.forEach((item, index) => { 
-                      %>
-                        <tr>
+                    <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="9">No active items in this order</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                  <!-- Cancelled Items Section -->
+                  <tbody class="cancelled-items-section">
+                    <% 
+                      const cancelledItems = order.orderedItems.filter(item => item.orderStatus === "Cancelled");
+                      if (cancelledItems.length > 0) { 
+                    %>
+                      <tr>
+                        <th colspan="9" class="cancelled-header">Cancelled Items</th>
+                      </tr>
+                      <% cancelledItems.forEach(item => { %>
+                        <tr class="cancelled-item">
                           <td><%= item.productId.productName %></td>
                           <td><img class="img-fluid" src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
                           <td><%= item.productId.category.name %></td>
@@ -138,52 +193,37 @@
                           <td><%= item.productId.brand ? item.productId.brand.brandName : "N/A" %></td>
                           <td><%= item.quantity %></td>
                           <td><%= item.price %></td>
-                          <td>₹<%= (order.finalAmount).toFixed(2) %></td>
-                          <% if (index === 0) { %>
-                            <td rowspan="<%= activeItems.length %>">
-                              <select class="order-status-dropdown" 
-                                      data-order-id="<%= order._id %>" 
-                                      data-current-status="<%= order.status %>">
-                                <% 
-                                  let statuses;
-                                  if (order.status === "Payment Pending") {
-                                    statuses = ["Payment Pending"]; 
-                                  } else if (order.status === "Cancelled") {
-                                    statuses = ["Cancelled"];
-                                  } else {
-                                    statuses = ["Order Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"];
-                                  }
-                                  
-                                  let adjustedStatus = ["Return Request", "Returned", "Return Denied"].includes(order.status) ? "Delivered" : order.status;
-                                  let currentIndex = statuses.indexOf(adjustedStatus);
-                                %>
-                                <% statuses.forEach((status, index) => { %>
-                                  <option value="<%= status %>" 
-                                          <%= adjustedStatus === status ? 'selected' : '' %>
-                                          <%= index < currentIndex && order.status !== "Payment Pending" ? 'disabled' : '' %>> 
-                                    <%= status %>
-                                  </option>
-                                <% }); %>
-                              </select>
-                            </td>
-                          <% } %>
+                          <td><%= item.orderStatus %></td>
+                          <td></td> <!-- No status dropdown for cancelled items -->
                         </tr>
                       <% }); %>
-                      <% } else { %>
-                        <tr>
-                          <td colspan="9">No active items in this order</td>
-                        </tr>
-                      <% } %>
-                    </tbody>
-                  </table>
+                    <% } %>
+                  </tbody>
+                </table>
               </div>
+              
+              <style>
+                .cancelled-items-section .cancelled-header {
+                  background-color: #f8d7da;
+                  color: #721c24;
+                  font-weight: bold;
+                  text-align: center;
+                }
+                .cancelled-item {
+                  background-color: #f8f8f8;
+                  color: #888;
+                }
+              </style>
 
               <hr>
 
               <div class="order-summary mb-4">
                   <h5>Payment Details</h5>
                   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                  <p><strong>Total Amount:</strong> ₹<%= (order.finalAmount).toFixed(2) %></p>
+                  <p><strong>Total Amount:</strong> ₹<%= (order.orderedItems
+                    .filter(item => item.orderStatus !== "Cancelled" && item.orderStatus !== "Returned")
+                    .reduce((sum, item) => sum + item.price * item.quantity, 0) * 1.18 + (order.shipping || 0)).toFixed(2) || '0' %>
+                  </p>
               </div>
 
               <hr>

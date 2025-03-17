@@ -39,7 +39,7 @@ const sendVerificationEmail = async(email,otp) => {
         const mailOptions = {
             from: process.env.NODEMAILER_EMAIL,
             to: email,
-            subject: "Your OTP for Password reset",
+            subject: "Your OTP for resetting is",
             text:`OTP is ${otp}`,
             html: `<b><h4>Your OTP is ${otp}</h4><br></b>`
         }
@@ -51,13 +51,11 @@ const sendVerificationEmail = async(email,otp) => {
         return false
        }
 
-   // Assign the OTP to the user object
-isUser.otp = otp;
+        // Assign the OTP to the user object
+        isUser.otp = otp;
 
-// Save the updated user object
-await isUser.save();
-
-
+        // Save the updated user object
+        await isUser.save();
         console.log("Email sent:",info.messageId);
         return true;
     } catch (error) {
@@ -86,44 +84,6 @@ const getForgotPassword = async(req,res) => {
 }
 
 //Email validation
-// const forgotEmailValid = async(req,res) => {
-//     try {
-//         const {email} = req.body;
-//         const findUser = await User.findOne({email:email});
-//         if(findUser){
-//             const otp = generateOtp();
-//             const emailSent = await sendVerificationEmail(email,otp);
-//             if(emailSent){
-//                 req.session.userOtp = otp;
-//                 req.session.email = email;
-
-//                 setTimeout(()=>{
-//                     delete req.session.userOtp
-//                     req.session.save((err)=>{
-//                         if(err){
-//                             console.log('Error deleting session');
-//                         }
-//                     })
-//                     console.log('otp expired');
-//                   },60000)
-//                   console.log('5');
-
-//                 res.render('forgotPass-otp');
-//                 console.log("OTP:",otp);
-//             }else{
-//                 res.json({success:false,message:"Failed to send OTP. Please try again."});
-//             }
-//         }else{
-//             res.render('forgot-password',{
-//                 message:"User with this email does not exist"
-//             });
-//         }
-
-//     } catch (error) {
-//         res.redirect('/pageNotFound');
-//     }
-// }
-
 const forgotEmailValid = async (req, res) => {
     try {
         console.log("body", req.body);
@@ -150,8 +110,6 @@ const forgotEmailValid = async (req, res) => {
                     });
                     console.log('otp expired');
                 }, 60000);
-
-                // Send JSON response instead of rendering HTML
                 res.json({ success: true, message: "OTP sent successfully" });
             } else {
                 res.json({ success: false, message: "Failed to send OTP. Please try again." });
@@ -186,7 +144,7 @@ const verifyForgotPassOtp = async(req,res) => {
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
-            // res.render('reset-password');
+            //res.render('reset-password');
             req.session.user = req.session.user || {};
             res.json({success:true,redirectUrl:'/reset-password',user: req.session.user});
         }else{
@@ -279,7 +237,6 @@ const userProfile = async (req, res) => {
 };
 
 
-
 //Email changing
 const changeEmail = async(req,res) => {
     try {
@@ -295,43 +252,56 @@ const changeEmail = async(req,res) => {
 }
 
 //Email change otp
-const changeEmailValid = async(req,res) => {
+const changeEmailValid = async (req, res) => {
     try {
-        const {email} = req.body;
-        const userExists = await User.findOne({email});
-        if(userExists){
+        const { email } = req.body;
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
             const otp = generateOtp();
-            const emailSent = await sendVerificationEmail(email,otp);
-            if(emailSent){
+            const emailSent = await sendVerificationEmail(email, otp);
+
+            if (emailSent) {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
 
-                setTimeout(()=>{
-                    delete req.session.userOtp
-                    req.session.save((err)=>{
-                        if(err){
-                            console.log('Error deleting session');
+                setTimeout(() => {
+                    delete req.session.userOtp;
+                    req.session.save((err) => {
+                        if (err) {
+                            console.log("Error deleting session");
                         }
-                    })
-                    console.log('otp expired');
-                  },60000)
-                  //console.log('5');
+                    });
+                    console.log("OTP expired");
+                }, 60000);
 
-                res.render("change-email-otp");
-                console.log("Email Sent:",email);
-                console.log("OTP:",otp);
-
-            }else{
-                res.json("email-error");
+                return res.json({ success: true, redirectUrl: "/change-email-otp" });
+            } else {
+                return res.json({ error: "email-error" });
             }
-        }else{
-            res.render('change-email',{message:"User with this email does not exist"});
+        } else {
+            return res.json({ error: "User with this email does not exist" });
         }
     } catch (error) {
-        res.redirect('/pageNotFound');
+        console.error(error);
+        return res.json({ error: "Something went wrong. Please try again." });
     }
-}
+};
+
+const changeEmailOtp = async (req, res) => {
+    try {
+        if (!req.session.userOtp) {
+            return res.redirect("/change-email");
+        }
+
+        res.render("change-email-otp");
+    } catch (error) {
+        console.error(error);
+        res.redirect("/pageNotFound");
+    }
+};
+
 
 //Verify email otp
 const verifyEmailOtp = async(req,res) => {
@@ -378,46 +348,56 @@ const changePassword = async(req,res) =>{
 }
 
 //Password change otp
-const changePasswordValid = async(req,res) => {
+const changePasswordValid = async (req, res) => {
     try {
-        const {email} = req.body;
-        const userExists = await User.findOne({email});
-        if(userExists){
+        const { email } = req.body;
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
             const otp = generateOtp();
-            const emailSent = await sendVerificationEmail(email,otp);
-            if(emailSent){
+            const emailSent = await sendVerificationEmail(email, otp);
+            if (emailSent) {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
 
-                setTimeout(()=>{
-                    delete req.session.userOtp
-                    req.session.save((err)=>{
-                        if(err){
+                setTimeout(() => {
+                    delete req.session.userOtp;
+                    req.session.save((err) => {
+                        if (err) {
                             console.log('Error deleting session');
                         }
-                    })
-                    console.log('otp expired');
-                  },60000)
-                  console.log('5');
+                    });
+                    console.log('OTP expired');
+                }, 60000);
 
-                res.render("change-password-otp");
-                console.log("Email Sent:",email);
-                console.log("OTP:",otp);
-            }else{
-                res.json({
-                    success:false,
-                    message:"Failed to send OTP. Please try again."
-                });
+                console.log('Email Sent:', email);
+                console.log('OTP:', otp);
+                res.json({ success: true, redirectUrl: "/change-password-otp" });
+            } else {
+                res.json({ success: false, message: "Failed to send OTP. Please try again." });
             }
-        }else{
-            res.render('change-password',{message:"User with this email does not exist"});
+        } else {
+            res.json({ success: false, message: "User with this email does not exist" });
         }
     } catch (error) {
-        console.log("Error in change password");
+        console.log("Error in change password:", error);
+        res.json({ success: false, message: "An error occurred. Please try again." });
+    }
+};
+
+const changePasswordOtp = async (req, res) => {
+    try {
+        if (!req.session.userOtp) {
+            return res.redirect("/change-email");
+        }
+
+        res.render("change-password-otp");
+    } catch (error) {
+        console.error(error);
         res.redirect("/pageNotFound");
     }
-}
+};
 
 //Change password otp verification
 const verifyChangePassOtp = async(req,res,next) => {    
@@ -678,10 +658,12 @@ module.exports = {
     userProfile,
     changeEmail,
     changeEmailValid,
+    changeEmailOtp,
     verifyEmailOtp,
     updateEmail,
     changePassword,
     changePasswordValid,
+    changePasswordOtp,
     verifyChangePassOtp,
     getAddress,
     addAddress,

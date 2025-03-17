@@ -8,6 +8,7 @@ const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const CryptoJS = require("crypto-js");
+const mongoose = require('mongoose');
 
 //404 page
 const pageNotFound = async(req,res) => {

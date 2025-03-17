@@ -3,7 +3,7 @@
    <div class="card mx-auto card-login col-4">
        <div class="card-body">
            <h4 class="card-title mb-4">Enter Current Email</h4>
-           <form method="post" action="/change-email" onsubmit="return validateLoginForm()">
+           <form method="post" action="/change-email">
                <div class="mb-3">
                    <input class="form-control" name="email" placeholder="Email" type="text" id="email">
                    <div class="error-message" id="email-error"></div>
@@ -12,12 +12,68 @@
                    <button type="submit" class="btn btn-primary w-100">Verify</button>
                </div>
            </form>
-         
-         
        </div>
    </div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+   document.querySelector("form").addEventListener("submit", async function (event) {
+       event.preventDefault();
+
+       const emailInput = document.getElementById("email");
+       const emailError = document.getElementById("email-error");
+       const emailValue = emailInput.value.trim();
+       const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+       if (emailValue === "") {
+           emailError.textContent = "Please enter your email.";
+           emailInput.classList.add("is-invalid");
+           return false;
+       } else if (!emailValue.match(emailPattern)) {
+           emailError.textContent = "Please enter a valid email address.";
+           emailInput.classList.add("is-invalid");
+           return false;
+       } else {
+           emailError.textContent = "";
+           emailInput.classList.remove("is-invalid");
+       }
+
+       // Send request using Fetch API
+       try {
+           const response = await fetch("/change-email", {
+               method: "POST",
+               headers: {
+                   "Content-Type": "application/json",
+               },
+               body: JSON.stringify({ email: emailValue }),
+           });
+
+           const data = await response.json();
+
+           if (data.error) {
+               Swal.fire({
+                   icon: "error",
+                   title: "Error",
+                   text: data.error,
+               });
+           } else if (data.success) {
+               window.location.href = data.redirectUrl;
+           }
+       } catch (err) {
+           console.error("Fetch error:", err);
+           Swal.fire({
+               icon: "error",
+               title: "Error",
+               text: "Something went wrong. Please try again.",
+           });
+       }
+   });
+</script>
+
+
+
+<!-- <script>
    function validateLoginForm() {
        const emailInput = document.getElementById('email');
        const emailError = document.getElementById('email-error');
@@ -39,7 +95,8 @@
            return true;
        }
    }
-</script>
+</script> -->
+
 <%- include("../../views/partials/user/footer") %>
 
 

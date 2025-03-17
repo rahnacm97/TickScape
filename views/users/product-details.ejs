@@ -44,14 +44,15 @@
   }
 
   .action-btn {
-    margin-top: 190px;
+    margin-top: 25px;
     font-size: 18px;
-    color: #077625;
+    color: #76075c;
     text-decoration: none;
     margin-left: 50px;
+    padding: 10px 10px;
   }
 
-  .action-btn:hover {
+  .action-btn1:hover {
     color: #0056b3;
   }
 
@@ -76,7 +77,7 @@
   }
 
   .swiper-container {
-    padding-bottom: 40px; /* Space for pagination */
+    padding-bottom: 40px; 
     overflow: hidden;
   }
 
@@ -247,11 +248,11 @@ h2{
 
   .review-rating .star {
     font-size: 20px;
-    color: #ddd; /* Empty stars */
+    color: #ddd; 
   }
 
   .review-rating .star.filled {
-    color: #f4c542; /* Filled stars */
+    color: #f4c542; 
   }
 
   .review-rating .rating-text {
@@ -306,7 +307,6 @@ h2{
     background-color: #0056b3;
   }
 
-  /* Responsive Adjustments */
   @media (max-width: 768px) {
     .customer-reviews {
       margin-left: 20px;
@@ -498,7 +498,7 @@ h2{
                       <div class="detail-extralink">
                         <div class="product-extra-link2">
                           <button type="submit" class="button button-add-to-cart button-new" style="top: 500px; margin-left: 100px ;" onclick="addToCart('<%= product._id %>')">Add to cart</button>
-                          <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
+                          <a aria-label="Add To Wishlist" class="action-btn hover-up" style="top: 25px; margin-left: 50px ;" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
                         </div>
                       </div>
                       <ul class="product-meta font-xs color-grey mt-50">
@@ -515,7 +515,7 @@ h2{
                             <span style="color: green; font-weight: bold; font-size: 14px;"><%= quantity %> Items in Stock</span>
                           <% } %>
                         </li>
-                        <li>
+                        <li style="margin-bottom: 30px;">
                           Availability:
                           <% if(product.status == 'Out of Stock'){ %>
                             <span style="color:red;font-weight: bold;font-size: 18px;"><%= product.status %></li>

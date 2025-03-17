@@ -1,5 +1,5 @@
 const User = require('../models/userSchema');
-
+const mongoose = require('mongoose');
 
 const redirectIfUserLoggedIn = (req, res, next) => {
     if (req.session.user) {
@@ -25,6 +25,22 @@ const userAuth = async (req, res, next) => {
         console.log("No user authenticated, redirecting to login");
         return res.redirect("/login");
     }
+
+    if (typeof userId !== 'string' || !mongoose.Types.ObjectId.isValid(userId)) {
+        console.log("Invalid userId detected:", userId);
+        if (req.user) {
+            req.logout((err) => {
+                if (err) console.error("Error during logout:", err);
+                if (req.session.passport) delete req.session.passport;
+                return res.redirect("/login");
+            });
+        } else {
+            delete req.session.user;
+            return res.redirect("/login");
+        }
+        return;
+    }
+
     try {     
         const user = await User.findById(userId);
         if (!user) {
