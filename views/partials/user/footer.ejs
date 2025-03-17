@@ -1,116 +1,244 @@
 <style>
+  .footer-area {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+    height: 400px;
+    padding: 10px;
+  }
+  .footer-tittle ul li a {
+    text-decoration: none;
+    color: #333333;
+  }
+  .footer-tittle ul li a:hover {
+    text-decoration: none;
+    color: #ff6b6b;
+  }
+  
+  @media (max-width: 991px) {
     .footer-area {
-        background-color: #ffffff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        transition: background-color 0.3s ease;
-        height: 400px;
-        padding: 10px;
+      height: auto; 
+      padding: 20px 0; 
     }
+
+    .row.d-flex.justify-content-between.mt-30 {
+      flex-direction: column; 
+      align-items: center;
+      gap: 20px; 
+      margin-top: 20px;
+    }
+
+    .col-xl-3,
+    .col-xl-2,
+    .col-lg-3,
+    .col-md-5,
+    .col-sm-7,
+    .col-sm-6 {
+      width: 100%;
+      max-width: 400px; 
+      text-align: center;
+    }
+
+    .footer-logo img {
+      max-width: 150px; 
+    }
+
+    .footer-tittle h4 {
+      font-size: 18px; 
+    }
+
     .footer-tittle ul li a {
-        text-decoration: none;
-        color: #333333;
+      font-size: 14px;
     }
-    .footer-tittle ul li a:hover {
-        text-decoration: none;
-        color: #ff6b6b;
+
+    .footer-pera p {
+      font-size: 14px;
     }
+
+    .row.align-items-center {
+      flex-direction: column; 
+      text-align: center;
+      gap: 15px; 
+    }
+
+    .col-xl-7,
+    .col-xl-5,
+    .col-lg-8,
+    .col-lg-4,
+    .col-md-7,
+    .col-md-5 {
+      width: 100%;
+    }
+
+    .footer-copy-right.f-right {
+      float: none; 
+    }
+
+    .footer-social {
+      justify-content: center; 
+    }
+
+    .footer-social a {
+      font-size: 18px; 
+      margin: 0 10px; 
+    }
+  }
+
+  @media (max-width: 576px) {
+    .footer-area {
+      padding: 15px 0; 
+    }
+
+    .row.d-flex.justify-content-between.mt-30 {
+      margin-top: 10px;
+      gap: 15px; 
+    }
+
+    .col-xl-3,
+    .col-xl-2,
+    .col-lg-3,
+    .col-md-5,
+    .col-sm-7,
+    .col-sm-6 {
+      max-width: 300px; 
+    }
+
+    .footer-logo img {
+      max-width: 120px; 
+    }
+
+    .footer-tittle h4 {
+      font-size: 16px; 
+    }
+
+    .footer-tittle ul li a {
+      font-size: 12px; 
+    }
+
+    .footer-pera p {
+      font-size: 12px;
+    }
+
+    .footer-copy-right p {
+      font-size: 12px; 
+    }
+
+    .footer-social a {
+      font-size: 16px; 
+      margin: 0 8px;
+    }
+  }
 </style>
 <footer>
-    <!-- Footer Start-->
-    <div class="footer-area">
-        <div class="container">
-            <div class="row d-flex justify-content-between mt-30">
-                <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
-                    <div class="single-footer-caption mb-30">
-                        <div class="single-footer-caption mb-30">
-                            <!-- logo -->
-                            <div class="footer-logo">
-                                <a href="index.html"><img src="assets/img/logo/ts1.png" alt=""></a>
-                            </div>
-                            <div class="footer-tittle">
-                                <div class="footer-pera">
-                                    <p>Asorem ipsum adipolor sdit amet, consectetur adipisicing elitcf sed do eiusmod tem.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <!-- Footer Start-->
+  <div class="footer-area">
+    <div class="container">
+      <div class="row d-flex justify-content-between mt-30">
+        <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
+          <div class="single-footer-caption mb-30">
+            <div class="single-footer-caption mb-30">
+              <!-- logo -->
+              <div class="footer-logo">
+                <a href="index.html"
+                  ><img src="assets/img/logo/ts1.png" alt=""
+                /></a>
+              </div>
+              <div class="footer-tittle">
+                <div class="footer-pera">
+                  <p>
+                    At TickScape, we believe in the art of timekeeping. 
+                  </p>
                 </div>
-                <div class="col-xl-2 col-lg-3 col-md-3 col-sm-5">
-                    <div class="single-footer-caption mb-30">
-                        <div class="footer-tittle">
-                            <h4>Quick Links</h4>
-                            <ul>
-                                <li><a href="#">About</a></li>
-                                <li><a href="#"> Offers & Discounts</a></li>
-                                <li><a href="#"> Get Coupon</a></li>
-                                <li><a href="#">  Contact Us</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
-                    <div class="single-footer-caption mb-30">
-                        <div class="footer-tittle">
-                            <h4>New Products</h4>
-                            <ul>
-                                <li><a href="#">Products</a></li>
-                                <li><a href="#">Women Watches</a></li>
-                                <li><a href="#">Men Watches</a></li>
-                                <li><a href="#">Smart Watches</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-5 col-sm-7">
-                    <div class="single-footer-caption mb-30">
-                        <div class="footer-tittle">
-                            <h4>Support</h4>
-                            <ul>
-                                <li><a href="#">Frequently Asked Questions</a></li>
-                                <li><a href="#">Terms & Conditions</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Report a Payment Issue</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-            <!-- Footer bottom -->
-            <div class="row align-items-center">
-                <div class="col-xl-7 col-lg-8 col-md-7">
-                    <div class="footer-copy-right">
-                        <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>                  
-                    </div>
-                </div>
-                <div class="col-xl-5 col-lg-4 col-md-5">
-                    <div class="footer-copy-right f-right">
-                        <!-- social -->
-                        <div class="footer-social">
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-behance"></i></a>
-                            <a href="#"><i class="fas fa-globe"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-xl-2 col-lg-3 col-md-3 col-sm-5">
+          <div class="single-footer-caption mb-30">
+            <div class="footer-tittle">
+              <h4>Quick Links</h4>
+              <ul>
+                <li><a href="#">About</a></li>
+                <li><a href="#"> Offers & Discounts</a></li>
+                <li><a href="#"> Get Coupon</a></li>
+                <li><a href="#"> Contact Us</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
+          <div class="single-footer-caption mb-30">
+            <div class="footer-tittle">
+              <h4>New Products</h4>
+              <ul>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Women Watches</a></li>
+                <li><a href="#">Men Watches</a></li>
+                <li><a href="#">Smart Watches</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-5 col-sm-7">
+          <div class="single-footer-caption mb-30">
+            <div class="footer-tittle">
+              <h4>Support</h4>
+              <ul>
+                <li><a href="#">Frequently Asked Questions</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Report a Payment Issue</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer bottom -->
+      <div class="row align-items-center">
+        <div class="col-xl-7 col-lg-8 col-md-7">
+          <div class="footer-copy-right">
+            <p>
+              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+              Copyright ©
+              <script>
+                document.write(new Date().getFullYear());
+              </script>
+              All rights reserved | This template is made with
+              <i class="fa fa-heart" aria-hidden="true"></i> by
+              <a href="https://colorlib.com" target="_blank">Colorlib</a>
+              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </p>
+          </div>
+        </div>
+        <div class="col-xl-5 col-lg-4 col-md-5">
+          <div class="footer-copy-right f-right">
+            <!-- social -->
+            <div class="footer-social">
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="https://www.facebook.com/sai4ull"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#"><i class="fab fa-behance"></i></a>
+              <a href="#"><i class="fas fa-globe"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- Footer End-->
+  </div>
+  <!-- Footer End-->
 </footer>
 <!--? Search model Begin -->
 <div class="search-model-box">
-    <div class="h-100 d-flex align-items-center justify-content-center">
-        <div class="search-close-btn">+</div>
-        <form class="search-model-form">
-            <input type="text" id="search-input" placeholder="Searching key.....">
-        </form>
-    </div>
+  <div class="h-100 d-flex align-items-center justify-content-center">
+    <div class="search-close-btn">+</div>
+    <form class="search-model-form">
+      <input type="text" id="search-input" placeholder="Searching key....." />
+    </form>
+  </div>
 </div>
 <!-- Search model end -->
 
@@ -158,6 +286,3 @@ Copyright ©<script>document.write(new Date().getFullYear());</script> All right
 <script src="./user-assets/js/plugins/jquery.elevatezoom.js"></script>
 <script src="./user-assets/js/maind134.js?v=3.4"></script>
 <script src="./user-assets/js/shopd134.js?v=3.4"></script>
-
-</body>
-</html>

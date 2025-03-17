@@ -315,6 +315,186 @@ strike{
     transition: background 0.3s ease;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 10px; 
+  }
+
+  .main-container {
+    margin: 10px auto; 
+  }
+
+  .shop-banner {
+    height: 300px;
+  }
+
+  .shop-banner .banner-text {
+    left: 50%;
+    padding: 15px;
+  }
+
+  .shop-banner .banner-text h1 {
+    font-size: 1.8rem; 
+  }
+
+  .shop-banner .banner-text p {
+    font-size: 1rem; 
+  }
+
+  .shop-topbar {
+    flex-direction: column; 
+    align-items: stretch;
+  }
+
+  .search-bar {
+    margin-left: 0; 
+    margin-bottom: 15px;
+  }
+
+  .search-form {
+    max-width: 100%; 
+  }
+
+  .search-input {
+    min-width: 0; 
+    font-size: 12px;
+  }
+
+  .search-button {
+    padding: 6px 12px; 
+    font-size: 12px;
+  }
+
+  .product-list-container {
+    flex-direction: column; 
+  }
+
+  .sidebar {
+    padding: 15px;
+    width: 100%;
+  }
+
+  .filter-title {
+    font-size: 16px; 
+  }
+
+  .filter-item a {
+    font-size: 12px;
+  }
+
+  .price-button, .sort-button {
+    padding: 6px 12px; 
+    font-size: 10px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  }
+
+  .product-card {
+    padding: 10px; 
+    height: 350px; 
+  }
+
+  .product-card img {
+    height: 150px; 
+    width: 150px;
+  }
+
+  .product-card h4 {
+    font-size: 14px;
+  }
+
+  .product-card p {
+    font-size: 12px; 
+  }
+
+  .add-to-cart-btn {
+    padding: 8px 15px; 
+    font-size: 12px;
+  }
+
+  .no-products {
+    margin-left: 0; 
+    text-align: center;
+  }
+
+  .no-products p {
+    font-size: 16px; 
+    padding: 15px;
+  }
+
+  .no-products a {
+    margin-left: 0; 
+  }
+
+  .pagination a {
+    padding: 6px 10px; 
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-banner {
+    height: 200px; 
+  }
+
+  .shop-banner .banner-text h1 {
+    font-size: 1.5rem; 
+  }
+
+  .shop-banner .banner-text p {
+    font-size: 0.9rem; 
+  }
+
+  .search-input {
+    font-size: 10px;
+  }
+
+  .search-button {
+    padding: 5px 10px; 
+    font-size: 10px;
+  }
+
+  .filter-title {
+    font-size: 14px; 
+  }
+
+  .filter-item a {
+    font-size: 11px; 
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+  }
+
+  .product-card {
+    height: 300px; 
+  }
+
+  .product-card img {
+    height: 120px; 
+    width: 120px;
+  }
+
+  .product-card h4 {
+    font-size: 12px; 
+  }
+
+  .product-card p {
+    font-size: 10px; 
+  }
+
+  .add-to-cart-btn {
+    padding: 6px 12px; 
+    font-size: 10px;
+  }
+
+  .pagination a {
+    padding: 5px 8px; 
+    font-size: 10px;
+  }
+}
 
 </style>
 
@@ -342,7 +522,7 @@ strike{
 </div>
 <section class="shop-page container">
    <div class="product-list-container">
-     <aside class="col-lg-3 col-md-4 mb-4 sidebar">
+     <aside class="col-lg-3 col-md-8 mb-4 sidebar">
        <div class="filter-section mb-4">
          <div class="filter-title">Categories</div>
          <div class="category-brand-container">
@@ -693,7 +873,6 @@ function resetFilters() {
       error: (xhr) => {
          const errorResponse = xhr.responseJSON || {};
          const errorMessage = errorResponse.error || errorResponse.message || 'There was an error adding to cart';
-         //console.error("Error details:", errorResponse);
         Swal.fire({
             title: 'Error',
             text: errorMessage,

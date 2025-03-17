@@ -1,240 +1,398 @@
 <%- include("../../views/partials/user/header") %>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin-bottom: 40px;
-        }
-        .form-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+/>
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
 
-        .container1{
-        margin-left: 30px;
-    }
-        .page-header.breadcrumb-wrap {
+  .container {
+    max-width: 1000px;
+    margin-bottom: 40px;
+  }
+  .form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+  }
+
+  .container1 {
+    margin-left: 30px;
+  }
+  .page-header.breadcrumb-wrap {
     background-color: #fff;
     padding: 10px 0;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   }
 
   .breadcrumb a {
-    color: #2874f0; 
+    color: #2874f0;
     text-decoration: none;
     font-weight: 500;
   }
 
   .breadcrumb span {
     margin: 0 5px;
-    color: #878787; 
+    color: #878787;
   }
 
-a, button {
+  a,
+  button {
     text-decoration: none;
     cursor: pointer;
-}
-.form-control {
-            border-radius: 8px;
-            border: 2px solid #ccc;
-        }
-.btn-primary {
-            background-color: #046963;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            width: 30%;
-            transition: 0.3s;
-            margin-left: 35%;
-        }
-        .btn-primary:hover {
-            background-color: #034f4a;
-        }
-        h3 {
-            text-align: center;
-            color: #046963;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
+  }
+  .form-control {
+    border-radius: 8px;
+    border: 2px solid #ccc;
+  }
+  .btn-primary {
+    background-color: #046963;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    width: 30%;
+    transition: 0.3s;
+    margin-left: 35%;
+  }
+  .btn-primary:hover {
+    background-color: #034f4a;
+  }
+  h3 {
+    text-align: center;
+    color: #046963;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
 
-    <div class="page-header breadcrumb-wrap mb-3 mt-4">
-        <div class="container1">
-          <div class="breadcrumb">
-            <a href="/" rel="nofollow">Home</a>
-            <span></span><a href="/userProfile" rel="nofollow">Profile</a>
-            <span></span><a href="/address" rel="nofollow">Addresses</a>
-            <span></span> Add Address 
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px; 
+      max-width: 100%; 
+      margin-bottom: 20px; 
+    }
+
+    .form-card {
+      padding: 20px; 
+    }
+
+    .page-header.breadcrumb-wrap {
+      padding: 8px 0; 
+    }
+
+    .breadcrumb a,
+    .breadcrumb span {
+      font-size: 14px;
+    }
+
+    .row.mb-10,
+    .row.mb-3 {
+      flex-direction: column; 
+      align-items: stretch;
+    }
+
+    .form-group.col-md-6 {
+      width: 100%;
+      margin-bottom: 15px; 
+    }
+
+    .form-control {
+      font-size: 14px; 
+      padding: 8px; 
+    }
+
+    .btn-primary {
+      width: 50%; 
+      margin-left: 25%; 
+      padding: 8px 12px; 
+      font-size: 14px; 
+    }
+
+    h3 {
+      font-size: 20px; 
+      margin-bottom: 50px; 
+    }
+  }
+
+  
+  @media (max-width: 576px) {
+    .container {
+      padding: 10px; 
+      margin-bottom: 15px; 
+    }
+
+    .form-card {
+      padding: 15px; 
+    }
+
+    .page-header.breadcrumb-wrap {
+      padding: 5px 0; 
+    }
+
+    .breadcrumb a,
+    .breadcrumb span {
+      font-size: 12px; 
+    }
+
+    .form-group.col-md-6 {
+      margin-bottom: 10px; 
+    }
+
+    .form-control {
+      font-size: 12px; 
+      padding: 6px; 
+    }
+
+    .btn-primary {
+      width: 60%; 
+      margin-left: 20%;
+      padding: 6px 10px; 
+      font-size: 12px; 
+    }
+
+    h3 {
+      font-size: 18px; 
+      margin-bottom: 40px; 
+    }
+  }
+</style>
+<body>
+  <div class="page-header breadcrumb-wrap mb-3 mt-4">
+    <div class="container1">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span><a href="/userProfile" rel="nofollow">Profile</a>
+        <span></span><a href="/address" rel="nofollow">Addresses</a>
+        <span></span> Add Address
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-5">
+    <h3 class="mt-10 mb-15" style="color: #046963; margin-bottom: 70px">
+      Create User Address
+    </h3>
+    <div class="form-card">
+      <form
+        id="addressForm"
+        method="POST"
+        action="/addAddress"
+        class="border-0 p-3"
+      >
+        <div class="row mb-10">
+          <div class="form-group col-md-6">
+            <label for="addressType">Address Type:</label>
+            <input
+              type="text"
+              class="form-control border-3"
+              id="addressType"
+              name="addressType"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="name">Name:</label>
+            <input
+              type="text"
+              class="form-control border-3"
+              id="name"
+              name="name"
+              value="<%=user.fname%> <%=user.lname%>"
+            />
           </div>
         </div>
-      </div>
+        <div class="row mb-3">
+          <div class="form-group col-md-6">
+            <label for="city">City:</label>
+            <input
+              type="text"
+              class="form-control border-3"
+              id="city"
+              name="city"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="landMark">Landmark:</label>
+            <input
+              type="text"
+              class="form-control border-3"
+              id="landMark"
+              name="landMark"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="state">State:</label>
+            <input
+              type="text"
+              class="form-control border-3"
+              id="state"
+              name="state"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="pincode">Pincode:</label>
+            <input
+              type="number"
+              class="form-control border-3"
+              id="pincode"
+              name="pincode"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="form-group col-md-6">
+            <label for="phone">Phone:</label>
+            <input
+              type="number"
+              class="form-control border-3"
+              id="phone"
+              name="phone"
+              value="<%=user.phone%>"
+            />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="altPhone">Alternate Phone:</label>
+            <input
+              type="number"
+              class="form-control border-3"
+              id="altPhone"
+              name="altPhone"
+            />
+          </div>
+          <input type="hidden" name="redirectTo" value="<%= redirectTo %>" />
+        </div>
+        <button
+          type="submit"
+          id="submitButton"
+          class="btn btn-primary"
+          style="text-transform: capitalize"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
 
-   <div class="container mt-5">
-    <h3 class="mt-10 mb-15" style="color: #046963; margin-bottom:70px">Create User Address</h3>
-    <div class="form-card"> 
-   <form id="addressForm" method="POST" action="/addAddress" class="border-0 p-3">
-       <div class="row mb-10">
-           <div class="form-group col-md-6">
-               <label for="addressType">Address Type:</label>
-               <input type="text" class="form-control border-3" id="addressType" name="addressType">
-           </div>
-           <div class="form-group col-md-6">
-               <label for="name">Name:</label>
-               <input type="text" class="form-control border-3" id="name" name="name" value="<%=user.fname%> <%=user.lname%>">
-           </div>
-           
-       </div>
-       <div class="row mb-3" >
-            <div class="form-group col-md-6">
-             <label for="city">City:</label>
-            <input type="text" class="form-control border-3" id="city" name="city">
-            </div>
-           <div class="form-group col-md-6">
-               <label for="landMark">Landmark:</label>
-               <input type="text" class="form-control border-3" id="landMark" name="landMark">
-           </div>
-           <div class="form-group col-md-6">
-               <label for="state">State:</label>
-               <input type="text" class="form-control border-3" id="state" name="state">
-           </div>
-           <div class="form-group col-md-6">
-               <label for="pincode">Pincode:</label>
-               <input type="number" class="form-control border-3" id="pincode" name="pincode">
-           </div>
-       </div>
-       <div class="row mb-3">
-           <div class="form-group col-md-6">
-               <label for="phone">Phone:</label>
-               <input type="number" class="form-control border-3" id="phone" name="phone" value="<%=user.phone%>">
-           </div>
-           <div class="form-group col-md-6">
-               <label for="altPhone">Alternate Phone:</label>
-               <input type="number" class="form-control border-3" id="altPhone" name="altPhone">
-           </div>
-           <input type="hidden" name="redirectTo" value="<%= redirectTo %>">
-       </div>
-       <button type="submit" id="submitButton" class="btn btn-primary" style="text-transform: capitalize;">Submit</button>
-   </form>
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-   $(document).ready(function() {
-       $('#addressForm').on('submit', function(event) {
-           if (!validateForm()) {
-               event.preventDefault();
-           }
-       });
+  $(document).ready(function () {
+    $("#addressForm").on("submit", function (event) {
+      if (!validateForm()) {
+        event.preventDefault();
+      }
+    });
 
-       function validateForm() {
-           let isValid = true;
-           const requiredFields = ["#addressType", "#name", "#city", "#landMark", "#state", "#pincode", "#phone", "#altPhone"];
-           $('.error-message').remove(); // Remove existing error messages
+    function validateForm() {
+      let isValid = true;
+      const requiredFields = [
+        "#addressType",
+        "#name",
+        "#city",
+        "#landMark",
+        "#state",
+        "#pincode",
+        "#phone",
+        "#altPhone",
+      ];
+      $(".error-message").remove(); // Remove existing error messages
 
-           // Check if required fields are filled
-           requiredFields.forEach(function(field) {
-               const input = $(field);
-               const inputValue = input.val().trim();
-               if (inputValue === "") {
-                   input.after('<div class="error-message text-danger">This field is required.</div>');
-                   isValid = false;
-               }
-           });
+      // Check if required fields are filled
+      requiredFields.forEach(function (field) {
+        const input = $(field);
+        const inputValue = input.val().trim();
+        if (inputValue === "") {
+          input.after(
+            '<div class="error-message text-danger">This field is required.</div>'
+          );
+          isValid = false;
+        }
+      });
 
-           // Regex patterns
-           const namePattern = /^[A-Za-z\s]+$/;
-           const pincodePattern = /^\d{6}$/;
-           const phonePattern = /^\d{10}$/;
+      // Regex patterns
+      const namePattern = /^[A-Za-z\s]+$/;
+      const pincodePattern = /^\d{6}$/;
+      const phonePattern = /^\d{10}$/;
 
-           // Validation for specific fields
-           const name = $('#name').val();
-           const city = $('#city').val();
-           const landMark = $('#landMark').val();
-           const state = $('#state').val();
-           const pincode = $('#pincode').val();
-           const phone = $('#phone').val();
-           const altPhone = $('#altPhone').val();
+      // Validation for specific fields
+      const name = $("#name").val();
+      const city = $("#city").val();
+      const landMark = $("#landMark").val();
+      const state = $("#state").val();
+      const pincode = $("#pincode").val();
+      const phone = $("#phone").val();
+      const altPhone = $("#altPhone").val();
 
-           if (!namePattern.test(name)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Name should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (!namePattern.test(city)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'City should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (!namePattern.test(landMark)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Landmark should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (!namePattern.test(state)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'State should contain alphabets only.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (!pincodePattern.test(pincode)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Pincode should be a 6-digit number.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (!phonePattern.test(phone)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Phone number should be a 10-digit number.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (!phonePattern.test(altPhone)) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Alternate phone number should be a 10-digit number.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           if (phone === altPhone) {
-               Swal.fire({
-                   title: 'Error',
-                   text: 'Phone number and alternate phone number should be different.',
-                   icon: 'error'
-               });
-               isValid = false;
-           }
-           return isValid;
-       }
-   });
+      if (!namePattern.test(name)) {
+        Swal.fire({
+          title: "Error",
+          text: "Name should contain alphabets only.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (!namePattern.test(city)) {
+        Swal.fire({
+          title: "Error",
+          text: "City should contain alphabets only.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (!namePattern.test(landMark)) {
+        Swal.fire({
+          title: "Error",
+          text: "Landmark should contain alphabets only.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (!namePattern.test(state)) {
+        Swal.fire({
+          title: "Error",
+          text: "State should contain alphabets only.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (!pincodePattern.test(pincode)) {
+        Swal.fire({
+          title: "Error",
+          text: "Pincode should be a 6-digit number.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (!phonePattern.test(phone)) {
+        Swal.fire({
+          title: "Error",
+          text: "Phone number should be a 10-digit number.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (!phonePattern.test(altPhone)) {
+        Swal.fire({
+          title: "Error",
+          text: "Alternate phone number should be a 10-digit number.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      if (phone === altPhone) {
+        Swal.fire({
+          title: "Error",
+          text: "Phone number and alternate phone number should be different.",
+          icon: "error",
+        });
+        isValid = false;
+      }
+      return isValid;
+    }
+  });
 </script>
 
 <%- include("../../views/partials/user/footer") %>
-

@@ -58,7 +58,6 @@
       vertical-align: middle;
     }
 
-    /* Improved Image Styling */
     .table td img {
       width: 80px;
       height: 80px;
@@ -123,6 +122,114 @@
     .pagination .current-page {
       background-color: #007bff;
       color: white;
+    }
+
+    @media (max-width: 1024px) {
+      .content-main {
+        padding: 20px;
+      }
+
+      .card-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .input-group {
+        width: 100%;
+      }
+
+      .btn-add-category {
+        width: 100%;
+        max-width: 250px;
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-title {
+        font-size: 24px;
+      }
+
+      .table th,
+      .table td {
+        padding: 10px;
+        font-size: 13px;
+      }
+
+      .table-responsive {
+        padding: 10px;
+        overflow-x: auto;
+      }
+
+      .table {
+        min-width: 700px;
+      }
+
+      .btn {
+        width: 100%; 
+        max-width: 200px;
+        max-height: 45px;
+        margin: 0 auto;
+      }
+
+
+      .btn-info,
+      .btn-danger,
+      .btn-success {
+        width: 100%;
+        max-width: 120px;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .pagination a,
+      .pagination .current-page {
+        padding: 6px 12px;
+        margin: 2px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content-title {
+        font-size: 20px;
+      }
+
+      .card-header {
+        padding: 10px;
+      }
+
+      .form-control {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 8px;
+      }
+
+      .table th,
+      .table td {
+        padding: 8px;
+        font-size: 12px;
+      }
+
+      .badge {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+
+      .pagination-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .pagination a,
+      .pagination .current-page {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>

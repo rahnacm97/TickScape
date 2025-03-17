@@ -1,169 +1,328 @@
 <!DOCTYPE html>
 <html class="no-js" lang="zxx">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>TickScape || The Watch Shop</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="manifest" href="site.webmanifest">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="assets/img/favicon.ico"
+    />
 
     <!-- CSS here (only keep necessary, avoid duplication) -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/flaticon.css">
-    <link rel="stylesheet" href="assets/css/slicknav.css">
-    <link rel="stylesheet" href="assets/css/animate.min.css">
-    <link rel="stylesheet" href="assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="assets/css/themify-icons.css">
-    <link rel="stylesheet" href="assets/css/slick.css">
-    <link rel="stylesheet" href="assets/css/nice-select.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="./user-assets/css/maind134.css">
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/flaticon.css" />
+    <link rel="stylesheet" href="assets/css/slicknav.css" />
+    <link rel="stylesheet" href="assets/css/animate.min.css" />
+    <link rel="stylesheet" href="assets/css/magnific-popup.css" />
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="assets/css/themify-icons.css" />
+    <link rel="stylesheet" href="assets/css/slick.css" />
+    <link rel="stylesheet" href="assets/css/nice-select.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="./user-assets/css/maind134.css" />
+    <script
+      src="https://kit.fontawesome.com/your-fontawesome-kit.js"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- Header-specific styles -->
     <style>
-        .header-right ul {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            color: #fe713d;
-        }
-        .dropdown {
-            position: relative;
-            display: inline-block;
-            font-size: large;
-        }
-        .dropdown a {
-            color: #10880c;
-            padding: 12px;
-            text-decoration: none;
-            font-size: 16px;
-            display: block;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1000;
-            right: 0;
-        }
-        .dropdown-content a {
-            color: black;
-            padding: 20px 20px;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-        }
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        .header-area {
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
-        }
-        
-        .main-menu nav ul li a,
-        .header-right ul li a {
+      .header-right ul {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        color: #fe713d;
+      }
+      .dropdown {
+        position: relative;
+        display: inline-block;
+        font-size: large;
+      }
+      .dropdown a {
+        color: #10880c;
+        padding: 12px;
+        text-decoration: none;
+        font-size: 16px;
+        display: block;
+      }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        right: 0;
+      }
+      .dropdown-content a {
+        color: black;
+        padding: 20px 20px;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+      }
+      .dropdown-content a:hover {
+        background-color: #f1f1f1;
+      }
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+      .header-area {
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        transition: background-color 0.3s ease;
+      }
+    
+      .main-menu nav ul li a,
+      .header-right ul li a {
         color: #333333;
         text-decoration: none;
-        padding: 5px 10px; 
+        padding: 5px 10px;
         font-size: 16px;
+      }
+    
+      .main-menu nav ul li a:hover,
+      .header-right ul li a:hover {
+        color: #fe713d;
+        text-decoration: none;
+      }
+      .main-header.header-sticky {
+        background-color: inherit;
+      }
+      .nav-search span,
+      .flaticon-user,
+      .flaticon-shopping-cart {
+        color: #333333;
+      }
+    
+      @media (max-width: 991px) {
+        .header-area {
+          padding: 10px 0;
         }
     
-    .main-menu nav ul li a:hover,
-    .header-right ul li a:hover {
-        color: #fe713d; 
-        text-decoration: none; 
-    }
-        .main-header.header-sticky {
-            background-color: inherit;
+        .menu-wrapper {
+          flex-direction: column;
+          align-items: center;
         }
-        .nav-search span,
-        .flaticon-user,
-        .flaticon-shopping-cart {
-            color: #333333;
+    
+        .logo {
+          margin-bottom: 10px;
         }
+    
+        .logo img {
+          height: 40px;
+        }
+    
+        .main-menu.d-none.d-lg-block {
+          display: none !important;
+        }
+    
+        .header-right {
+          margin-top: 10px;
+        }
+    
+        .header-right ul {
+          gap: 10px;
+        }
+    
+        .dropdown a {
+          font-size: 14px;
+          padding: 8px;
+        }
+    
+        .dropdown-content {
+          min-width: 120px;
+        }
+    
+        .dropdown-content a {
+          padding: 10px 15px;
+          font-size: 14px;
+        }
+    
+        .mobile_menu.d-block.d-lg-none {
+          display: block !important;
+        }
+      }
+    
+      @media (max-width: 576px) {
+        .logo {
+          margin-bottom: 10px;
+        }
+    
+        .logo img {
+          height: 35px;
+        }
+    
+        .menu-wrapper {
+          flex-direction: column;
+          align-items: center;
+        }
+    
+        /* Move header-right inside main-menu visually */
+        .main-menu {
+          width: 100%;
+          margin-top: 10px;
+        }
+    
+        .main-menu nav ul {
+          flex-direction: column;
+          align-items: center;
+          padding: 0;
+        }
+    
+        .main-menu nav ul li {
+          width: 100%;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+    
+        .header-right {
+          display: none; 
+        }
+    
+        .main-menu nav ul .header-right-ul {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          margin-top: 10px;
+        }
+    
+        .main-menu nav ul .header-right-ul li {
+          width: auto;
+          margin: 0;
+        }
+    
+        .main-menu nav ul .header-right-ul .dropdown {
+          width: 100%;
+        }
+    
+        .main-menu nav ul .header-right-ul .dropdown a {
+          padding: 10px;
+          font-size: 14px;
+        }
+    
+        .main-menu nav ul .header-right-ul .dropdown-content {
+          position: static;
+          box-shadow: none;
+          background-color: transparent;
+          min-width: auto;
+          display: none;
+        }
+    
+        .main-menu nav ul .header-right-ul .dropdown:hover .dropdown-content {
+          display: block;
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background-color: white;
+          box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+          min-width: 120px;
+        }
+    
+        .dropdown-content a {
+          padding: 10px 15px;
+          font-size: 14px;
+        }
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="preloader-circle"></div>
-                <div class="preloader-img pere-text">
-                    <img src="assets/img/logo/tslogo.png" alt="">
-                </div>
-            </div>
+      <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+          <div class="preloader-circle"></div>
+          <div class="preloader-img pere-text">
+            <img src="assets/img/logo/tslogo.png" alt="" />
+          </div>
         </div>
+      </div>
     </div>
 
     <header>
-        <div class="header-area">
-            <div class="main-header header-sticky">
-                <div class="container-fluid">
-                    <div class="menu-wrapper">
-    
-                        <div class="logo">
-                            <a href="/"><img src="assets/img/logo/ts1.png" alt="" style="height: 50px;margin-top: 0px; "></a>
-                        </div>
-                        
-                        <div class="main-menu d-none d-lg-block">
-                            <nav>
-                                <ul id="navigation">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/shop">Shop</a></li>
-                                    <li><a href="about.html">About</a></li>
-                                    <li><a href="contact.html">Contact Us</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                        
-                        <div class="header-right">
-                            <ul>
-                                <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a></li>
-                                <li><a href="/wishlist"><span class="flaticon-heart"></span></a></li>
-                                <% if (user && !user.isBlocked) { %>
-                                    <li class="dropdown">
-                                            <a href="#" class="sign-in-link"><%= user.fname %> <%= user.lname || "" %></a>
-                                            <div class="dropdown-content">
-                                                <a href="/userProfile"><i class="fas fa-user"></i> Profile</a>
-                                                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                                            </div>
-                                    </li>
-                                <% } else { %>
-                                    <li><a href="/login"><span class="flaticon-user"> Login</span></a></li>
-                                <% } %>
-                            </ul>
-                        </div>
+      <div class="header-area">
+        <div class="main-header header-sticky">
+          <div class="container-fluid">
+            <div class="menu-wrapper">
+              <div class="logo">
+                <a href="/"
+                  ><img
+                    src="assets/img/logo/ts1.png"
+                    alt=""
+                    style="height: 50px; margin-top: 0px"
+                /></a>
+              </div>
+
+              <div class="main-menu d-none d-lg-block">
+                <nav>
+                  <ul id="navigation">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/shop">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                  </ul>
+                </nav>
+              </div>
+
+              <div class="header-right">
+                <ul class="header-right-ul">
+                  <li>
+                    <a href="/cart"
+                      ><span class="flaticon-shopping-cart"></span
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="/wishlist"><span class="flaticon-heart"></span></a>
+                  </li>
+                  <% if (user && !user.isBlocked) { %>
+                  <li class="dropdown">
+                    <a href="#" class="sign-in-link"
+                      ><%= user.fname %> <%= user.lname || "" %></a
+                    >
+                    <div class="dropdown-content">
+                      <a href="/userProfile"
+                        ><i class="fas fa-user"></i> Profile</a
+                      >
+                      <a href="/logout"
+                        ><i class="fas fa-sign-out-alt"></i> Logout</a
+                      >
                     </div>
-    
-                    <div class="col-12">
-                        <div class="mobile_menu d-block d-lg-none"></div>
-                    </div>
-                </div>
+                  </li>
+                  <% } else { %>
+                  <li>
+                    <a href="/login"
+                      ><span class="flaticon-user"> Login</span></a
+                    >
+                  </li>
+                  <% } %>
+                </ul>
+              </div>
             </div>
+
+            <div class="col-12">
+              <div class="mobile_menu d-block d-lg-none"></div>
+            </div>
+          </div>
         </div>
+      </div>
     </header>
     <script>
-        window.addEventListener("load", function () {
-            setTimeout(function () {
-                document.getElementById("preloader-active").style.display = "none";
-            }, 300);
-        });
+      window.addEventListener("load", function () {
+        setTimeout(function () {
+          document.getElementById("preloader-active").style.display = "none";
+        }, 300);
+      });
     </script>
+  </body>
+</html>

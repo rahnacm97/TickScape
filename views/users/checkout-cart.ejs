@@ -625,7 +625,13 @@ function placeOrder(paymentId = null) {
           Swal.fire({ icon: 'error', title: 'Error', text: 'Unable to fetch wallet balance.' });
           return;
         }
+        let totalPrice = orderedItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+        let shipping = 50;
+        let discount = parseFloat(document.querySelector("#discount-display")?.textContent.replace("-₹", "").trim()) || 0;
+        let gstAmount = totalPrice * 18 /100
+        let finalAmount = totalPrice + shipping - discount + gstAmount;
         let walletBalance = walletData.wallet;
+        console.log("Wallet Balance:", walletBalance, "Final Amount:", finalAmount)
         if (walletBalance < finalAmount) {
           Swal.fire({ icon: 'error', title: 'Insufficient Wallet Balance', text: 'Please select another payment method.' });
           return;

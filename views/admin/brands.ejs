@@ -144,6 +144,122 @@
 .btn-info:hover {
   background-color: #138496;
 }
+
+@media (max-width: 768px) {
+  .content-main {
+    padding: 15px; 
+  }
+
+  .content-title {
+    font-size: 24px; 
+  }
+
+  .content-header {
+    flex-direction: column; 
+    align-items: flex-start;
+  }
+
+  .search-container {
+    flex-direction: column; 
+    padding: 10px 0;
+    justify-content: center;
+  }
+
+  .input-group {
+    width: 100%; 
+    margin-right: 0;
+    flex-direction: column; 
+  }
+
+  .form-control {
+    margin-bottom: 10px; 
+    border-radius: 25px; 
+  }
+
+  .btn {
+    width: 100%; 
+    max-width: 200px; 
+    margin: 0 auto; 
+  }
+
+  .btn-add-category {
+    margin-top: 10px; 
+    width: 100%;
+    max-width: 200px;
+    text-align: center;
+  }
+
+  .table-responsive {
+    padding: 10px; 
+    overflow-x: auto; 
+  }
+
+  .table th,
+  .table td {
+    padding: 8px; 
+    font-size: 14px;
+  }
+
+  .table td button {
+    width: 70px; 
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .pagination-container {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 5px; 
+  }
+
+  .pagination a,
+  .pagination .current-page {
+    padding: 6px 12px; 
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-title {
+    font-size: 20px; 
+  }
+
+  .card-header {
+    padding: 10px; 
+  }
+
+  .form-control {
+    font-size: 14px; 
+  }
+
+  .btn {
+    padding: 8px 12px; 
+    font-size: 12px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px; 
+    font-size: 12px; 
+  }
+
+  .table td button {
+    width: 60px; 
+    padding: 6px;
+  }
+
+  .table td .badge {
+    width: 50px; 
+    font-size: 12px;
+  }
+
+  .pagination a,
+  .pagination .current-page {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+}
 </style>
 <section class="content-main">
   <div class="content-header">
