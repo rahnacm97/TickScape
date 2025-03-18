@@ -155,99 +155,132 @@ const loadDashboard = async (req, res) => {
           ? totalCouponUsers[0].totalCouponApplied
           : 0;
 
-      const topOrders = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        { $group: { _id: "$orderedItems.productId", orderCount: { $sum: 1 } } },
-        { $sort: { orderCount: -1 } },
-        { $limit: 10 },
-        {
-          $lookup: {
-            from: "products",
-            localField: "_id",
-            foreignField: "_id",
-            as: "productDetails",
-          },
-        },
-        { $unwind: "$productDetails" },
-        {
-          $project: {
-            _id: 0,
-            productId: "$_id",
-            name: "$productDetails.productName",
-            orderCount: 1,
-          },
-        },
-      ]);
-
-      const topCategories = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        {
-          $lookup: {
-            from: "products",
-            localField: "orderedItems.productId",
-            foreignField: "_id",
-            as: "productDetails",
-          },
-        },
-        { $unwind: "$productDetails" },
-        {
-          $group: {
-            _id: "$productDetails.category",
-            categoryCount: { $sum: 1 },
-          },
-        },
-        { $sort: { categoryCount: -1 } },
-        { $limit: 10 },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "_id",
-            foreignField: "_id",
-            as: "categoryDetails",
-          },
-        },
-        { $unwind: "$categoryDetails" },
-        {
-          $project: {
-            _id: 0,
-            categoryId: "$_id",
-            categoryName: "$categoryDetails.name",
-            categoryCount: 1,
-          },
-        },
-      ]);
-
-      const topBrands = await Order.aggregate([
-        { $unwind: "$orderedItems" },
-        {
-          $lookup: {
-            from: "products",
-            localField: "orderedItems.productId",
-            foreignField: "_id",
-            as: "productDetails",
-          },
-        },
-        { $unwind: "$productDetails" },
-        {
-          $lookup: {
-            from: "brands",
-            localField: "productDetails.brand",
-            foreignField: "_id",
-            as: "brandDetails",
-          },
-        },
-        { $unwind: "$brandDetails" },
-        {
-          $group: {
-            _id: "$productDetails.brand",
-            brandCount: { $sum: 1 },
-            brandName: { $first: "$brandDetails.brandName" },
-          },
-        },
-        { $sort: { brandCount: -1 } },
-        { $limit: 10 },
-        { $project: { _id: 0, brandId: "$_id", brandName: 1, brandCount: 1 } },
-      ]);
+          const topOrders = await Order.aggregate([
+            // Filter out cancelled/returned items first
+            {
+                $project: {
+                    orderedItems: {
+                        $filter: {
+                            input: "$orderedItems",
+                            cond: { $not: { $in: ["$$this.orderStatus", ["Cancelled", "Returned"]] } }
+                        }
+                    }
+                }
+            },
+            { $unwind: "$orderedItems" },
+            { $group: { _id: "$orderedItems.productId", orderCount: { $sum: 1 } } },
+            { $sort: { orderCount: -1 } },
+            { $limit: 10 },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $project: {
+                    _id: 0,
+                    productId: "$_id",
+                    name: "$productDetails.productName",
+                    orderCount: 1,
+                },
+            },
+        ]);
+        
+        const topCategories = await Order.aggregate([
+            // Filter out cancelled/returned items first
+            {
+                $project: {
+                    orderedItems: {
+                        $filter: {
+                            input: "$orderedItems",
+                            cond: { $not: { $in: ["$$this.orderStatus", ["Cancelled", "Returned"]] } }
+                        }
+                    }
+                }
+            },
+            { $unwind: "$orderedItems" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderedItems.productId",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.category",
+                    categoryCount: { $sum: 1 },
+                },
+            },
+            { $sort: { categoryCount: -1 } },
+            { $limit: 10 },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryDetails",
+                },
+            },
+            { $unwind: "$categoryDetails" },
+            {
+                $project: {
+                    _id: 0,
+                    categoryId: "$_id",
+                    categoryName: "$categoryDetails.name",
+                    categoryCount: 1,
+                },
+            },
+        ]);
+        
+        const topBrands = await Order.aggregate([
+            // Filter out cancelled/returned items first
+            {
+                $project: {
+                    orderedItems: {
+                        $filter: {
+                            input: "$orderedItems",
+                            cond: { $not: { $in: ["$$this.orderStatus", ["Cancelled", "Returned"]] } }
+                        }
+                    }
+                }
+            },
+            { $unwind: "$orderedItems" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orderedItems.productId",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $lookup: {
+                    from: "brands",
+                    localField: "productDetails.brand",
+                    foreignField: "_id",
+                    as: "brandDetails",
+                },
+            },
+            { $unwind: "$brandDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.brand",
+                    brandCount: { $sum: 1 },
+                    brandName: { $first: "$brandDetails.brandName" },
+                },
+            },
+            { $sort: { brandCount: -1 } },
+            { $limit: 10 },
+            { $project: { _id: 0, brandId: "$_id", brandName: 1, brandCount: 1 } },
+        ]);
 
       const lowStockProducts = await Product.find({ quantity: { $lte: 5 } });
       const totalProducts = await Product.countDocuments();

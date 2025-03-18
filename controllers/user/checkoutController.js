@@ -36,7 +36,7 @@ const checkCart = async (req, res) => {
 const getCheckout = async (req, res) => {
   try {
     const userId = req.session.user;
-    //console.log("User ID:", userId);
+   
     if (!userId) {
       return res.status(401).json({ success: false, message: "User not logged in" });
     }
@@ -44,8 +44,6 @@ const getCheckout = async (req, res) => {
     const carts = await Cart.findOne({ userId }).populate("items.productId");
     const address = await Address.find({ userId });
     const user = await User.findById({_id:userId});
-
-    //console.log("Address:", address);
 
     if (!carts || !carts.items || carts.items.length === 0) {
       req.session.appliedCoupon = null;
@@ -93,7 +91,7 @@ const getCheckout = async (req, res) => {
       if (coupon && total >= coupon.minimumPrice && today <= new Date(coupon.expireOn)) {
         couponDiscount = Math.min(appliedCoupon.discount, total); 
       } else {
-        couponDiscount = 0; // Invalid coupon
+        couponDiscount = 0; 
       }
     }
 
@@ -134,13 +132,6 @@ const getCheckout = async (req, res) => {
     req.session.couponError = null;
     req.session.save();
 
-    console.log("user",user);
-    console.log("Applied Coupon in Session:", req.session.appliedCoupon);
-    console.log("Total:", total);
-    console.log("GST Amount:", gstAmount);
-    console.log("Discount Applied:", couponDiscount);
-    console.log("Final Total:", finalTotal);
-
   } catch (error) {
     console.error("Error loading checkout page:", error);
     res.status(500).send("An error occurred while loading the checkout page.");
@@ -153,8 +144,6 @@ const applyCoupon = async (req, res) => {
     console.log("Coupon request received:", req.body);
     const { couponCode, carts } = req.body;
     const userId = req.session.user;
-
-    console.log("User ID:", userId);
 
     if (!userId) {
       return res.status(401).json({ success: false, message: "User not logged in" });
@@ -169,11 +158,9 @@ const applyCoupon = async (req, res) => {
     }
 
     const subTotal = carts.reduce((acc, item) => acc + (item.price * (item.quantity ?? 1)), 0);
-    console.log("Subtotal:", subTotal);
 
     const gstRate = 18;
     const gstAmount = (subTotal * gstRate) / 100;
-    console.log("GST Amount:", gstAmount);
     const finalAmount = subTotal + gstAmount + 50;
 
     const coupon = await Coupon.findOne({ name: couponCode }).lean();
@@ -191,11 +178,9 @@ const applyCoupon = async (req, res) => {
     }
 
     const couponDiscount = coupon.offerPrice;
-    console.log("Discount Applied:", couponDiscount);
 
     const finalTotal = Math.max(subTotal + gstAmount - couponDiscount, 0);
-    console.log("Final Total After Discount:", finalTotal);
-
+   
     req.session.appliedCoupon = {
       _id: coupon._id,
       name: coupon.name,
@@ -243,8 +228,6 @@ const removeCoupon = async (req, res) => {
       return res.json({ success: false, message: "No coupon applied" });
     }
 
-    console.log("Before removing coupon:", req.session.appliedCoupon);
-
     const discount = req.session.appliedCoupon.discount || 0;
     req.session.appliedCoupon = null; 
 
@@ -253,11 +236,9 @@ const removeCoupon = async (req, res) => {
     }
 
     const subTotal = req.session.cart.subTotal || 0;
-    console.log("Subtotal:", subTotal);
 
     const gstRate = 18; 
     const gstAmount = (subTotal * gstRate) / 100;
-    console.log("GST Amount:", gstAmount);
 
     const finalTotal = subTotal + gstAmount; 
 
@@ -269,7 +250,7 @@ const removeCoupon = async (req, res) => {
         console.error("Session save error:", err);
         return res.json({ success: false, message: "Failed to update session" });
       }
-      console.log("After removing coupon:", req.session.cart);
+      
       return res.json({ 
         success: true, 
         message: "Coupon Removed", 
@@ -301,7 +282,6 @@ const razorpayPayment = async (req, res) => {
       const userId = req.session.user;
       const addressId = req.body.addressId;
 
-      console.log("Session Data:", req.session);
 
       const addressData = await Address.findOne(
           { userId, "address._id": addressId },
@@ -354,9 +334,6 @@ const razorpayPayment = async (req, res) => {
       let finalAmount = Math.max(totalOfferPrice - couponDiscount + shippingCharge + gstAmount, 0);
 
       let couponApplied = couponDiscount > 0;
-
-      console.log("Coupon Discount:", couponDiscount);
-      console.log("Final Amount:", finalAmount);
 
       if (finalAmount === 0) {
           return res.status(400).json({ success: false, message: "Order amount must be greater than zero." });
@@ -421,6 +398,7 @@ const verifyRazorpay = async (req, res) => {
           return res.status(500).json({ success: false, message: "Server error: Payment configuration missing." });
       }
 
+      //Signature generation
       const generatedSignature = crypto
           .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
           .update(order_id + "|" + payment_id)
@@ -462,6 +440,7 @@ const verifyRazorpay = async (req, res) => {
             console.log("Applied Coupon in verifyRazorpay:", req.session.appliedCoupon);
         }
 
+        //Final amount calculation
         const finalAmount = (
             orderDetails.totalPrice +
             (orderDetails.gstAmount || 0) +
@@ -625,8 +604,6 @@ const savePendingOrder = async (req, res) => {
 const placeOrder = async (req, res) => {
   try {
       const userId = req.session.user;
-      //console.log("Step 1 - User ID:", userId);
-      console.log("Request Body:", req.body);
 
       const { orderedItems, discount = 0, address, status, paymentMethod, shipping = 0 , gstAmount = 0} = req.body;
 
@@ -652,12 +629,8 @@ const placeOrder = async (req, res) => {
       let couponApplied = discount > 0;
       let appliedCoupon = null;
 
-      // console.log("Coupon Applied:", couponApplied);
-      // console.log("Applied Coupon in Session:", req.session.appliedCoupon);
-
       if (req.session.appliedCoupon && couponApplied) {
         appliedCoupon = req.session.appliedCoupon._id; 
-        console.log("Applied Coupon ID:", appliedCoupon);
       }
 
       let fullAddress;
@@ -723,11 +696,6 @@ const placeOrder = async (req, res) => {
         }
       });
 
-      console.log("Ordered Items:", orderedItems);
-      console.log("Total Price:", totalPrice);
-      console.log("Final Amount:", finalAmount);
-      console.log("GST Amount:", gstAmount);
-
       await newOrder.save();
 
       if (req.session.appliedCoupon) {
@@ -759,11 +727,9 @@ const getUserWalletBalance = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     let walletTransactions = user.wallet || [];
-    console.log("walletTransactions",walletTransactions);
     
     // Calculate total wallet balance
     let walletBalance = walletTransactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-    console.log("walletBalance",walletBalance);
 
     res.json({ wallet: walletBalance });
   } catch (error) {
@@ -781,11 +747,9 @@ const deductWalletBalance = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     let walletTransactions = user.wallet || [];
-    console.log("walletTransactions1",walletTransactions);
     
     // Calculate wallet balance
     let walletBalance = walletTransactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-    console.log("walletBalance1",walletBalance);
 
     // Check if balance is sufficient
     if (walletBalance < req.body.amount) {
@@ -795,7 +759,6 @@ const deductWalletBalance = async (req, res) => {
     user.wallet.push({ amount: -req.body.amount, date: new Date(), reason: "Order Payment" });
 
     await user.save();
-    console.log(user,"after save")
 
     res.json({ success: true, message: "Amount deducted successfully" });
   } catch (error) {
