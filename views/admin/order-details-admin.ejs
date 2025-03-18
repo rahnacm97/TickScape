@@ -187,14 +187,14 @@
                       <% cancelledItems.forEach(item => { %>
                         <tr class="cancelled-item">
                           <td><%= item.productId.productName %></td>
-                          <td><img class="img-fluid" src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
+                          <td><img class="img-fluid" src="/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
                           <td><%= item.productId.category.name %></td>
                           <td><%= item.productId.description %></td>
                           <td><%= item.productId.brand ? item.productId.brand.brandName : "N/A" %></td>
                           <td><%= item.quantity %></td>
                           <td><%= item.price %></td>
                           <td><%= item.orderStatus %></td>
-                          <td></td> <!-- No status dropdown for cancelled items -->
+                          <td></td> 
                         </tr>
                       <% }); %>
                     <% } %>
@@ -227,18 +227,6 @@
               </div>
 
               <hr>
-
-              <!-- Tracking History -->
-              <!-- <div class="order-summary mb-4">
-                  <h5>Order Tracking</h5>
-                  <ul class="list-group">
-                      <% order.trackingHistory.forEach(entry => { %>
-                          <li class="list-group-item">
-                              <strong><%= entry.date %></strong> - <%= entry.status %>
-                          </li>
-                      <% }); %>
-                  </ul>
-              </div> -->
 
               <div class="order-summary mb-4">
                 <h5>Order Tracking</h5>

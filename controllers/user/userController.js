@@ -177,6 +177,13 @@ const signup = async (req, res) => {
             return res.render('signup', { message: "Email already exists" });
         }
 
+        if (referralCode) {
+            const referralUser = await User.findOne({ referalCode: referralCode });
+            if (!referralUser) {
+                return res.render('signup', { message: "Invalid referral code" });
+            }
+        }
+        
         // Generate OTP
         const otp = generateOtp();
         const emailSent = await sentVerification(email, otp);
