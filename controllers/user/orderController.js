@@ -9,7 +9,6 @@ const Coupon = require("../../models/couponSchema");
 const env = require("dotenv").config();
 const session = require("express-session");
 const mongoose = require('mongoose');
-//const PDFDocument = require("pdfkit");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const fs = require("fs");
@@ -19,13 +18,9 @@ const PDFTable = require("pdfkit-table");
 //Confirmation page
 const getConfirmation = async (req, res) => {
     try {
-        const orderId = req.query.orderId; // Sequential number from frontend
-        console.log("Received orderId:", orderId);
-        const userId = req.session.user;        
-        //const order = await Order.findOne({ orderId: parseInt(orderId) });
+        const orderId = req.query.orderId; 
         
-        //console.log("Order ID received:", orderId);
-        //console.log("User ID from session:", userId);
+        const userId = req.session.user;        
 
         const user = await User.findById({_id:userId});
 
@@ -42,12 +37,11 @@ const getConfirmation = async (req, res) => {
             return res.status(404).json({ error: "Order not found" });
         }
 
-        //console.log("Order address:", order.address);
 
         let fullAddress = null;
         if (order.address) {
             const addressDoc = await Address.findOne({ userId });
-            //console.log(addressDoc);
+            
 
             if (!addressDoc) {
                 return res.status(404).json({ error: "Address document not found." });
@@ -59,7 +53,6 @@ const getConfirmation = async (req, res) => {
                 return res.status(404).json({ error: "Address not found." });
             }
 
-           // console.log("Selected Address:", fullAddress);
         }
 
         res.render("orders", {
@@ -88,7 +81,7 @@ const downloadInvoice = async (req, res) => {
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
-        //console.log("order",order.orderedItems);
+        
 
         let fullAddress = null;
         if (order.address) {
@@ -137,16 +130,15 @@ const downloadInvoice = async (req, res) => {
             title: "Order Details",
             headers: ["#", "Product Name", "Quantity", "Price", "Total" ,"Status"],
             rows: order.orderedItems.map((item, index) => [
-                index + 1, // Index
-                item.productId.productName, // Product Name
-                item.quantity.toString(), // Quantity
-                `₹${item.price}`, // Price
+                index + 1, 
+                item.productId.productName, 
+                item.quantity.toString(), 
+                `₹${item.price}`, 
                 `₹${(item.quantity * item.price * 1.18).toFixed(2)}`,
-                item.orderStatus, // Total
+                item.orderStatus, 
             ]), 
         };
 
-        console.log("Table Rows:", table.rows);
 
         doc.registerFont("NotoSans", path.join(invoiceDir, "fonts" , "Noto_Sans", "static", "NotoSans-Regular.ttf"));
         doc.font("NotoSans");
@@ -160,7 +152,6 @@ const downloadInvoice = async (req, res) => {
             },
         });
 
-        //console.log('table data',table);
 
         // Summary Section
         doc.moveDown().fontSize(12);
@@ -276,8 +267,7 @@ const getOrders = async (req, res) => {
                 user: user,
                 cartItemCount
             });
-            //console.log("order",formattedOrders);
-
+           
     } catch (error) {
         console.error("Error retrieving orders:", error.message);
         res.redirect('/pageNotFound');
@@ -290,7 +280,6 @@ const viewOrder = async(req,res) => {
 
         const userId = req.session.user;
         const { orderid } = req.params;
-        //console.log("1",orderid,userId);
 
         const user = await User.findById({_id:userId});
 
@@ -302,8 +291,7 @@ const viewOrder = async(req,res) => {
         if (!order) {
             return res.status(404).send('Order not found');
         }
-        
-        //console.log("1", order);
+
         const addressDetails = await Address.findOne({ userId: order.userId }).exec();
    
         const address = addressDetails.address.find(
@@ -314,7 +302,6 @@ const viewOrder = async(req,res) => {
         return new Date(a.date) - new Date(b.date);
         }): [];
 
-       // console.log("Sorted Tracking History:", trackingHistory);
 
         const latestTrackingEntry = trackingHistory.length > 0 ? trackingHistory[trackingHistory.length - 1] : null;
         
@@ -359,7 +346,7 @@ const viewOrder = async(req,res) => {
           const walletRefund = user.wallet
             .filter(w => 
               w.reason === "Refund" &&
-              Math.abs(new Date(w.date) - refundDate) < 1000 * 60 * 60 // Within 1 hour of refund event
+              Math.abs(new Date(w.date) - refundDate) < 1000 * 60 * 60 
             )
             .sort((a, b) => Math.abs(new Date(a.date) - refundDate) - Math.abs(new Date(b.date) - refundDate))[0];
     
@@ -633,7 +620,6 @@ const returnOrder = async (req, res) => {
       order.status = "Return request";
   
       await order.save();
-      console.log("Updated order:", order);
   
       res.status(200).json({
         success: true,
@@ -655,23 +641,22 @@ const razorpayInstance = new Razorpay({
 const retryPayment = async (req, res) => {
     try {
       const { orderId } = req.params;
-      console.log("1",orderId);
+      
       const order = await Order.findById(orderId).populate("orderedItems.productId");
-      console.log("order",order);
+      
   
       if (!order || order.status !== "Payment Pending") {
         return res.status(400).json({ success: false, message: "Invalid order or status." });
       }
 
       const finalAmount = order.finalAmount;
-      console.log("final", finalAmount);
+      
   
       const finalAmountPaise = Math.round(finalAmount * 100);      
       const options = { amount: finalAmountPaise, currency: "INR" }; 
-      console.log("options",options);
-      console.log("final",finalAmount);
+      
       const razorpayOrder = await razorpayInstance.orders.create(options);
-      console.log("razorpay",razorpayOrder);
+      
   
       if (!razorpayOrder || !razorpayOrder.id) {
         throw new Error("Failed to create Razorpay order.");
@@ -681,8 +666,7 @@ const retryPayment = async (req, res) => {
       order.paymentInfo.transactionId = razorpayOrder.id;
       await order.save();
 
-      console.log("Order updated with payment info");
-  
+    
       res.status(200).json({
         success: true,
         order: razorpayOrder,

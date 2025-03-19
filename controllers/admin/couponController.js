@@ -165,7 +165,7 @@ const getUnlistCoupon = async (req, res, next) => {
 const deleteCoupon = async (req, res) => {
   try {
     const id = req.query.id;
-    console.log("Deleting coupon with ID:", id);
+    
     const result = await Coupon.deleteOne({ _id: id });
     if (result.deletedCount === 0) {
       return res

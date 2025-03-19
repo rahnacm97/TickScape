@@ -25,7 +25,7 @@ const getBrandsPage = async (req, res) => {
         .skip(skip)
         .limit(limit);
     }
-    console.log("1", brandData);
+    
     const totalBrands = await Brand.countDocuments();
     const totalPages = Math.ceil(totalBrands / limit);
     const reverseBrand = brandData.reverse();
@@ -146,13 +146,13 @@ const editBrand = async (req, res, next) => {
 
     if (!id) {
       next(new CustomError(400, "Invalid brand ID"));
-      //return res.status(400).send("Invalid brand ID");
+      
     }
 
     const brand = await Brand.findOne({ _id: id });
     if (!brand) {
       next(new CustomError(404, "Brand not found"));
-      //return res.status(404).send("Brand not found");
+     
     }
 
     const existingBrand = await Brand.findOne({

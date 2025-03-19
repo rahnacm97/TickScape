@@ -48,7 +48,6 @@ const getOrderListPageAdmin = async (req, res) => {
     let totalPages = Math.ceil(orders.length / itemsPerPage);
     const currentOrder = orders.slice(startIndex, endIndex);
 
-    // console.log("Filtered Orders:", currentOrder);
 
     res.render("order-list", {
       orders: currentOrder,
@@ -101,7 +100,7 @@ const getOrderDetailsPageAdmin = async (req, res) => {
       return res.redirect("/pageerror");
     }
 
-    console.log("Order details:", order);
+   
 
     res.render("order-details-admin", {
       order,
@@ -118,7 +117,6 @@ const getOrderDetailsPageAdmin = async (req, res) => {
 //Updating order status
 const updateOrderStatus = async (req, res) => {
   try {
-    console.log("Received request to update order status:", req.body);
 
     const { orderId, status } = req.body;
     if (!orderId || !status) {
@@ -204,7 +202,6 @@ const returnRequest = async (req, res) => {
     let totalPages = Math.ceil(orders.length / itemsPerPage);
     const currentOrder = orders.slice(startIndex, endIndex);
 
-    //console.log("Filtered Orders:", currentOrder);
 
     res.render("return-request", {
       orders: currentOrder,
@@ -221,8 +218,7 @@ const returnRequest = async (req, res) => {
 const rejectOrder = async (req, res) => {
   try {
     const { orderId, productId } = req.body;
-    //console.log("Rejecting order:", orderId, productId);
-
+  
     if (!orderId || !productId) {
       return res
         .status(400)
@@ -381,7 +377,7 @@ const approveOrder = async (req, res) => {
         { $set: { status: "Delivered" } }
       );
     }
-    console.log("Status update result:", statusUpdateResult);
+    
 
     return res.status(200).json({
       success: true,

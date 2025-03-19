@@ -27,7 +27,6 @@ const getProductAddPage = async (req, res, next) => {
 const addProducts = async (req, res, next) => {
   try {
     const products = req.body;
-    console.log("Received product data:", products);
 
     const productExists = await Product.findOne({
       productName: products.productName,
@@ -44,7 +43,6 @@ const addProducts = async (req, res, next) => {
       if (!fs.existsSync(processedDir)) {
         fs.mkdirSync(processedDir, { recursive: true });
       }
-      console.log(req.files);
 
       if (req.files && req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
@@ -68,13 +66,13 @@ const addProducts = async (req, res, next) => {
       if (!categoryId) {
         console.error("Invalid category name:", products.category);
         return next(new CustomError(400, "Invalid Category Name."));
-        //return res.status(400).json("Invalid Category Name");
+       
       }
 
       const brandExists = await Brand.findOne({ brandName: products.brand });
       if (!brandExists) {
         console.error("Invalid brand name:", products.brand);
-        //return res.status(400).json("Invalid Brand Name");
+        
         return next(new CustomError(400, "Invalid Brand Name."));
       }
 
@@ -108,7 +106,7 @@ const addProducts = async (req, res, next) => {
     }
   } catch (error) {
     console.error("Error saving product:", error);
-    //return res.status(500).json({ message: "Error saving product: " + error.message });
+    
     return next(new CustomError(500, "Error saving product" + error.message));
   }
 };
@@ -163,7 +161,6 @@ const addProductOffer = async (req, res, next) => {
   try {
     const { productId, offerAmount } = req.body;
 
-    console.log(offerAmount);
 
     if (!productId || !offerAmount) {
       throw new CustomError(400, "Product ID and offer amount are required");
@@ -195,7 +192,7 @@ const addProductOffer = async (req, res, next) => {
     }
 
     if (discountAmount > findProduct.regularPrice) {
-      // return res.status(400).json({ status: false, message: "Offer amount cannot exceed the regular price." });
+      
       throw new CustomError(
         400,
         "Offer amount cannot exceed the regular price"
@@ -210,7 +207,7 @@ const addProductOffer = async (req, res, next) => {
     res.json({ status: true, message: "Offer applied successfully." });
   } catch (error) {
     console.error("Error applying product offer:", error);
-    //return res.status(500).json({ status: false, message: "Internal Server Error" });
+   
     next(
       error instanceof CustomError
         ? error
@@ -250,7 +247,7 @@ const removeProductOffer = async (req, res, next) => {
 const blockProduct = async (req, res, next) => {
   try {
     let id = req.query.id.trim();
-    console.log("Blocking product ID:", id);
+    
     await Product.updateOne({ _id: id }, { $set: { isBlocked: true } });
 
     await User.updateMany({ wishlist: id }, { $pull: { wishlist: id } });
@@ -260,7 +257,7 @@ const blockProduct = async (req, res, next) => {
       { $pull: { items: { productId: id } } }
     );
 
-    console.log("Blocked product successfully");
+    
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error blocking product:", error);
@@ -272,9 +269,9 @@ const blockProduct = async (req, res, next) => {
 const unblockProduct = async (req, res, next) => {
   try {
     let id = req.query.id.trim();
-    console.log("Unblocking product ID:", id);
+    
     await Product.updateOne({ _id: id }, { $set: { isBlocked: false } });
-    console.log("Unblocked product successfully");
+    
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error unblocking product:", error);
@@ -286,20 +283,20 @@ const unblockProduct = async (req, res, next) => {
 const getEditProduct = async (req, res, next) => {
   try {
     const id = req.params.id.trim();
-    //console.log("The id is",id);
+    
     const product = await Product.findOne({ _id: id });
-    //console.log(product);
+   
     const category = await Category.find({});
-    //console.log(category);/
+    
     const brand = await Brand.find({});
-    console.log(product, "0000");
+    
 
     res.render("edit-product", {
       product: product,
       category: category,
       brand: brand,
     });
-    console.log("Exited");
+    
   } catch (error) {
     res.redirect("/pageerror");
   }
@@ -310,31 +307,28 @@ const editProduct = async (req, res, next) => {
   try {
     const id = req.params.id.trim();
 
-    // console.log(req.params)
 
     if (!id) {
       return next(new CustomError(400, "Invalid product ID"));
-      //return res.status(400).send("Invalid product ID");
+     
     }
 
-    // console.log("Product ID:", id);
+    
 
     const product = await Product.findOne({ _id: id });
     if (!product) {
       return next(new CustomError(400, "Product not found"));
-      //return res.status(404).send("Product not found");
+      
     }
-    console.log(product);
-    // const category = await Category.find({ isListed: true });
-    // const brand = await Brand.find({ isBlocked: false });
+    
     const data = req.body;
 
     const brandObj = await Brand.findById(data.brand);
     if (!brandObj) {
       return next(new CustomError(400, "Brand not found"));
-      //return res.status(400).send("Brand not found");
+      
     }
-    // console.log("Request data:", data);
+    
 
     const existingProduct = await Product.findOne({
       productName: data.productName,
@@ -342,9 +336,7 @@ const editProduct = async (req, res, next) => {
     });
 
     if (existingProduct) {
-      // return res.status(400).json({
-      //     error: "Product with this name already exists. Please try with another name.",
-      // });
+      
       return next(
         new CustomError(
           400,
@@ -359,9 +351,9 @@ const editProduct = async (req, res, next) => {
         images.push(`uploads/product-images/${file.filename}`)
       );
     }
-    // console.log("Category is",data.caBrandtegory);
+   
 
-    let status = product.status; // Keep the existing status by default
+    let status = product.status;
     if (data.quantity && data.quantity > 0) {
       status = "Available";
     } else {
@@ -384,7 +376,7 @@ const editProduct = async (req, res, next) => {
     if (images.length > 0) {
       updateFields.$push = { productImage: { $each: images } };
     }
-    // console.log("id is ",id);
+    
     await Product.findByIdAndUpdate(id, updateFields, { new: true });
 
     res.redirect("/admin/products");
@@ -397,7 +389,6 @@ const editProduct = async (req, res, next) => {
 //Delete single image from the images
 const deleteSingleImage = async (req, res) => {
   try {
-    console.log("halooo");
 
     const { imageNameToServer, productIdToServer } = req.body;
     console.log("productId:", productIdToServer);
@@ -424,7 +415,6 @@ const deleteSingleImage = async (req, res) => {
   }
 };
 
-//console.log("Exited");
 
 //Product deleting
 const deleteProduct = async (req, res) => {

@@ -11,7 +11,6 @@ const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const ExcelJS = require("exceljs");
-//const PDFDocument = require("pdfkit");
 const PDFDocument = require("pdfkit-table");
 const path = require("path");
 const sharp = require("sharp");

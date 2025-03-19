@@ -33,7 +33,6 @@ const categoryInfo = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    // res.redirect('/pageerror');
     next(
       error instanceof CustomError
         ? error
@@ -50,7 +49,7 @@ const getAddCategory = async (req, res) => {
   try {
     res.render("add-category");
   } catch (error) {
-    //res.redirect('/pageerror');
+    
     next(
       error instanceof CustomError
         ? error
@@ -85,7 +84,7 @@ const addCategory = async (req, res, next) => {
 
     return res.json({ message: "Category added successfully" });
   } catch (err) {
-    //next(new CustomError(err.statusCode, err.message))
+    
     next(
       err instanceof CustomError
         ? err
@@ -142,19 +141,19 @@ const removeCategoryOffer = async (req, res, next) => {
     const { categoryId } = req.body;
 
     if (!categoryId) {
-      // return res.status(400).json({ status: false, message: "Category ID is required." });
+      
       throw new CustomError(400, "Category ID is required");
     }
 
     const category = await Category.findById(categoryId);
 
     if (!category) {
-      //return res.status(404).json({ status: false, message: "Category not found." });
+     
       throw new CustomError(404, "Category not found");
     }
 
     if (category.categoryOffer === 0) {
-      //return res.json({ status: false, message: "No active offer to remove." });
+     
       throw new CustomError(400, "No active offer to remove");
     }
 
@@ -178,7 +177,7 @@ const removeCategoryOffer = async (req, res, next) => {
     res.json({ status: true, message: "Category offer removed successfully." });
   } catch (error) {
     console.error("Error removing category offer:", error);
-    //res.status(500).json({ status: false, message: "Internal Server Error" });
+    
     next(
       error instanceof CustomError
         ? error
@@ -225,7 +224,7 @@ const getEditCategory = async (req, res, next) => {
     const category = await Category.findOne({ _id: id });
     res.render("edit-category", { category: category });
   } catch (error) {
-    //res.redirect('/pageerror');
+    
     next(
       error instanceof CustomError
         ? error
@@ -246,7 +245,7 @@ const editCategory = async (req, res, next) => {
 
     if (existingCategory && existingCategory._id.toString() !== id) {
       next(new CustomError(400, "Category exists, choose another name"));
-      //return res.status(400).json({ error: "Category exists, choose another name" });
+     
     }
 
     const updateCategory = await Category.findByIdAndUpdate(
@@ -259,11 +258,11 @@ const editCategory = async (req, res, next) => {
       return res.json({ success: true, redirectUrl: "/admin/category" });
     } else {
       next(new CustomError(404, "Category Not Found"));
-      //res.status(404).json({ error: "Category Not Found" });
+      
     }
   } catch (error) {
     next(new CustomError(500, "Internal Server Error"));
-    //res.status(500).json({ error: "Internal Server Error" });
+  
   }
 };
 

@@ -90,7 +90,7 @@ const login = async(req,res,next) => {
     try{
         
         const {email,password} = req.body;
-        //console.log("password",password);
+        
         const findUser = await User.findOne({isAdmin: 0,email:email});
         if(!findUser){
             return res.render("login",{message:"User Not Found"});
@@ -101,14 +101,13 @@ const login = async(req,res,next) => {
 
        const passwordMatch = await bcrypt.compare(password,findUser.password);
 
-        //console.log("Password Match:", passwordMatch);
         if(!passwordMatch){
             return res.render("login",{message:"Incorrect Password"});
         }
 
-        req.session.user = findUser._id; // Store just the ID, not the full object
+        req.session.user = findUser._id; 
         res.locals.user = findUser;
-        // Pass user to all views using res.locals
+        
         res.redirect('/');
     }catch(err){
         console.error("Login error",err);
@@ -326,8 +325,6 @@ const loadShoppingPage = async (req, res, next) => {
         const { category, brand, gt, lt, sort, page, search } = req.query;
         const searchQuery = search || ''; 
 
-        //console.log("Received query params:", req.query);
-        //console.log("Parsed values - Page:", page, "GT:", gt, "LT:", lt);
 
         const userData = user ? await User.findOne({ _id: user }) : null;
 
@@ -353,7 +350,7 @@ const loadShoppingPage = async (req, res, next) => {
         }
 
         if (searchQuery) {
-            //console.log("Search Query Received:", searchQuery); 
+            
             const matchingCategories = await Category.find({
                 name: { $regex: searchQuery, $options: "i" },
                 isListed: true,

@@ -19,7 +19,7 @@ const razorpay = new Razorpay({
 
 const addMoney = async (req, res) => {
   const { amount } = req.body;
-  console.log("amount",amount)
+  
   const options = {
     amount: amount * 100, 
     currency: "INR",
@@ -29,7 +29,7 @@ const addMoney = async (req, res) => {
   try {
     const order = await razorpay.orders.create(options);
     res.json(order);
-    console.log("order",order);
+  
   } catch (error) {
     res.status(500).send(error);
   }

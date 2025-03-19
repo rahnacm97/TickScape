@@ -84,13 +84,13 @@ const addToCart = async (req, res,next) => {
     const userId = req.session?.user; 
 
     if (!userId) {
-      //return res.status(401).json({ error: "Please log in to add a product" });
+     
       return next(new CustomError(401, "Please log in to add a product"))
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-      //return res.status(404).json({ error: "Product not found" });
+      
       return next(new CustomError(404, "Product not found"))
     }
 
@@ -150,7 +150,7 @@ const addToCart = async (req, res,next) => {
     }
 
     await cart.save();
-    console.log("Updated cart:", cart);
+    
     res.status(200).json({ status: true, message: "Product added to cart successfully!", cart, cartItemCount: cart.items.length });
   } catch (error) {
     console.error("Error adding product to cart:", error);

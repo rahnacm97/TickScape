@@ -133,7 +133,7 @@
                     %>
                       <tr>
                         <td><%= item.productId.productName %></td>
-                        <td><img class="img-fluid" src="http://localhost:3000/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
+                        <td><img class="img-fluid" src="/<%= item.productId.productImage[0] %>" alt="Product Image"></td>
                         <td><%= item.productId.category.name %></td>
                         <td><%= item.productId.description %></td>
                         <td><%= item.productId.brand ? item.productId.brand.brandName : "N/A" %></td>

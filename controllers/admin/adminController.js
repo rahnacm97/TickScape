@@ -10,7 +10,7 @@ const pageerror = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Error rendering admin error page:", err);
-    //res.status(500).render("500page", { message: "Something went wrong." });
+  
     next(new CustomError(500, "Failed to render error page"));
   }
 };
@@ -68,7 +68,7 @@ const logout = async (req, res) => {
     res.redirect("/admin/login");
   } catch (error) {
     console.log("Unexpected Error", error);
-    //res.redirect("/pageerror");
+   
     next(
       error instanceof CustomError
         ? error

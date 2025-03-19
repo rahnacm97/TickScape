@@ -86,11 +86,9 @@ const getForgotPassword = async(req,res) => {
 //Email validation
 const forgotEmailValid = async (req, res) => {
     try {
-        console.log("body", req.body);
-        const { email } = req.body;
-        console.log("email", email);
+        
+        const { email } = req.body;       
         const findUser = await User.findOne({ email: email });
-        console.log("user", findUser);
         if (findUser) {
             const otp = generateOtp();
             const emailSent = await sendVerificationEmail(email, otp);
@@ -144,7 +142,7 @@ const verifyForgotPassOtp = async(req,res) => {
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
-            //res.render('reset-password');
+            
             req.session.user = req.session.user || {};
             res.json({success:true,redirectUrl:'/reset-password',user: req.session.user});
         }else{
@@ -404,14 +402,14 @@ const verifyChangePassOtp = async(req,res,next) => {
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp === req.session.userOtp){
-            //res.render('reset-password');
+            
             res.json({success:true,redirectUrl:'/reset-password', user: req.session.user});
         }else{
             res.json({success:false,message:"OTP does not match"});
         }
     } catch (error) {
         next(new CustomError(500, "An error occured. Please try again later."))
-        //res.status(500).json({success:false,message:"An error occured. Please try again later."});
+        
     }
 }
 
@@ -461,7 +459,7 @@ const getAddress = async (req, res) => {
 const addAddress = async(req,res) => {
     try {
         const redirectTo = req.query.redirectTo || "address";
-        console.log(redirectTo)
+       
         const userId = req.session.user;
         const user = await User.findById({_id:userId});
         res.render('add-address',{
@@ -476,7 +474,7 @@ const addAddress = async(req,res) => {
 const userAddAddress = async(req,res) => {
     try {
         const { redirectTo } = req.body; 
-        console.log("hiii",redirectTo);
+        
         const userId = req.session.user;
         const userData = await User.findOne({_id:userId});
         const {addressType,name,city,landMark,state,pincode,phone,altPhone} = req.body;
@@ -507,11 +505,11 @@ const userAddAddress = async(req,res) => {
 //Edit address page
 const editAddress = async(req,res) => {
     try {
-        console.log("query",req.query);
+        
         const addressId = req.query.id;
-        console.log("addres",addressId);
+        
         const redirectTo = req.query.redirectTo || "address"; 
-        console.log("addres1",addressId,redirectTo);
+        
         const userId = req.session.user;
 
         const user = await User.findById({_id:userId});
@@ -603,7 +601,7 @@ const deleteAddress = async (req, res, next) => {
         return res.json({ success: true, redirectTo, message: "Address deleted successfully" });
     } catch (error) {
         console.error("Error in deleting address", error);
-        //res.status(500).json({ success: false, message: "Internal Server Error" });
+    
         next(new CustomError(500, "Internal Server Error"))
     }
 };
@@ -613,19 +611,19 @@ const geteditProfile = async (req, res,next) => {
     try {
         const userId = req.query.id;
         if (!userId) {
-            //return res.status(400).send('User ID is required');
+           
             return next(new CustomError(400, "User ID is required"))
         }
         const user = await User.findById(userId);
         if (!user) {
-            //return res.status(404).send('User not found');
+           
             return next(new CustomError(400, "User not found"))
         }
 
         res.render('editProfile', { user });
     } catch (error) {
         console.error(error);
-        //res.status(500).send('Internal Server Error');
+        
         next(new CustomError(500, "Internal Server Error"))
     }
 };
@@ -634,7 +632,7 @@ const geteditProfile = async (req, res,next) => {
 const editProfile = async (req, res) => {
     try {
         const { newFname, newLname, newPhone } = req.body;
-        console.log("req", req.body);
+        
         const userId = req.session.user;
         await User.findByIdAndUpdate(userId, {
             fname: newFname,

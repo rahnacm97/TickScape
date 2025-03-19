@@ -55,7 +55,6 @@ const getCheckout = async (req, res) => {
     });
   }
 
-  console.log("user",user);
     // Calculate total price and GST amount
     let total = 0;
     let gstAmount = 0;
@@ -141,7 +140,7 @@ const getCheckout = async (req, res) => {
 //Coupon applying
 const applyCoupon = async (req, res) => {
   try {
-    console.log("Coupon request received:", req.body);
+    
     const { couponCode, carts } = req.body;
     const userId = req.session.user;
 
@@ -710,7 +709,6 @@ const placeOrder = async (req, res) => {
 
       await Cart.findOneAndDelete({ userId });
 
-      console.log("Order placed successfully:", newOrder);
       res.status(201).json({ success: true, message: "Order placed successfully", order: newOrder });
   } catch (error) {
       console.error("Order Error:", error);

@@ -74,7 +74,6 @@ const loadDashboard = async (req, res) => {
       }
 
       let query = { createdOn: { $gte: startDate, $lte: endDate } };
-      //console.log("loadDashboard Query:", JSON.stringify(query, null, 2));
 
       const userCount = await User.countDocuments({ isAdmin: false });
       const totalSales = await Order.aggregate([
@@ -131,7 +130,7 @@ const loadDashboard = async (req, res) => {
         totalDiscountPrice: 0,
         itemSold: 0,
       };
-      //console.log("loadDashboard sales:", salesData);
+     
 
       const order = await Order.find(query)
         .sort({ createdOn: -1 })
@@ -371,7 +370,7 @@ const salesReport = async (req, res) => {
     }
 
     let query = { createdOn: { $gte: startDate, $lte: endDate } };
-    //console.log("salesReport Query:", JSON.stringify(query, null, 2));
+   
 
     const userCount = await User.countDocuments({ isAdmin: false });
 
@@ -469,7 +468,7 @@ const salesReport = async (req, res) => {
       filterType,
     };
 
-    //console.log("salesReport Result:", JSON.stringify(result, null, 2));
+    
     res.json(result);
   } catch (error) {
     console.error("Sales report error:", error);
@@ -554,7 +553,7 @@ const Chart = async (req, res) => {
         if (isNaN(start.getTime()) || isNaN(end.getTime())) {
           return res.status(400).json({ error: "Invalid date format" });
         }
-        end.setHours(23, 59, 59, 999); // Ensure end date includes the full day
+        end.setHours(23, 59, 59, 999); 
         matchStage = {
           createdOn: {
             $gte: start,
@@ -566,7 +565,7 @@ const Chart = async (req, res) => {
         return res.status(400).json({ error: "Invalid filter type" });
     }
 
-    //console.log('Chart Match stage:', JSON.stringify(matchStage, null, 2));
+   
 
     const salesData = await Order.aggregate([
       {
@@ -621,7 +620,7 @@ const Chart = async (req, res) => {
       { $sort: { _id: 1 } },
     ]);
 
-    //console.log('Chart Sales data:', JSON.stringify(salesData, null, 2));
+    
 
     let labels, values;
     if (filter === "yearly") {
@@ -663,8 +662,7 @@ const Chart = async (req, res) => {
       values = salesData.map((data) => parseFloat(data.totalSales.toFixed(2)));
     }
 
-    console.log("Chart Labels:", labels);
-    console.log("Chart Values:", values);
+    
 
     res.json({ labels, values });
   } catch (error) {
