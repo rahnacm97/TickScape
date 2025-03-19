@@ -68,136 +68,234 @@ const getConfirmation = async (req, res) => {
 };
 
 //Invoice
+// const downloadInvoice = async (req, res) => {
+//     try {
+//         const { orderId } = req.params;
+//         const userId = req.session.user;
+
+//         const order = await Order.findById(orderId).populate({
+//             path: "orderedItems.productId",
+//             model: "Product",
+//         });
+
+//         if (!order) {
+//             return res.status(404).json({ error: "Order not found" });
+//         }
+        
+
+//         let fullAddress = null;
+//         if (order.address) {
+//             const addressDoc = await Address.findOne({ userId });
+
+//             if (!addressDoc) {
+//                 return res.status(404).json({ error: "Address document not found." });
+//             }
+
+//             fullAddress = addressDoc.address.find(
+//                 (addr) => addr._id.toString() === order.address.toString()
+//             );
+
+//             if (!fullAddress) {
+//                 return res.status(404).json({ error: "Address not found." });
+//             }
+//         }
+
+//         const invoiceDir = path.join("D:", "BROTOTYPE", "TICKSCAPE", "invoices");
+//         const invoicePath = path.join(invoiceDir, `invoice-${orderId}.pdf`);
+
+//         if (!fs.existsSync(invoiceDir)) {
+//             fs.mkdirSync(invoiceDir, { recursive: true });
+//         }
+
+//         const doc = new PDFTable({ margin: 30, size: "A4" }); 
+//         const writeStream = fs.createWriteStream(invoicePath);
+//         doc.pipe(writeStream);
+
+//         // Header
+//         doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
+
+//         // Order ID and Date
+//         doc.fontSize(12).text(`Order ID: ${order.orderId}`);
+//         doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
+
+//         // Delivery Address
+//         doc.fontSize(12).text("Deliver to:", { underline: true });
+//         doc.text(`${fullAddress.name}`);
+//         doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
+//         doc.text(`Pincode: ${fullAddress.pincode}`);
+//         doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
+
+//         // Table
+//         const table = {
+//             title: "Order Details",
+//             headers: ["#", "Product Name", "Quantity", "Price", "Total" ,"Status"],
+//             rows: order.orderedItems.map((item, index) => [
+//                 index + 1, 
+//                 item.productId.productName, 
+//                 item.quantity.toString(), 
+//                 `₹${item.price}`, 
+//                 `₹${(item.quantity * item.price * 1.18).toFixed(2)}`,
+//                 item.orderStatus, 
+//             ]), 
+//         };
+
+
+//         doc.registerFont("NotoSans", path.join(invoiceDir, "fonts" , "Noto_Sans", "static", "NotoSans-Regular.ttf"));
+//         doc.font("NotoSans");
+        
+//         // Add the table to the PDF
+//         await doc.table(table, {
+//             columnsSize: [50, 150, 80, 80, 80, 100],
+//             prepareHeader: () => doc.font("NotoSans").fontSize(12),
+//             prepareRow: (row, indexColumn, indexRow, rectRow) => {
+//                 doc.font("NotoSans");
+//             },
+//         });
+
+
+//         // Summary Section
+//         doc.moveDown().fontSize(12);
+//         const cgst = (order.totalPrice * 0.09).toFixed(2);
+//         const sgst = (order.totalPrice * 0.09).toFixed(2);
+
+//         doc.text(`Products Price: ₹${(order.totalPrice).toFixed(2)}`, { align: "right" });
+//         doc.text(`CGST (9%): ₹${cgst}`, { align: "right" });
+//         doc.text(`SGST (9%): ₹${sgst}`, { align: "right" });
+//         doc.text(`Total GST (18%): ₹${(order.gstAmount).toFixed(2)}`, { align: "right" });
+//         doc.text(`Shipping: ₹${(order.shipping).toFixed(2)}`, { align: "right" });
+//         doc.text(`Discount: ₹${(order.discount).toFixed(2)}`, { align: "right" });
+//         doc.fontSize(14).text(`Final Amount: ₹${(order.finalAmount).toFixed(2)}`, { align: "right", underline: true });
+
+//         // Footer
+//         doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
+
+//         doc.end();
+
+//         // Handle file download
+//         writeStream.on("finish", () => {
+
+//             fs.access(invoicePath, fs.constants.F_OK, (err) => {
+//                 if (err) {
+//                     console.error("File does not exist:", invoicePath);
+//                     return res.status(404).json({ error: "Invoice file not found" });
+//                 }
+
+
+//                 res.download(invoicePath, `invoice-${orderId}.pdf`, (err) => {
+//                     if (err) {
+//                         console.error("Error downloading invoice:", err);
+//                         return res.status(500).json({ error: "Error downloading invoice" });
+//                     } else {
+//                         console.log("Invoice downloaded successfully.");
+//                     }
+//                 });
+//             });
+//         });
+//     } catch (error) {
+//         console.error("Error generating invoice:", error);
+//         res.status(500).json({ error: "Error generating invoice" });
+//     }
+// };
+
 const downloadInvoice = async (req, res) => {
-    try {
-        const { orderId } = req.params;
-        const userId = req.session.user;
+  try {
+    const { orderId } = req.params;
+    const userId = req.session.user;
 
-        const order = await Order.findById(orderId).populate({
-            path: "orderedItems.productId",
-            model: "Product",
-        });
+    const order = await Order.findById(orderId).populate({
+      path: "orderedItems.productId",
+      model: "Product",
+    });
 
-        if (!order) {
-            return res.status(404).json({ error: "Order not found" });
-        }
-        
-
-        let fullAddress = null;
-        if (order.address) {
-            const addressDoc = await Address.findOne({ userId });
-
-            if (!addressDoc) {
-                return res.status(404).json({ error: "Address document not found." });
-            }
-
-            fullAddress = addressDoc.address.find(
-                (addr) => addr._id.toString() === order.address.toString()
-            );
-
-            if (!fullAddress) {
-                return res.status(404).json({ error: "Address not found." });
-            }
-        }
-
-        const invoiceDir = path.join("D:", "BROTOTYPE", "TICKSCAPE", "invoices");
-        const invoicePath = path.join(invoiceDir, `invoice-${orderId}.pdf`);
-
-        if (!fs.existsSync(invoiceDir)) {
-            fs.mkdirSync(invoiceDir, { recursive: true });
-        }
-
-        const doc = new PDFTable({ margin: 30, size: "A4" }); 
-        const writeStream = fs.createWriteStream(invoicePath);
-        doc.pipe(writeStream);
-
-        // Header
-        doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
-
-        // Order ID and Date
-        doc.fontSize(12).text(`Order ID: ${order.orderId}`);
-        doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
-
-        // Delivery Address
-        doc.fontSize(12).text("Deliver to:", { underline: true });
-        doc.text(`${fullAddress.name}`);
-        doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
-        doc.text(`Pincode: ${fullAddress.pincode}`);
-        doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
-
-        // Table
-        const table = {
-            title: "Order Details",
-            headers: ["#", "Product Name", "Quantity", "Price", "Total" ,"Status"],
-            rows: order.orderedItems.map((item, index) => [
-                index + 1, 
-                item.productId.productName, 
-                item.quantity.toString(), 
-                `₹${item.price}`, 
-                `₹${(item.quantity * item.price * 1.18).toFixed(2)}`,
-                item.orderStatus, 
-            ]), 
-        };
-
-
-        doc.registerFont("NotoSans", path.join(invoiceDir, "fonts" , "Noto_Sans", "static", "NotoSans-Regular.ttf"));
-        doc.font("NotoSans");
-        
-        // Add the table to the PDF
-        await doc.table(table, {
-            columnsSize: [50, 150, 80, 80, 80, 100],
-            prepareHeader: () => doc.font("NotoSans").fontSize(12),
-            prepareRow: (row, indexColumn, indexRow, rectRow) => {
-                doc.font("NotoSans");
-            },
-        });
-
-
-        // Summary Section
-        doc.moveDown().fontSize(12);
-        const cgst = (order.totalPrice * 0.09).toFixed(2);
-        const sgst = (order.totalPrice * 0.09).toFixed(2);
-
-        doc.text(`Products Price: ₹${(order.totalPrice).toFixed(2)}`, { align: "right" });
-        doc.text(`CGST (9%): ₹${cgst}`, { align: "right" });
-        doc.text(`SGST (9%): ₹${sgst}`, { align: "right" });
-        doc.text(`Total GST (18%): ₹${(order.gstAmount).toFixed(2)}`, { align: "right" });
-        doc.text(`Shipping: ₹${(order.shipping).toFixed(2)}`, { align: "right" });
-        doc.text(`Discount: ₹${(order.discount).toFixed(2)}`, { align: "right" });
-        doc.fontSize(14).text(`Final Amount: ₹${(order.finalAmount).toFixed(2)}`, { align: "right", underline: true });
-
-        // Footer
-        doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
-
-        doc.end();
-
-        // Handle file download
-        writeStream.on("finish", () => {
-            console.log("PDF successfully written. Ready for download.");
-
-            fs.access(invoicePath, fs.constants.F_OK, (err) => {
-                if (err) {
-                    console.error("File does not exist:", invoicePath);
-                    return res.status(404).json({ error: "Invoice file not found" });
-                }
-
-                console.log("File exists, proceeding to download...");
-
-                res.download(invoicePath, `invoice-${orderId}.pdf`, (err) => {
-                    if (err) {
-                        console.error("Error downloading invoice:", err);
-                        return res.status(500).json({ error: "Error downloading invoice" });
-                    } else {
-                        console.log("Invoice downloaded successfully.");
-                    }
-                });
-            });
-        });
-    } catch (error) {
-        console.error("Error generating invoice:", error);
-        res.status(500).json({ error: "Error generating invoice" });
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
     }
+
+    let fullAddress = null;
+    if (order.address) {
+      const addressDoc = await Address.findOne({ userId });
+      if (!addressDoc) {
+        return res.status(404).json({ error: "Address document not found." });
+      }
+      fullAddress = addressDoc.address.find(
+        (addr) => addr._id.toString() === order.address.toString()
+      );
+      if (!fullAddress) {
+        return res.status(404).json({ error: "Address not found." });
+      }
+    }
+
+    // Stream directly to response
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="invoice-${orderId}.pdf"`);
+    const doc = new PDFTable({ margin: 30, size: "A4" });
+    doc.pipe(res);
+
+    // Header
+    doc.fontSize(20).text("Invoice", { align: "center" }).moveDown();
+
+    // Order ID and Date
+    doc.fontSize(12).text(`Order ID: ${order.orderId}`);
+    doc.text(`Date: ${new Date(order.createdOn).toLocaleDateString()}`).moveDown();
+
+    // Delivery Address
+    doc.fontSize(12).text("Deliver to:", { underline: true });
+    doc.text(`${fullAddress.name}`);
+    doc.text(`${fullAddress.addressType}, ${fullAddress.city}, ${fullAddress.state}, ${fullAddress.landMark}`);
+    doc.text(`Pincode: ${fullAddress.pincode}`);
+    doc.text(`Phone: ${fullAddress.phone}, ${fullAddress.altPhone}`).moveDown();
+
+    // Table
+    const table = {
+      title: "Order Details",
+      headers: ["#", "Product Name", "Quantity", "Price", "Total", "Status"],
+      rows: order.orderedItems.map((item, index) => [
+        index + 1,
+        item.productId.productName,
+        item.quantity.toString(),
+        `₹${item.price}`,
+        `₹${(item.quantity * item.price * 1.18).toFixed(2)}`,
+        item.orderStatus,
+      ]),
+    };
+
+    // Register font (ensure it's in the project directory)
+    doc.registerFont("NotoSans", path.join(__dirname, '..', 'fonts', 'Noto_Sans', 'static', 'NotoSans-Regular.ttf'));
+    doc.font("NotoSans").fontSize(12);
+
+    // Add the table to the PDF
+    await doc.table(table, {
+      columnsSize: [50, 150, 80, 80, 80, 100],
+      prepareHeader: () => doc.font("NotoSans").fontSize(12),
+      prepareRow: (row, indexColumn, indexRow, rectRow) => {
+        doc.font("NotoSans");
+      },
+    });
+
+    // Summary Section
+    doc.moveDown();
+    const cgst = (order.totalPrice * 0.09).toFixed(2);
+    const sgst = (order.totalPrice * 0.09).toFixed(2);
+
+    doc.text(`Products Price: ₹${(order.totalPrice).toFixed(2)}`, { align: "right" });
+    doc.text(`CGST (9%): ₹${cgst}`, { align: "right" });
+    doc.text(`SGST (9%): ₹${sgst}`, { align: "right" });
+    doc.text(`Total GST (18%): ₹${(order.gstAmount).toFixed(2)}`, { align: "right" });
+    doc.text(`Shipping: ₹${(order.shipping).toFixed(2)}`, { align: "right" });
+    doc.text(`Discount: ₹${(order.discount).toFixed(2)}`, { align: "right" });
+    doc.fontSize(14).text(`Final Amount: ₹${(order.finalAmount).toFixed(2)}`, { align: "right", underline: true });
+
+    // Footer
+    doc.moveDown().fontSize(12).text("Thank you for shopping with us!", { align: "center" });
+
+    doc.end();
+
+  } catch (error) {
+    console.error("Error generating invoice:", error);
+    res.status(500).json({ error: "Error generating invoice" });
+  }
 };
+
 
 //Orders in profile
 const getOrders = async (req, res) => {
